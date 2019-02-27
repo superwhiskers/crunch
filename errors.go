@@ -23,7 +23,7 @@ package crunch
 import "fmt"
 
 // Error implements a custom error type used in crunch
-type Error struct{
+type Error struct {
 	scope string
 	error string
 }
@@ -36,34 +36,49 @@ func (e Error) Error() string {
 }
 
 var (
+	// ByteBufferOverreadError represents an instance in which an overread of a ByteBuffer has been attempted
 	ByteBufferOverreadError = Error{
 		scope: "bytebuffer",
 		error: "read exceeds buffer capacity",
 	}
+
+	// ByteBufferOverwriteError represents an instance in which an overwrite of a ByteBuffer has been attempted
 	ByteBufferOverwriteError = Error{
 		scope: "bytebuffer",
 		error: "write exceeds buffer capacity",
 	}
+
+	// ByteBufferInvalidIntegerSizeError represents an instance in which an invalid integer size was provided to the read/write function of a ByteBuffer
 	ByteBufferInvalidIntegerSizeError = Error{
 		scope: "bytebuffer",
 		error: "invalid integer size specified",
 	}
+
+	// ByteBufferInvalidEndiannessError represents an instance in which an invalid endianness was provided to the read/write function of a ByteBuffer
 	ByteBufferInvalidEndiannessError = Error{
 		scope: "bytebuffer",
 		error: "invalid endianness specified",
 	}
+
+	// ByteBufferInvalidByteCountError represents an instance in which an invalid byte count was provided to a function
 	ByteBufferInvalidByteCountError = Error{
 		scope: "bytebuffer",
 		error: "invalid byte count requested",
 	}
+
+	// BitfieldInvalidBitError represents an instance in which an invalid bit was provided to a function
 	BitfieldInvalidBitError = Error{
 		scope: "bitfield",
 		error: "invalid bit value specified",
 	}
+
+	// BitfieldOverreadError represents an instance in which an overread of a Bitfield has been attempted
 	BitfieldOverreadError = Error{
 		scope: "bitfield",
 		error: "read exceeds bitfield capacity",
 	}
+
+	// BitfieldOverwriteError represents an instance in which an overwrite of a Bitfield has been attempted
 	BitfieldOverwriteError = Error{
 		scope: "bitfield",
 		error: "write exceeds bitfield capacity",

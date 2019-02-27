@@ -27,9 +27,9 @@ import (
 
 // Buffer implements a concurrent-safe buffer type in go that handles multiple types of data
 type Buffer struct {
-	buf []byte
-	off int64
-	cap int64
+	buf  []byte
+	off  int64
+	cap  int64
 	boff int64
 	bcap int64
 
@@ -40,8 +40,8 @@ type Buffer struct {
 func NewBuffer(slices ...[]byte) (buf *Buffer) {
 
 	buf = &Buffer{
-		buf: []byte{},
-		off: 0x00,
+		buf:  []byte{},
+		off:  0x00,
 		boff: 0x00,
 	}
 
@@ -179,7 +179,7 @@ func (b *Buffer) clearallbits() {
 
 	b.Lock()
 	defer b.Unlock()
-	
+
 	for i := range b.buf {
 
 		b.buf[i] = 0
@@ -594,7 +594,7 @@ func (b *Buffer) refresh() {
 	defer b.Unlock()
 
 	b.cap = int64(len(b.buf))
-	b.bcap = b.cap*8
+	b.bcap = b.cap * 8
 
 	return
 
@@ -605,8 +605,8 @@ func (b *Buffer) alignbit() {
 
 	b.Lock()
 	defer b.Unlock()
-	
-	b.boff = b.off*8
+
+	b.boff = b.off * 8
 
 }
 
@@ -615,8 +615,8 @@ func (b *Buffer) alignbyte() {
 
 	b.Lock()
 	defer b.Unlock()
-	
-	b.off = b.boff/8
+
+	b.off = b.boff / 8
 
 }
 
@@ -733,7 +733,7 @@ func (b *Buffer) ReadComplex(off, n int64, size IntegerSize, endianness Endianne
 
 }
 
-// ReadBytesNext returns the next n bytes from the current offset and moves the offset foward the amount of bytes read
+// ReadBytesNext returns the next n bytes from the current offset and moves the offset forward the amount of bytes read
 func (b *Buffer) ReadBytesNext(n int64) (out []byte) {
 
 	out = b.read(b.off, n)
@@ -742,7 +742,7 @@ func (b *Buffer) ReadBytesNext(n int64) (out []byte) {
 
 }
 
-// ReadComplexNext returns the next n uint8/uint16/uint32/uint64-s from the current offset and moves the offset foward the amount of bytes read
+// ReadComplexNext returns the next n uint8/uint16/uint32/uint64-s from the current offset and moves the offset forward the amount of bytes read
 func (b *Buffer) ReadComplexNext(n int64, size IntegerSize, endianness Endianness) (out interface{}) {
 
 	out = b.readComplex(b.off, n, size, endianness)
@@ -775,7 +775,7 @@ func (b *Buffer) WriteComplex(off int64, data interface{}, size IntegerSize, end
 
 }
 
-// WriteByteNext writes a byte to the buffer at the current offset and moves the offset foward the amount of bytes written
+// WriteByteNext writes a byte to the buffer at the current offset and moves the offset forward the amount of bytes written
 func (b *Buffer) WriteByteNext(data byte) {
 
 	b.write(b.off, []byte{data})
@@ -784,7 +784,7 @@ func (b *Buffer) WriteByteNext(data byte) {
 
 }
 
-// WriteBytesNext writes bytes to the buffer at the current offset and moves the offset foward the amount of bytes written
+// WriteBytesNext writes bytes to the buffer at the current offset and moves the offset forward the amount of bytes written
 func (b *Buffer) WriteBytesNext(data []byte) {
 
 	b.write(b.off, data)
@@ -793,7 +793,7 @@ func (b *Buffer) WriteBytesNext(data []byte) {
 
 }
 
-// WriteComplexNext writes a uint8/uint16/uint32/uint64 to the buffer at the current offset and moves the offset foward the amount of bytes written
+// WriteComplexNext writes a uint8/uint16/uint32/uint64 to the buffer at the current offset and moves the offset forward the amount of bytes written
 func (b *Buffer) WriteComplexNext(data interface{}, size IntegerSize, endianness Endianness) {
 
 	b.writeComplex(b.off, data, size, endianness)
@@ -832,7 +832,7 @@ func (b *Buffer) ReadBits(off, n int64) uint64 {
 
 }
 
-// ReadBitNext returns the next bit from the current offset and moves the offset foward a bit
+// ReadBitNext returns the next bit from the current offset and moves the offset forward a bit
 func (b *Buffer) ReadBitNext() (out byte) {
 
 	out = b.readbit(b.off)
@@ -841,7 +841,7 @@ func (b *Buffer) ReadBitNext() (out byte) {
 
 }
 
-// ReadBitsNext returns the next n bits from the current offset and moves the offset foward the amount of bits read
+// ReadBitsNext returns the next n bits from the current offset and moves the offset forward the amount of bits read
 func (b *Buffer) ReadBitsNext(n int64) (out uint64) {
 
 	out = b.readbits(b.off, n)
@@ -866,7 +866,7 @@ func (b *Buffer) SetBits(off, data, n int64) {
 
 }
 
-// SetBitNext sets the next bit from the current offset and moves the offset foward a bit
+// SetBitNext sets the next bit from the current offset and moves the offset forward a bit
 func (b *Buffer) SetBitNext(data int64) {
 
 	b.setbit(b.off, data)
@@ -875,7 +875,7 @@ func (b *Buffer) SetBitNext(data int64) {
 
 }
 
-// SetBitsNext sets the next n bits from the current offset and moves the offset foward the amount of bits set
+// SetBitsNext sets the next n bits from the current offset and moves the offset forward the amount of bits set
 func (b *Buffer) SetBitsNext(data, n int64) {
 
 	b.setbits(b.off, data, n)
@@ -892,7 +892,7 @@ func (b *Buffer) FlipBit(off int64) {
 
 }
 
-// FlipBitNext flips the next bit from the current offset and moves the offset foward a bit
+// FlipBitNext flips the next bit from the current offset and moves the offset forward a bit
 func (b *Buffer) FlipBitNext() {
 
 	b.flipbit(b.off)

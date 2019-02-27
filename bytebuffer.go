@@ -483,7 +483,7 @@ func (b *ByteBuffer) ReadComplex(off, n int64, size IntegerSize, endianness Endi
 
 }
 
-// ReadBytesNext returns the next n bytes from the current offset and moves the offset foward the amount of bytes read
+// ReadBytesNext returns the next n bytes from the current offset and moves the offset forward the amount of bytes read
 func (b *ByteBuffer) ReadBytesNext(n int64) (out []byte) {
 
 	out = b.read(b.off, n)
@@ -492,7 +492,7 @@ func (b *ByteBuffer) ReadBytesNext(n int64) (out []byte) {
 
 }
 
-// ReadComplexNext returns the next n uint8/uint16/uint32/uint64-s from the current offset and moves the offset foward the amount of bytes read
+// ReadComplexNext returns the next n uint8/uint16/uint32/uint64-s from the current offset and moves the offset forward the amount of bytes read
 func (b *ByteBuffer) ReadComplexNext(n int64, size IntegerSize, endianness Endianness) (out interface{}) {
 
 	out = b.readComplex(b.off, n, size, endianness)
@@ -525,7 +525,7 @@ func (b *ByteBuffer) WriteComplex(off int64, data interface{}, size IntegerSize,
 
 }
 
-// WriteByteNext writes a byte to the buffer at the current offset and moves the offset foward the amount of bytes written
+// WriteByteNext writes a byte to the buffer at the current offset and moves the offset forward the amount of bytes written
 func (b *ByteBuffer) WriteByteNext(data byte) {
 
 	b.write(b.off, []byte{data})
@@ -534,7 +534,7 @@ func (b *ByteBuffer) WriteByteNext(data byte) {
 
 }
 
-// WriteBytesNext writes bytes to the buffer at the current offset and moves the offset foward the amount of bytes written
+// WriteBytesNext writes bytes to the buffer at the current offset and moves the offset forward the amount of bytes written
 func (b *ByteBuffer) WriteBytesNext(data []byte) {
 
 	b.write(b.off, data)
@@ -543,7 +543,7 @@ func (b *ByteBuffer) WriteBytesNext(data []byte) {
 
 }
 
-// WriteComplexNext writes a uint8/uint16/uint32/uint64 to the buffer at the current offset and moves the offset foward the amount of bytes written
+// WriteComplexNext writes a uint8/uint16/uint32/uint64 to the buffer at the current offset and moves the offset forward the amount of bytes written
 func (b *ByteBuffer) WriteComplexNext(data interface{}, size IntegerSize, endianness Endianness) {
 
 	b.writeComplex(b.off, data, size, endianness)

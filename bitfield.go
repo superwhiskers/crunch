@@ -175,7 +175,7 @@ func (b *Bitfield) clear() {
 
 	b.Lock()
 	defer b.Unlock()
-	
+
 	for i := range b.btf {
 
 		b.btf[i] = 0
@@ -339,7 +339,7 @@ func (b *Bitfield) ReadBits(off, n int64) uint64 {
 
 }
 
-// ReadBitNext returns the next bit from the current offset and moves the offset foward a bit
+// ReadBitNext returns the next bit from the current offset and moves the offset forward a bit
 func (b *Bitfield) ReadBitNext() (out byte) {
 
 	out = b.readbit(b.off)
@@ -348,7 +348,7 @@ func (b *Bitfield) ReadBitNext() (out byte) {
 
 }
 
-// ReadBitsNext returns the next n bits from the current offset and moves the offset foward the amount of bits read
+// ReadBitsNext returns the next n bits from the current offset and moves the offset forward the amount of bits read
 func (b *Bitfield) ReadBitsNext(n int64) (out uint64) {
 
 	out = b.readbits(b.off, n)
@@ -373,7 +373,7 @@ func (b *Bitfield) SetBits(off, data, n int64) {
 
 }
 
-// SetBitNext sets the next bit from the current offset and moves the offset foward a bit
+// SetBitNext sets the next bit from the current offset and moves the offset forward a bit
 func (b *Bitfield) SetBitNext(data int64) {
 
 	b.setbit(b.off, data)
@@ -382,7 +382,7 @@ func (b *Bitfield) SetBitNext(data int64) {
 
 }
 
-// SetBitsNext sets the next n bits from the current offset and moves the offset foward the amount of bits set
+// SetBitsNext sets the next n bits from the current offset and moves the offset forward the amount of bits set
 func (b *Bitfield) SetBitsNext(data, n int64) {
 
 	b.setbits(b.off, data, n)
@@ -399,7 +399,7 @@ func (b *Bitfield) FlipBit(off int64) {
 
 }
 
-// FlipBitNext flips the next bit from the current offset and moves the offset foward a bit
+// FlipBitNext flips the next bit from the current offset and moves the offset forward a bit
 func (b *Bitfield) FlipBitNext() {
 
 	b.flipbit(b.off)
