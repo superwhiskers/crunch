@@ -603,6 +603,9 @@ func (b *Buffer) refresh() {
 // alignbit aligns the bit offset to the byte offset
 func (b *Buffer) alignbit() {
 
+	b.Lock()
+	defer b.Unlock()
+	
 	b.boff = b.off*8
 
 }
@@ -610,6 +613,9 @@ func (b *Buffer) alignbit() {
 // alignbyte aligns the byte offset to the bit offset
 func (b *Buffer) alignbyte() {
 
+	b.Lock()
+	defer b.Unlock()
+	
 	b.off = b.boff/8
 
 }
