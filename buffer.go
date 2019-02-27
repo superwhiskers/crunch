@@ -681,7 +681,7 @@ func (b *Buffer) Seek(off int64, relative bool) {
 
 }
 
-// BitSeek seeks to bit postion off of the the buffer relative to the current position or exact
+// BitSeek seeks to bit position off of the the buffer relative to the current position or exact
 func (b *Buffer) BitSeek(off int64, relative bool) {
 
 	b.bitseek(off, relative)
