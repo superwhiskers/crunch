@@ -216,8 +216,8 @@ func (b *Buffer) flipallbits() {
 
 }
 
-// bitseek seeks to position off of the bitfield relative to the current position or exact
-func (b *Buffer) bitseek(off int64, relative bool) {
+// seekbit seeks to position off of the bitfield relative to the current position or exact
+func (b *Buffer) seekbit(off int64, relative bool) {
 
 	b.Lock()
 	defer b.Unlock()
@@ -236,8 +236,8 @@ func (b *Buffer) bitseek(off int64, relative bool) {
 
 }
 
-// bitafter returns the amount of bits located after the current position or the specified one
-func (b *Buffer) bitafter(off ...int64) int64 {
+// afterbit returns the amount of bits located after the current position or the specified one
+func (b *Buffer) afterbit(off ...int64) int64 {
 
 	if len(off) == 0 {
 
@@ -681,10 +681,10 @@ func (b *Buffer) Seek(off int64, relative bool) {
 
 }
 
-// BitSeek seeks to bit position off of the the buffer relative to the current position or exact
-func (b *Buffer) BitSeek(off int64, relative bool) {
+// SeekBit seeks to bit position off of the the buffer relative to the current position or exact
+func (b *Buffer) SeekBit(off int64, relative bool) {
 
-	b.bitseek(off, relative)
+	b.seekbit(off, relative)
 	return
 
 }
@@ -712,10 +712,10 @@ func (b *Buffer) After(off ...int64) int64 {
 
 }
 
-// BitAfter returns the amount of bits located after the current bit position or the specified one
-func (b *Buffer) BitAfter(off ...int64) int64 {
+// AfterBit returns the amount of bits located after the current bit position or the specified one
+func (b *Buffer) AfterBit(off ...int64) int64 {
 
-	return b.bitafter(off...)
+	return b.afterbit(off...)
 
 }
 
@@ -835,8 +835,8 @@ func (b *Buffer) ReadBits(off, n int64) uint64 {
 // ReadBitNext returns the next bit from the current offset and moves the offset forward a bit
 func (b *Buffer) ReadBitNext() (out byte) {
 
-	out = b.readbit(b.off)
-	b.bitseek(1, true)
+	out = b.readbit(b.boff)
+	b.seekbit(1, true)
 	return
 
 }
@@ -844,8 +844,8 @@ func (b *Buffer) ReadBitNext() (out byte) {
 // ReadBitsNext returns the next n bits from the current offset and moves the offset forward the amount of bits read
 func (b *Buffer) ReadBitsNext(n int64) (out uint64) {
 
-	out = b.readbits(b.off, n)
-	b.bitseek(n, true)
+	out = b.readbits(b.boff, n)
+	b.seekbit(n, true)
 	return
 
 }
@@ -869,8 +869,8 @@ func (b *Buffer) SetBits(off, data, n int64) {
 // SetBitNext sets the next bit from the current offset and moves the offset forward a bit
 func (b *Buffer) SetBitNext(data int64) {
 
-	b.setbit(b.off, data)
-	b.bitseek(1, true)
+	b.setbit(b.boff, data)
+	b.seekbit(1, true)
 	return
 
 }
@@ -878,8 +878,8 @@ func (b *Buffer) SetBitNext(data int64) {
 // SetBitsNext sets the next n bits from the current offset and moves the offset forward the amount of bits set
 func (b *Buffer) SetBitsNext(data, n int64) {
 
-	b.setbits(b.off, data, n)
-	b.bitseek(n, true)
+	b.setbits(b.boff, data, n)
+	b.seekbit(n, true)
 	return
 
 }
@@ -895,8 +895,8 @@ func (b *Buffer) FlipBit(off int64) {
 // FlipBitNext flips the next bit from the current offset and moves the offset forward a bit
 func (b *Buffer) FlipBitNext() {
 
-	b.flipbit(b.off)
-	b.bitseek(1, true)
+	b.flipbit(b.boff)
+	b.seekbit(1, true)
 	return
 
 }
