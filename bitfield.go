@@ -1,7 +1,7 @@
 /*
 
 crunch - utilities for taking bytes out of things
-copyright (c) 2018 superwhiskers <whiskerdev@protonmail.com>
+copyright (c) 2019 superwhiskers <whiskerdev@protonmail.com>
 
 this program is free software: you can redistribute it and/or modify
 it under the terms of the gnu lesser general public license as published by
