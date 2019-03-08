@@ -106,7 +106,7 @@ func (b *Bitfield) readbits(off, n int64) (v uint64) {
 }
 
 // setbit sets a bit in the bitfield to the specified value
-func (b *Bitfield) setbit(off, data int64) {
+func (b *Bitfield) setbit(off int64, data byte) {
 
 	if off > (b.cap - 1) {
 
@@ -137,7 +137,7 @@ func (b *Bitfield) setbit(off, data int64) {
 }
 
 // setbits sets n bits in the bitfield to the specified value at the specified offset
-func (b *Bitfield) setbits(off, data, n int64) {
+func (b *Bitfield) setbits(off int64, data uint64, n int64) {
 
 	if off+n > (b.cap - 1) {
 
@@ -147,7 +147,7 @@ func (b *Bitfield) setbits(off, data, n int64) {
 
 	for i := int64(0); i < n; i++ {
 
-		b.setbit(off+i, (data>>uint64(n-i-1))&1)
+		b.setbit(off+i, byte((data>>uint64(n-i-1))&1))
 
 	}
 
@@ -358,7 +358,7 @@ func (b *Bitfield) ReadBitsNext(n int64) (out uint64) {
 }
 
 // SetBit sets the bit located at the specified offset without modifying the internal offset value
-func (b *Bitfield) SetBit(off, data int64) {
+func (b *Bitfield) SetBit(off int64, data byte) {
 
 	b.setbit(off, data)
 	return
@@ -366,7 +366,7 @@ func (b *Bitfield) SetBit(off, data int64) {
 }
 
 // SetBits sets the next n bits from the specified offset without modifying the internal offset value
-func (b *Bitfield) SetBits(off, data, n int64) {
+func (b *Bitfield) SetBits(off int64, data uint64, n int64) {
 
 	b.setbits(off, data, n)
 	return
@@ -374,7 +374,7 @@ func (b *Bitfield) SetBits(off, data, n int64) {
 }
 
 // SetBitNext sets the next bit from the current offset and moves the offset forward a bit
-func (b *Bitfield) SetBitNext(data int64) {
+func (b *Bitfield) SetBitNext(data byte) {
 
 	b.setbit(b.off, data)
 	b.seek(1, true)
@@ -383,7 +383,7 @@ func (b *Bitfield) SetBitNext(data int64) {
 }
 
 // SetBitsNext sets the next n bits from the current offset and moves the offset forward the amount of bits set
-func (b *Bitfield) SetBitsNext(data, n int64) {
+func (b *Bitfield) SetBitsNext(data uint64, n int64) {
 
 	b.setbits(b.off, data, n)
 	b.seek(n, true)
