@@ -469,6 +469,13 @@ func (b *ByteBuffer) After(off ...int64) int64 {
 
 }
 
+// ReadByte returns the next byte from the specified offset without modifying the internal offset value
+func (b *ByteBuffer) ReadByte(off int64) byte {
+
+	return b.read(off, 1)[0]
+
+}
+
 // ReadBytes returns the next n bytes from the specified offset without modifying the internal offset value
 func (b *ByteBuffer) ReadBytes(off, n int64) []byte {
 
@@ -480,6 +487,15 @@ func (b *ByteBuffer) ReadBytes(off, n int64) []byte {
 func (b *ByteBuffer) ReadComplex(off, n int64, size IntegerSize, endianness Endianness) interface{} {
 
 	return b.readComplex(off, n, size, endianness)
+
+}
+
+// ReadByteNext returns the next byte from the current offset and moves the offset foward a byte
+func (b *ByteBuffer) ReadByteNext() (out byte) {
+
+	out = b.read(b.off, 1)[0]
+	b.seek(1, true)
+	return
 
 }
 
