@@ -740,7 +740,7 @@ func (b *Buffer) ReadComplex(off, n int64, size IntegerSize, endianness Endianne
 
 }
 
-// ReadByteNext returns the next byte from the current offset and moves the offset foward a byte
+// ReadByteNext returns the next byte from the current offset and moves the offset forward a byte
 func (b *Buffer) ReadByteNext() (out byte) {
 
 	out = b.read(b.off, 1)[0]
