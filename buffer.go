@@ -85,8 +85,7 @@ func (b *Buffer) readbit(off int64) byte {
 	b.Lock()
 	defer b.Unlock()
 
-	i, o := (off / 8), uint(7-(off%8))
-	return atob((b.buf[i] & (1 << o)) != 0)
+	return atob((b.buf[off/8] & (1 << uint(7-(off%8)))) != 0)
 
 }
 
@@ -127,14 +126,13 @@ func (b *Buffer) setbit(off int64, data byte) {
 	b.Lock()
 	defer b.Unlock()
 
-	i, o := (off / 8), uint(7-(off%8))
 	switch data {
 
 	case 0:
-		b.buf[i] &= ^(1 << o)
+		b.buf[off/8] &= ^(1 << uint(7-(off%8)))
 
 	case 1:
-		b.buf[i] |= (1 << o)
+		b.buf[off/8] |= (1 << uint(7-(off%8)))
 
 	}
 
@@ -169,8 +167,8 @@ func (b *Buffer) flipbit(off int64) {
 	b.Lock()
 	defer b.Unlock()
 
-	i, o := (off / 8), uint(7-(off%8))
-	b.buf[i] ^= (1 << o)
+	b.buf[off/8] ^= (1 << uint(7-(off%8)))
+
 
 }
 
@@ -643,14 +641,14 @@ func (b *Buffer) BitCapacity() int64 {
 
 }
 
-// Offset returns the current offset
+// Offset returns the current offset of the buffer
 func (b *Buffer) Offset() int64 {
 
 	return b.off
 
 }
 
-// BitOffset returns the current bit offset
+// BitOffset returns the current bit offset of the buffer
 func (b *Buffer) BitOffset() int64 {
 
 	return b.boff
