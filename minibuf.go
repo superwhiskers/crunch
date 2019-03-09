@@ -22,8 +22,8 @@ package crunch
 
 import "sync"
 
-// MiniBuffer implements a concurrent-safe buffer type in go that handles multiple types of data with very low memory allocations
-// complex reading and writing functions are removed as they are harder to optimize and aren't hard to do without
+// MiniBuffer implements a fast and low-memory buffer type in go that handles multiple types of data easily. it is not safe
+// for concurrent usage out of the box, you are required to handle that yourself by calling the Lock and Unlock methods on it
 type MiniBuffer struct {
 	buf  []byte
 	off  int64
@@ -79,9 +79,6 @@ func (b *MiniBuffer) readbit(out *byte, off int64) {
 
 	}
 
-	b.Lock()
-	defer b.Unlock()
-
 	*out = atob((b.buf[off/8] & (1 << uint(7-(off%8)))) != 0)
 	return
 
@@ -122,9 +119,6 @@ func (b *MiniBuffer) setbit(off int64, data byte) {
 		panic(BitfieldInvalidBitError)
 
 	}
-
-	b.Lock()
-	defer b.Unlock()
 
 	switch data {
 
@@ -168,9 +162,6 @@ func (b *MiniBuffer) flipbit(off int64) {
 
 	}
 
-	b.Lock()
-	defer b.Unlock()
-
 	b.buf[off/8] ^= (1 << uint(7-(off%8)))
 	return
 
@@ -178,9 +169,6 @@ func (b *MiniBuffer) flipbit(off int64) {
 
 // clearallbits sets all of the buffer's bits to 0
 func (b *MiniBuffer) clearallbits() {
-
-	b.Lock()
-	defer b.Unlock()
 
 	for i := range b.buf {
 
@@ -195,9 +183,6 @@ func (b *MiniBuffer) clearallbits() {
 // setallbits sets all of the buffer's bits to 1
 func (b *MiniBuffer) setallbits() {
 
-	b.Lock()
-	defer b.Unlock()
-
 	for i := range b.buf {
 
 		b.buf[i] = 0xFF
@@ -211,9 +196,6 @@ func (b *MiniBuffer) setallbits() {
 // flipallbits flips all of the buffer's bits
 func (b *MiniBuffer) flipallbits() {
 
-	b.Lock()
-	defer b.Unlock()
-
 	for i := range b.buf {
 
 		b.buf[i] = ^b.buf[i]
@@ -226,9 +208,6 @@ func (b *MiniBuffer) flipallbits() {
 
 // seekbit seeks to position off of the bitfield relative to the current position or exact
 func (b *MiniBuffer) seekbit(off int64, relative bool) {
-
-	b.Lock()
-	defer b.Unlock()
 
 	if relative == true {
 
@@ -268,15 +247,11 @@ func (b *MiniBuffer) write(off int64, data []byte) {
 
 	}
 
-	b.Lock()
-
 	for i, byt := range data {
 
 		b.buf[off+int64(i)] = byt
 
 	}
-
-	b.Unlock()
 
 	return
 }
@@ -290,9 +265,6 @@ func (b *MiniBuffer) read(out *[]byte, off, n int64) {
 
 	}
 
-	b.Lock()
-	defer b.Unlock()
-
 	*out = b.buf[off : off+n]
 	return
 
@@ -300,9 +272,6 @@ func (b *MiniBuffer) read(out *[]byte, off, n int64) {
 
 // seek seeks to position off of the byte buffer relative to the current position or exact
 func (b *MiniBuffer) seek(off int64, relative bool) {
-
-	b.Lock()
-	defer b.Unlock()
 
 	if relative == true {
 
@@ -336,12 +305,7 @@ func (b *MiniBuffer) after(out *int64, off ...int64) {
 // grow grows the buffer by n bytes
 func (b *MiniBuffer) grow(n int64) {
 
-	b.Lock()
-
 	b.buf = append(b.buf, make([]byte, n)...)
-
-	b.Unlock()
-
 	b.refresh()
 
 	return
@@ -350,9 +314,6 @@ func (b *MiniBuffer) grow(n int64) {
 
 // refresh updates the internal statistics of the byte buffer forcefully
 func (b *MiniBuffer) refresh() {
-
-	b.Lock()
-	defer b.Unlock()
 
 	b.cap = int64(len(b.buf))
 	b.bcap = b.cap * 8
@@ -364,18 +325,12 @@ func (b *MiniBuffer) refresh() {
 // alignbit aligns the bit offset to the byte offset
 func (b *MiniBuffer) alignbit() {
 
-	b.Lock()
-	defer b.Unlock()
-
 	b.boff = b.off * 8
 
 }
 
 // alignbyte aligns the byte offset to the bit offset
 func (b *MiniBuffer) alignbyte() {
-
-	b.Lock()
-	defer b.Unlock()
 
 	b.off = b.boff / 8
 
