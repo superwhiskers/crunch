@@ -35,9 +35,9 @@ type MiniBuffer struct {
 }
 
 // NewMiniBuffer initilaizes a new MiniBuffer with the provided byte slice(s) stored inside in the order provided
-func NewMiniBuffer(out *MiniBuffer, slices ...[]byte) {
+func NewMiniBuffer(out **MiniBuffer, slices ...[]byte) {
 
-	out = &MiniBuffer{
+	*out = &MiniBuffer{
 		buf:  []byte{},
 		off:  0x00,
 		boff: 0x00,
@@ -49,19 +49,19 @@ func NewMiniBuffer(out *MiniBuffer, slices ...[]byte) {
 		break
 
 	case 1:
-		out.buf = slices[0]
+		(*out).buf = slices[0]
 		break
 
 	default:
 		for _, s := range slices {
 
-			out.buf = append(out.buf, s...)
+			(*out).buf = append((*out).buf, s...)
 
 		}
 
 	}
 
-	out.refresh()
+	(*out).refresh()
 	return
 
 }
