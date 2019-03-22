@@ -11,6 +11,18 @@ manipulate bytes and bits in golang with ease
 $ go get github.com/superwhiskers/crunch
 ```
 
+## benchmarks
+
+`MiniBuffer` performs on average more than twice as fast as `bytes.Buffer` in both writing and reading
+```
+BenchmarkBufferWrite-4          	30000000	        36.5 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferRead-4           	20000000	       106 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferWrite-4      	200000000	         8.86 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferRead-4       	1000000000	         2.12 ns/op	       0 B/op	       0 allocs/op
+BenchmarkStdByteBufferWrite-4   	100000000	        19.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkStdByteBufferRead-4    	300000000	         4.62 ns/op	       0 B/op	       0 allocs/op
+```
+
 ## example
 
 ```golang

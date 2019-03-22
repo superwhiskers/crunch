@@ -169,7 +169,6 @@ func (b *Buffer) flipbit(off int64) {
 
 	b.buf[off/8] ^= (1 << uint(7-(off%8)))
 
-
 }
 
 // clearallbits sets all of the buffer's bits to 0
@@ -259,10 +258,17 @@ func (b *Buffer) write(off int64, data []byte) {
 
 	b.Lock()
 
-	for i, byt := range data {
+	i := int64(len(data) - 1)
 
-		b.buf[off+int64(i)] = byt
+	{
+	write_loop:
+		b.buf[off+i] = data[i]
+		i--
+		if i != -1 {
 
+			goto write_loop
+
+		}
 	}
 
 	b.Unlock()

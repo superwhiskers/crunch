@@ -247,13 +247,21 @@ func (b *MiniBuffer) write(off int64, data []byte) {
 
 	}
 
-	for i, byt := range data {
+	i := int64(len(data) - 1)
 
-		b.buf[off+int64(i)] = byt
+	{
+	write_loop:
+		b.buf[off+i] = data[i]
+		i--
+		if i != -1 {
 
+			goto write_loop
+
+		}
 	}
 
 	return
+
 }
 
 // read reads n bytes from the buffer at the specified offset
