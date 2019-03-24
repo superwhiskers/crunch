@@ -28,7 +28,7 @@ tests
 
 func TestNewMiniBuffer(t *testing.T) {
 
-	expected := &MiniBuffer{
+	expected1 := &MiniBuffer{
 		buf:  []byte{0x00, 0x00, 0x00, 0x00},
 		off:  0x00,
 		cap:  4,
@@ -36,12 +36,42 @@ func TestNewMiniBuffer(t *testing.T) {
 		bcap: 32,
 	}
 
+	expected2 := &MiniBuffer{
+		buf: []byte{},
+		off: 0x00,
+		cap: 0,
+		boff: 0,
+		bcap: 0,
+	}
+
+	expected3 := &MiniBuffer{
+		buf:  []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+		off:  0x00,
+		cap:  8,
+		boff: 0x00,
+		bcap: 64,
+	}
+
 	out := &MiniBuffer{}
+
 	NewMiniBuffer(&out, []byte{0x00, 0x00, 0x00, 0x00})
+	if !cmp.Equal(expected1, out, MiniBufferComparer) {
 
-	if !cmp.Equal(expected, out, MiniBufferComparer) {
+		t.Fatalf("expected minibuffer does not match the one gotten (got %#v, expected %#v)", out, expected1)
 
-		t.Fatalf("expected minibuffer does not match the one gotten (got %#v, expected %#v)", out, expected)
+	}
+
+	NewMiniBuffer(&out)
+	if !cmp.Equal(expected2, out, MiniBufferComparer) {
+
+		t.Fatalf("expected minibuffer does not match the one gotten (got %#v, expected %#v)", out, expected2)
+
+	}
+
+	NewMiniBuffer(&out, []byte{0x00, 0x00, 0x00, 0x00}, []byte{0x00, 0x00, 0x00, 0x00})
+	if !cmp.Equal(expected3, out, MiniBufferComparer) {
+
+		t.Fatalf("expected minibuffer does not match the one gotten (got %#v, expected %#v)", out, expected3)
 
 	}
 
@@ -138,8 +168,21 @@ func TestMiniBufferBitOffset(t *testing.T) {
 
 func TestMiniBufferRefresh(t *testing.T) {
 
-	// there is no actual way to test this because
-	// the statistics are updated every time Grow is called
+	var (
+		expected1 int64 = 4
+		expected2 int64 = 32
+	)
+	
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.Refresh()
+
+	if expected1 != buf.cap || expected2 != buf.bcap {
+
+		t.Fatalf("expected int64(s) do not match the ones gotten (got %d and %d, expected %d and %d)", buf.cap, buf.bcap, expected1, expected2)
+
+	}
 
 }
 
