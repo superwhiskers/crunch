@@ -12,7 +12,7 @@ utilities
 
 */
 
-var MiniBufferComparer = cmp.Comparer(func(x, y MiniBuffer) bool {
+var MiniBufferComparer = cmp.Comparer(func(x, y *MiniBuffer) bool {
 	return cmp.Equal(x.buf, y.buf) &&
 		x.off == y.off &&
 		x.cap == y.cap &&
@@ -106,7 +106,7 @@ func TestMiniBufferOffset(t *testing.T) {
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
 
 	buf.Seek(0x02, false)
-	
+
 	var out int64
 	buf.Offset(&out)
 	if expected != out {
@@ -473,7 +473,7 @@ func TestMiniBufferSetBitNext(t *testing.T) {
 		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
 
 	}
-	
+
 }
 
 func TestMiniBufferSetBits(t *testing.T) {

@@ -8,8 +8,6 @@ tests
 
 */
 
-
-
 /*
 
 benchmarks
@@ -23,7 +21,7 @@ func BenchmarkBufferWrite(b *testing.B) {
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
 	for n := 0; n < b.N; n++ {
-		
+
 		buf.WriteBytes(0x00, []byte{0x01, 0x02})
 
 	}
@@ -33,7 +31,7 @@ func BenchmarkBufferWrite(b *testing.B) {
 func BenchmarkBufferRead(b *testing.B) {
 
 	b.ReportAllocs()
-	
+
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
 	var out []byte

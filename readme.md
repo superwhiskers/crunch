@@ -38,10 +38,10 @@ func main() {
 	// creates a new buffer with four zeroes
 	buf := crunch.NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 	
-	// write the byte `0x01` to the first offset, and move the offset foward one
+	// write the byte `0x01` to the first offset, and move the offset forward one
 	buf.WriteByteNext(0x01)
 	
-	// write the byte `0x01` to the second offset, and move the offset foward one
+	// write the byte `0x01` to the second offset, and move the offset forward one
 	buf.WriteByteNext(0x01)
 	
 	// seek the offset back one
