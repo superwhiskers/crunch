@@ -22,41 +22,6 @@ var MiniBufferComparer = cmp.Comparer(func(x, y *MiniBuffer) bool {
 
 })
 
-var ErrorComparer = cmp.Comparer(func(x, y Error) bool {
-
-	return x.scope == y.scope &&
-		x.error == y.error
-
-})
-
-func panicChecker(t *testing.T, errs ...Error) {
-
-	if r := recover(); r != nil {
-
-		for i, err := range errs {
-
-			if cmp.Equal(r, err, ErrorComparer) {
-
-				break
-
-			}
-
-			if i == len(errs)-1 {
-
-				t.Fatalf("none of the expected panic return value(s) do not match the one gotten (got \"%s\", expected %v)", r, errs)
-
-			}
-
-		}
-
-	} else {
-
-		t.Fatalf("none of the expected panics were triggered")
-
-	}
-
-}
-
 /*
 
 tests
@@ -66,21 +31,21 @@ tests
 func TestNewMiniBuffer(t *testing.T) {
 
 	var (
-		expected1 *MiniBuffer = &MiniBuffer{
+		expected1 = &MiniBuffer{
 			buf:  []byte{0x00, 0x00, 0x00, 0x00},
 			off:  0x00,
 			cap:  4,
 			boff: 0x00,
 			bcap: 32,
 		}
-		expected2 *MiniBuffer = &MiniBuffer{
+		expected2 = &MiniBuffer{
 			buf:  []byte{},
 			off:  0x00,
 			cap:  0,
-			boff: 0,
+			boff: 0x00,
 			bcap: 0,
 		}
-		expected3 *MiniBuffer = &MiniBuffer{
+		expected3 = &MiniBuffer{
 			buf:  []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
 			off:  0x00,
 			cap:  8,
@@ -116,7 +81,7 @@ func TestNewMiniBuffer(t *testing.T) {
 
 func TestMiniBufferBytes(t *testing.T) {
 
-	var expected []byte = []byte{0x01, 0x02, 0x03, 0x04}
+	var expected = []byte{0x01, 0x02, 0x03, 0x04}
 
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x01, 0x02, 0x03, 0x04})
@@ -380,7 +345,7 @@ func TestMiniBufferAfterBit(t *testing.T) {
 
 func TestMiniBufferReadBytes(t *testing.T) {
 
-	var expected []byte = []byte{0x03, 0x04}
+	var expected = []byte{0x03, 0x04}
 
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x01, 0x02, 0x03, 0x04})
@@ -397,7 +362,7 @@ func TestMiniBufferReadBytes(t *testing.T) {
 
 func TestMiniBufferReadBytesNext(t *testing.T) {
 
-	var expected []byte = []byte{0x01, 0x02}
+	var expected = []byte{0x01, 0x02}
 
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x01, 0x02, 0x03, 0x04})
@@ -414,7 +379,7 @@ func TestMiniBufferReadBytesNext(t *testing.T) {
 
 func TestMiniBufferWriteBytes(t *testing.T) {
 
-	var expected []byte = []byte{0x01, 0x02}
+	var expected = []byte{0x01, 0x02}
 
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
@@ -433,7 +398,7 @@ func TestMiniBufferWriteBytes(t *testing.T) {
 
 func TestMiniBufferWriteBytesNext(t *testing.T) {
 
-	var expected []byte = []byte{0x01, 0x02}
+	var expected = []byte{0x01, 0x02}
 
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
