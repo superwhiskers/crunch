@@ -13,12 +13,49 @@ utilities
 */
 
 var MiniBufferComparer = cmp.Comparer(func(x, y *MiniBuffer) bool {
+
 	return cmp.Equal(x.buf, y.buf) &&
 		x.off == y.off &&
 		x.cap == y.cap &&
 		x.boff == y.boff &&
 		x.bcap == y.bcap
+
 })
+
+var ErrorComparer = cmp.Comparer(func(x, y Error) bool {
+
+	return x.scope == y.scope &&
+		x.error == y.error
+
+})
+
+func panicChecker(t *testing.T, errs ...Error) {
+
+	if r := recover(); r != nil {
+
+		for i, err := range errs {
+
+			if cmp.Equal(r, err, ErrorComparer) {
+
+				break
+
+			}
+
+			if i == len(errs)-1 {
+
+				t.Fatalf("none of the expected panic return value(s) do not match the one gotten (got \"%s\", expected %v)", r, errs)
+
+			}
+
+		}
+
+	} else {
+
+		t.Fatalf("none of the expected panics were triggered")
+
+	}
+
+}
 
 /*
 
@@ -28,29 +65,29 @@ tests
 
 func TestNewMiniBuffer(t *testing.T) {
 
-	expected1 := &MiniBuffer{
-		buf:  []byte{0x00, 0x00, 0x00, 0x00},
-		off:  0x00,
-		cap:  4,
-		boff: 0x00,
-		bcap: 32,
-	}
-
-	expected2 := &MiniBuffer{
-		buf: []byte{},
-		off: 0x00,
-		cap: 0,
-		boff: 0,
-		bcap: 0,
-	}
-
-	expected3 := &MiniBuffer{
-		buf:  []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
-		off:  0x00,
-		cap:  8,
-		boff: 0x00,
-		bcap: 64,
-	}
+	var (
+		expected1 *MiniBuffer = &MiniBuffer{
+			buf:  []byte{0x00, 0x00, 0x00, 0x00},
+			off:  0x00,
+			cap:  4,
+			boff: 0x00,
+			bcap: 32,
+		}
+		expected2 *MiniBuffer = &MiniBuffer{
+			buf:  []byte{},
+			off:  0x00,
+			cap:  0,
+			boff: 0,
+			bcap: 0,
+		}
+		expected3 *MiniBuffer = &MiniBuffer{
+			buf:  []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+			off:  0x00,
+			cap:  8,
+			boff: 0x00,
+			bcap: 64,
+		}
+	)
 
 	out := &MiniBuffer{}
 
@@ -79,7 +116,7 @@ func TestNewMiniBuffer(t *testing.T) {
 
 func TestMiniBufferBytes(t *testing.T) {
 
-	expected := []byte{0x01, 0x02, 0x03, 0x04}
+	var expected []byte = []byte{0x01, 0x02, 0x03, 0x04}
 
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x01, 0x02, 0x03, 0x04})
@@ -172,7 +209,7 @@ func TestMiniBufferRefresh(t *testing.T) {
 		expected1 int64 = 4
 		expected2 int64 = 32
 	)
-	
+
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
 
@@ -643,6 +680,97 @@ func TestMiniBufferFlipAllBits(t *testing.T) {
 		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", buf.buf, expected)
 
 	}
+
+}
+
+func TestMiniBufferReadbitPanic(t *testing.T) {
+
+	defer panicChecker(t, BitfieldOverreadError)
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf)
+
+	var out byte
+	buf.readbit(&out, 0x00)
+
+}
+
+func TestMiniBufferReadbitsPanic(t *testing.T) {
+
+	defer panicChecker(t, BitfieldOverreadError)
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf)
+
+	var out uint64
+	buf.readbits(&out, 0x00, 2)
+
+}
+
+func TestMiniBufferSetbitPanic1(t *testing.T) {
+
+	defer panicChecker(t, BitfieldOverwriteError)
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf)
+
+	buf.setbit(0x00, 1)
+
+}
+
+func TestMiniBufferSetbitPanic2(t *testing.T) {
+
+	defer panicChecker(t, BitfieldInvalidBitError)
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x00})
+
+	buf.setbit(0x00, 2)
+
+}
+
+func TestMiniBufferSetbitsPanic(t *testing.T) {
+
+	defer panicChecker(t, BitfieldOverwriteError)
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf)
+
+	buf.setbits(0x00, 0, 1)
+
+}
+
+func TestMiniBufferFlipbitPanic(t *testing.T) {
+
+	defer panicChecker(t, BitfieldOverwriteError)
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf)
+
+	buf.flipbit(0x00)
+
+}
+
+func TestMiniBufferWritePanic(t *testing.T) {
+
+	defer panicChecker(t, ByteBufferOverwriteError)
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf)
+
+	buf.write(0x00, []byte{0x00})
+
+}
+
+func TestMiniBufferReadPanic(t *testing.T) {
+
+	defer panicChecker(t, ByteBufferOverreadError)
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf)
+
+	var out []byte
+	buf.read(&out, 0x00, 1)
 
 }
 
