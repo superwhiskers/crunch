@@ -228,10 +228,11 @@ func (b *MiniBuffer) afterbit(out *int64, off ...int64) {
 
 	if len(off) == 0 {
 
-		*out = b.bcap - b.boff
+		*out = b.bcap - b.boff - 1
+		return
 
 	}
-	*out = b.bcap - off[0]
+	*out = b.bcap - off[0] - 1
 	return
 
 }
@@ -300,10 +301,11 @@ func (b *MiniBuffer) after(out *int64, off ...int64) {
 
 	if len(off) == 0 {
 
-		*out = b.cap - b.off
+		*out = b.cap - b.off - 1
+		return
 
 	}
-	*out = b.cap - off[0]
+	*out = b.cap - off[0] - 1
 	return
 
 }

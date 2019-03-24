@@ -2,6 +2,20 @@ package crunch
 
 import "testing"
 
+/*
+
+tests
+
+*/
+
+
+
+/*
+
+benchmarks
+
+*/
+
 func BenchmarkBufferWrite(b *testing.B) {
 
 	b.ReportAllocs()

@@ -238,10 +238,10 @@ func (b *Buffer) afterbit(off ...int64) int64 {
 
 	if len(off) == 0 {
 
-		return b.bcap - b.boff
+		return b.bcap - b.boff - 1
 
 	}
-	return b.bcap - off[0]
+	return b.bcap - off[0] - 1
 
 }
 
@@ -567,10 +567,10 @@ func (b *Buffer) after(off ...int64) int64 {
 
 	if len(off) == 0 {
 
-		return b.cap - b.off
+		return b.cap - b.off - 1
 
 	}
-	return b.cap - off[0]
+	return b.cap - off[0] - 1
 
 }
 
