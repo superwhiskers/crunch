@@ -596,7 +596,7 @@ func TestMiniBufferSetBitsNext(t *testing.T) {
 
 func TestMiniBufferFlipBit(t *testing.T) {
 
-	var expected byte = 0
+	var expected byte
 
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0xff, 0xff, 0xff, 0xff})

@@ -281,137 +281,77 @@ func (b *Buffer) write(off int64, data []byte) {
 func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, endianness Endianness) {
 
 	var data []byte
+
+	var endian binary.ByteOrder
+	switch endianness {
+
+	case LittleEndian:
+		endian = binary.LittleEndian
+		break
+
+	case BigEndian:
+		endian = binary.BigEndian
+		break
+
+	default:
+		panic(ByteBufferInvalidEndiannessError)
+
+	}
+
+	var tdata []byte
 	switch size {
 
 	case Unsigned8:
-		// literally just a byte array
-		// if you did this, you should probably be using the regular write methods bc those are more efficient than this one
+		// just pass it through
 		data = idata.([]byte)
 		break
 
 	case Unsigned16:
-		var tdata []byte
 		adata := idata.([]uint16)
 		data = make([]byte, 2*len(adata))
+		for i := 0; i < len(adata); i++ {
 
-		switch endianness {
+			tdata = []byte{0x00, 0x00}
+			endian.PutUint16(tdata, adata[i])
 
-		case LittleEndian:
-			for i := 0; i < len(adata); i++ {
-
-				tdata = []byte{0, 0}
-				binary.LittleEndian.PutUint16(tdata, adata[i])
-
-				data[0+(i*2)] = tdata[0]
-				data[1+(i*2)] = tdata[1]
-
-			}
-			break
-
-		case BigEndian:
-			for i := 0; i < len(adata); i++ {
-
-				tdata = []byte{0, 0}
-				binary.BigEndian.PutUint16(tdata, adata[i])
-
-				data[0+(i*2)] = tdata[0]
-				data[1+(i*2)] = tdata[1]
-
-			}
-			break
-
-		default:
-			panic(ByteBufferInvalidEndiannessError)
+			data[0+(i*2)] = tdata[0]
+			data[1+(i*2)] = tdata[1]
 
 		}
 		break
 
 	case Unsigned32:
-		var tdata []byte
 		adata := idata.([]uint32)
 		data = make([]byte, 4*len(adata))
+		for i := 0; i < len(adata); i++ {
 
-		switch endianness {
+			tdata = []byte{0x00, 0x00, 0x00, 0x00}
+			endian.PutUint32(tdata, adata[i])
 
-		case LittleEndian:
-			for i := 0; i < len(adata); i++ {
-
-				tdata = []byte{0, 0, 0, 0}
-				binary.LittleEndian.PutUint32(tdata, adata[i])
-
-				data[0+(i*4)] = tdata[0]
-				data[1+(i*4)] = tdata[1]
-				data[2+(i*4)] = tdata[2]
-				data[3+(i*4)] = tdata[3]
-
-			}
-			break
-
-		case BigEndian:
-			for i := 0; i < len(adata); i++ {
-
-				tdata = []byte{0, 0, 0, 0}
-				binary.BigEndian.PutUint32(tdata, adata[i])
-
-				data[0+(i*4)] = tdata[0]
-				data[1+(i*4)] = tdata[1]
-				data[2+(i*4)] = tdata[2]
-				data[3+(i*4)] = tdata[3]
-
-			}
-			break
-
-		default:
-			panic(ByteBufferInvalidEndiannessError)
+			data[0+(i*4)] = tdata[0]
+			data[1+(i*4)] = tdata[1]
+			data[2+(i*4)] = tdata[2]
+			data[3+(i*4)] = tdata[3]
 
 		}
 		break
 
 	case Unsigned64:
-		var tdata []byte
 		adata := idata.([]uint64)
 		data = make([]byte, 8*len(adata))
+		for i := 0; i < len(adata); i++ {
 
-		switch endianness {
+			tdata = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+			binary.LittleEndian.PutUint64(tdata, adata[i])
 
-		case LittleEndian:
-			for i := 0; i < len(adata); i++ {
-
-				tdata = []byte{0, 0, 0, 0, 0, 0, 0, 0}
-				binary.LittleEndian.PutUint64(tdata, adata[i])
-
-				data[0+(i*8)] = tdata[0]
-				data[1+(i*8)] = tdata[1]
-				data[2+(i*8)] = tdata[2]
-				data[3+(i*8)] = tdata[3]
-				data[4+(i*8)] = tdata[4]
-				data[5+(i*8)] = tdata[5]
-				data[6+(i*8)] = tdata[6]
-				data[7+(i*8)] = tdata[7]
-
-			}
-			break
-
-		case BigEndian:
-			for i := 0; i < len(adata); i++ {
-
-				tdata = []byte{0, 0, 0, 0, 0, 0, 0, 0}
-				binary.BigEndian.PutUint64(tdata, adata[i])
-
-				data[0+(i*8)] = tdata[0]
-				data[1+(i*8)] = tdata[1]
-				data[2+(i*8)] = tdata[2]
-				data[3+(i*8)] = tdata[3]
-				data[4+(i*8)] = tdata[4]
-				data[5+(i*8)] = tdata[5]
-				data[6+(i*8)] = tdata[6]
-				data[7+(i*8)] = tdata[7]
-
-			}
-			break
-
-		default:
-			panic(ByteBufferInvalidEndiannessError)
+			data[0+(i*8)] = tdata[0]
+			data[1+(i*8)] = tdata[1]
+			data[2+(i*8)] = tdata[2]
+			data[3+(i*8)] = tdata[3]
+			data[4+(i*8)] = tdata[4]
+			data[5+(i*8)] = tdata[5]
+			data[6+(i*8)] = tdata[6]
+			data[7+(i*8)] = tdata[7]
 
 		}
 		break
@@ -446,6 +386,22 @@ func (b *Buffer) readComplex(off, n int64, size IntegerSize, endianness Endianne
 
 	data := b.read(off, n)
 
+	var endian binary.ByteOrder
+	switch endianness {
+
+	case LittleEndian:
+		endian = binary.LittleEndian
+		break
+
+	case BigEndian:
+		endian = binary.BigEndian
+		break
+
+	default:
+		panic(ByteBufferInvalidEndiannessError)
+
+	}
+
 	switch size {
 
 	case Unsigned8:
@@ -454,85 +410,31 @@ func (b *Buffer) readComplex(off, n int64, size IntegerSize, endianness Endianne
 	case Unsigned16:
 		idata := make([]uint16, n)
 
-		switch endianness {
+		for i := int64(0); i < n; i++ {
 
-		case LittleEndian:
-			for i := int64(0); i < n; i++ {
-
-				idata[i] = binary.LittleEndian.Uint16(data[i*2 : (i+1)*2])
-
-			}
-			break
-
-		case BigEndian:
-			for i := int64(0); i < n; i++ {
-
-				idata[i] = binary.BigEndian.Uint16(data[i*2 : (i+1)*2])
-
-			}
-			break
-
-		default:
-			panic(ByteBufferInvalidEndiannessError)
+			idata[i] = endian.Uint16(data[i*2 : (i+1)*2])
 
 		}
-
 		return idata
 
 	case Unsigned32:
 		idata := make([]uint32, n)
 
-		switch endianness {
+		for i := int64(0); i < n; i++ {
 
-		case LittleEndian:
-			for i := int64(0); i < n; i++ {
-
-				idata[i] = binary.LittleEndian.Uint32(data[i*4 : (i+1)*4])
-
-			}
-			break
-
-		case BigEndian:
-			for i := int64(0); i < n; i++ {
-
-				idata[i] = binary.BigEndian.Uint32(data[i*4 : (i+1)*4])
-
-			}
-			break
-
-		default:
-			panic(ByteBufferInvalidEndiannessError)
+			idata[i] = endian.Uint32(data[i*4 : (i+1)*4])
 
 		}
-
 		return idata
 
 	case Unsigned64:
 		idata := make([]uint64, n)
 
-		switch endianness {
+		for i := int64(0); i < n; i++ {
 
-		case LittleEndian:
-			for i := int64(0); i < n; i++ {
-
-				idata[i] = binary.LittleEndian.Uint64(data[i*8 : (i+1)*8])
-
-			}
-			break
-
-		case BigEndian:
-			for i := int64(0); i < n; i++ {
-
-				idata[i] = binary.BigEndian.Uint64(data[(i * 8) : (i+1)*8])
-
-			}
-			break
-
-		default:
-			panic(ByteBufferInvalidEndiannessError)
+			idata[i] = endian.Uint64(data[(i * 8) : (i+1)*8])
 
 		}
-
 		return idata
 
 	default:
