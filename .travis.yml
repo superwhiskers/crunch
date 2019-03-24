@@ -5,10 +5,6 @@ go:
   - "1.10.x"
 jobs:
   include:
-    - stage: install
-      script:
-        - "go mod download"
-        - "go mod vendor"
     - stage: test
       script:
         - "go test -v -coverprofile=coverage.txt -covermode=atomic"
