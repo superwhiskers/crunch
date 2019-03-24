@@ -444,6 +444,217 @@ func TestBufferWriteBytesNext(t *testing.T) {
 
 }
 
+func TestBufferReadBit(t *testing.T) {
+
+	var expected byte = 1
+
+	buf := NewBuffer([]byte{0x01, 0x00, 0x00, 0x00})
+
+	out := buf.ReadBit(0x07)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferReadBitNext(t *testing.T) {
+
+	var expected byte = 1
+
+	buf := NewBuffer([]byte{0xff, 0x00, 0x00, 0x00})
+
+	out := buf.ReadBitNext()
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferReadBits(t *testing.T) {
+
+	var expected uint64 = 5
+
+	buf := NewBuffer([]byte{0x0d, 0x00, 0x00, 0x00})
+
+	out := buf.ReadBits(0x05, 3)
+	if expected != out {
+
+		t.Fatalf("expected uint64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferReadBitsNext(t *testing.T) {
+
+	var expected uint64 = 13
+
+	buf := NewBuffer([]byte{0x0d, 0x00, 0x00, 0x00})
+
+	out := buf.ReadBitsNext(8)
+	if expected != out {
+
+		t.Fatalf("expected uint64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferSetBit(t *testing.T) {
+
+	var expected byte = 1
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.SetBit(0x00, 1)
+
+	out := buf.ReadBit(0x00)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferSetBitNext(t *testing.T) {
+
+	var expected byte = 1
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.SetBitNext(1)
+
+	out := buf.ReadBit(0x00)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferSetBits(t *testing.T) {
+
+	var expected uint64 = 5
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.SetBits(0x06, 5, 3)
+
+	out := buf.ReadBits(0x06, 3)
+	if expected != out {
+
+		t.Fatalf("expected uint64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferSetBitsNext(t *testing.T) {
+
+	var expected uint64 = 13
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.SetBitsNext(13, 8)
+
+	out := buf.ReadBits(0x00, 8)
+	if expected != out {
+
+		t.Fatalf("expected uint64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferFlipBit(t *testing.T) {
+
+	var expected byte
+
+	buf := NewBuffer([]byte{0xff, 0xff, 0xff, 0xff})
+
+	buf.FlipBit(0x01)
+
+	out := buf.ReadBit(0x01)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferFlipBitNext(t *testing.T) {
+
+	var expected byte = 1
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.FlipBitNext()
+
+	out := buf.ReadBit(0x00)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferClearAllBits(t *testing.T) {
+
+	var expected = []byte{0x00, 0x00, 0x00, 0x00}
+
+	buf := NewBuffer([]byte{0xff, 0x00, 0xff, 0x00})
+
+	buf.ClearAllBits()
+
+	if !cmp.Equal(expected, buf.buf) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", buf.buf, expected)
+
+	}
+
+}
+
+func TestBufferSetAllBits(t *testing.T) {
+
+	var expected = []byte{0xff, 0xff, 0xff, 0xff}
+
+	buf := NewBuffer([]byte{0x00, 0xff, 0x00, 0xff})
+
+	buf.SetAllBits()
+
+	if !cmp.Equal(expected, buf.buf) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", buf.buf, expected)
+
+	}
+
+}
+
+func TestBufferFlipAllBits(t *testing.T) {
+
+	var expected = []byte{0xff, 0x00, 0xff, 0x00}
+
+	buf := NewBuffer([]byte{0x00, 0xff, 0x00, 0xff})
+
+	buf.FlipAllBits()
+
+	if !cmp.Equal(expected, buf.buf) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", buf.buf, expected)
+
+	}
+
+}
+
+
 /*
 
 benchmarks
