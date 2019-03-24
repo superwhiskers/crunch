@@ -158,6 +158,292 @@ func TestBufferBitOffset(t *testing.T) {
 
 }
 
+func TestBufferRefresh(t *testing.T) {
+
+	var (
+		expected1 int64 = 4
+		expected2 int64 = 32
+	)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.Refresh()
+
+	if expected1 != buf.cap || expected2 != buf.bcap {
+
+		t.Fatalf("expected int64(s) do not match the ones gotten (got %d and %d, expected %d and %d)", buf.cap, buf.bcap, expected1, expected2)
+
+	}
+
+}
+
+func TestBufferGrow(t *testing.T) {
+
+	var expected int64 = 4
+
+	buf := NewBuffer([]byte{0x00, 0x00})
+
+	buf.Grow(2)
+
+	out := buf.Capacity()
+	if expected != out {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferSeek(t *testing.T) {
+
+	var expected int64 = 0x04
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.Seek(2, true)
+	buf.Seek(2, true)
+
+	out := buf.Offset()
+	if expected != out {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferSeekBit(t *testing.T) {
+
+	var expected int64 = 0x20
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.SeekBit(16, true)
+	buf.SeekBit(16, true)
+
+	out := buf.BitOffset()
+	if expected != out {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferAlignBit(t *testing.T) {
+
+	var expected int64 = 0x20
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.Seek(0x04, false)
+	buf.AlignBit()
+
+	out := buf.BitOffset()
+	if expected != out {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferAlignByte(t *testing.T) {
+
+	var expected int64 = 0x04
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.SeekBit(0x20, false)
+	buf.AlignByte()
+
+	out := buf.Offset()
+	if expected != out {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferAfter(t *testing.T) {
+
+	var expected int64 = 2
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.Seek(0x01, false)
+	out := buf.After()
+
+	if expected != out {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+	out = buf.After(0x01)
+
+	if expected != out {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferAfterBit(t *testing.T) {
+
+	var expected int64 = 16
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.SeekBit(0x0f, false)
+	out := buf.AfterBit()
+
+	if expected != out {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+	out = buf.AfterBit(0x0f)
+
+	if expected != out {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferReadByte(t *testing.T) {
+
+	var expected byte = 0x03
+
+	buf := NewBuffer([]byte{0x01, 0x02, 0x03, 0x04})
+
+	out := buf.ReadByte(0x02)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferReadByteNext(t *testing.T) {
+
+	var expected byte = 0x01
+
+	buf := NewBuffer([]byte{0x01, 0x02, 0x03, 0x04})
+
+	out := buf.ReadByteNext()
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferReadBytes(t *testing.T) {
+
+	var expected = []byte{0x03, 0x04}
+
+	buf := NewBuffer([]byte{0x01, 0x02, 0x03, 0x04})
+
+	out := buf.ReadBytes(0x02, 2)
+	if !cmp.Equal(expected, out) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out, expected)
+
+	}
+
+}
+
+func TestBufferReadBytesNext(t *testing.T) {
+
+	var expected = []byte{0x01, 0x02}
+
+	buf := NewBuffer([]byte{0x01, 0x02, 0x03, 0x04})
+
+	out := buf.ReadBytesNext(2)
+	if !cmp.Equal(expected, out) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out, expected)
+
+	}
+
+}
+
+func TestBufferWriteByte(t *testing.T) {
+
+	var expected byte = 0x04
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.WriteByte(0x03, 0x04)
+
+	out := buf.ReadByte(0x03)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferWriteByteNext(t *testing.T) {
+
+	var expected byte = 0x01
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.WriteByteNext(0x01)
+
+	out := buf.ReadByte(0x00)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferWriteBytes(t *testing.T) {
+
+	var expected = []byte{0x01, 0x02}
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.WriteBytes(0x02, []byte{0x01, 0x02})
+
+	out := buf.ReadBytes(0x02, 2)
+	if !cmp.Equal(expected, out) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out, expected)
+
+	}
+
+}
+
+func TestBufferWriteBytesNext(t *testing.T) {
+
+	var expected = []byte{0x01, 0x02}
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.WriteBytesNext([]byte{0x01, 0x02})
+
+	out := buf.ReadBytes(0x00, 2)
+	if !cmp.Equal(expected, out) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out, expected)
+
+	}
+
+}
+
 /*
 
 benchmarks
