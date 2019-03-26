@@ -78,7 +78,13 @@ func (b *Buffer) readbit(off int64) byte {
 
 	if off > (b.bcap - 1) {
 
-		panic(BitfieldOverreadError)
+		panic(BufferOverreadError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderreadError)
 
 	}
 
@@ -91,12 +97,6 @@ func (b *Buffer) readbit(off int64) byte {
 
 // readbits reads n bits from the bitfield at the specified offset
 func (b *Buffer) readbits(off, n int64) (v uint64) {
-
-	if (off + n) > b.bcap {
-
-		panic(BitfieldOverreadError)
-
-	}
 
 	for i := int64(0); i < n; i++ {
 
@@ -113,13 +113,13 @@ func (b *Buffer) setbit(off int64, data byte) {
 
 	if off > (b.bcap - 1) {
 
-		panic(BitfieldOverwriteError)
+		panic(BufferOverwriteError)
 
 	}
 
-	if data != 1 && data != 0 {
+	if off < 0x00 {
 
-		panic(BitfieldInvalidBitError)
+		panic(BufferUnderwriteError)
 
 	}
 
@@ -134,18 +134,15 @@ func (b *Buffer) setbit(off int64, data byte) {
 	case 1:
 		b.buf[off/8] |= (1 << uint(7-(off%8)))
 
+	default:
+		panic(BufferInvalidBitError)
+
 	}
 
 }
 
 // setbits sets n bits in the bitfield to the specified value at the specified offset
 func (b *Buffer) setbits(off int64, data uint64, n int64) {
-
-	if off+n > (b.bcap - 1) {
-
-		panic(BitfieldOverwriteError)
-
-	}
 
 	for i := int64(0); i < n; i++ {
 
@@ -160,7 +157,13 @@ func (b *Buffer) flipbit(off int64) {
 
 	if off > (b.bcap - 1) {
 
-		panic(BitfieldOverwriteError)
+		panic(BufferOverwriteError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderwriteError)
 
 	}
 
@@ -252,7 +255,13 @@ func (b *Buffer) write(off int64, data []byte) {
 
 	if (off + int64(len(data))) > b.cap {
 
-		panic(ByteBufferOverwriteError)
+		panic(BufferOverwriteError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderwriteError)
 
 	}
 
@@ -294,7 +303,7 @@ func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, en
 		break
 
 	default:
-		panic(ByteBufferInvalidEndiannessError)
+		panic(BufferInvalidEndiannessError)
 
 	}
 
@@ -357,7 +366,7 @@ func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, en
 		break
 
 	default:
-		panic(ByteBufferInvalidIntegerSizeError)
+		panic(BufferInvalidIntegerSizeError)
 
 	}
 
@@ -370,7 +379,13 @@ func (b *Buffer) read(off, n int64) []byte {
 
 	if (off + n) > b.cap {
 
-		panic(ByteBufferOverreadError)
+		panic(BufferOverreadError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderreadError)
 
 	}
 
@@ -398,7 +413,7 @@ func (b *Buffer) readComplex(off, n int64, size IntegerSize, endianness Endianne
 		break
 
 	default:
-		panic(ByteBufferInvalidEndiannessError)
+		panic(BufferInvalidEndiannessError)
 
 	}
 
@@ -438,7 +453,7 @@ func (b *Buffer) readComplex(off, n int64, size IntegerSize, endianness Endianne
 		return idata
 
 	default:
-		panic(ByteBufferInvalidIntegerSizeError)
+		panic(BufferInvalidIntegerSizeError)
 
 	}
 

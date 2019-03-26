@@ -23,7 +23,8 @@ package crunch
 import "sync"
 
 // MiniBuffer implements a fast and low-memory buffer type in go that handles multiple types of data easily. it is not safe
-// for concurrent usage out of the box, you are required to handle that yourself by calling the Lock and Unlock methods on it
+// for concurrent usage out of the box, you are required to handle that yourself by calling the Lock and Unlock methods on it.
+// it also lacks the overwrite/read and underwrite/read checks that Buffer has
 type MiniBuffer struct {
 	buf  []byte
 	off  int64
@@ -73,12 +74,6 @@ func NewMiniBuffer(out **MiniBuffer, slices ...[]byte) {
 // readbit reads a bit from the bitfield at the specified offset
 func (b *MiniBuffer) readbit(out *byte, off int64) {
 
-	if off > (b.bcap - 1) {
-
-		panic(BitfieldOverreadError)
-
-	}
-
 	*out = atob((b.buf[off/8] & (1 << uint(7-(off%8)))) != 0)
 	return
 
@@ -86,12 +81,6 @@ func (b *MiniBuffer) readbit(out *byte, off int64) {
 
 // readbits reads n bits from the bitfield at the specified offset
 func (b *MiniBuffer) readbits(out *uint64, off, n int64) {
-
-	if (off + n) > b.bcap {
-
-		panic(BitfieldOverreadError)
-
-	}
 
 	var bout byte
 	for i := int64(0); i < n; i++ {
@@ -108,18 +97,6 @@ func (b *MiniBuffer) readbits(out *uint64, off, n int64) {
 // setbit sets a bit in the bitfield to the specified value
 func (b *MiniBuffer) setbit(off int64, data byte) {
 
-	if off > (b.bcap - 1) {
-
-		panic(BitfieldOverwriteError)
-
-	}
-
-	if data != 1 && data != 0 {
-
-		panic(BitfieldInvalidBitError)
-
-	}
-
 	switch data {
 
 	case 0:
@@ -127,6 +104,9 @@ func (b *MiniBuffer) setbit(off int64, data byte) {
 
 	case 1:
 		b.buf[off/8] |= (1 << uint(7-(off%8)))
+
+	default:
+		panic(BufferInvalidBitError)
 
 	}
 
@@ -136,12 +116,6 @@ func (b *MiniBuffer) setbit(off int64, data byte) {
 
 // setbits sets n bits in the bitfield to the specified value at the specified offset
 func (b *MiniBuffer) setbits(off int64, data uint64, n int64) {
-
-	if off+n > (b.bcap - 1) {
-
-		panic(BitfieldOverwriteError)
-
-	}
 
 	for i := int64(0); i < n; i++ {
 
@@ -155,12 +129,6 @@ func (b *MiniBuffer) setbits(off int64, data uint64, n int64) {
 
 // flipbit flips a bit in the bitfield
 func (b *MiniBuffer) flipbit(off int64) {
-
-	if off > (b.bcap - 1) {
-
-		panic(BitfieldOverwriteError)
-
-	}
 
 	b.buf[off/8] ^= (1 << uint(7-(off%8)))
 	return
@@ -242,12 +210,6 @@ func (b *MiniBuffer) afterbit(out *int64, off ...int64) {
 // write writes a slice of bytes to the buffer at the specified offset
 func (b *MiniBuffer) write(off int64, data []byte) {
 
-	if (off + int64(len(data))) > b.cap {
-
-		panic(ByteBufferOverwriteError)
-
-	}
-
 	i := int64(len(data) - 1)
 
 	{
@@ -267,12 +229,6 @@ func (b *MiniBuffer) write(off int64, data []byte) {
 
 // read reads n bytes from the buffer at the specified offset
 func (b *MiniBuffer) read(out *[]byte, off, n int64) {
-
-	if (off + n) > b.cap {
-
-		panic(ByteBufferOverreadError)
-
-	}
 
 	*out = b.buf[off : off+n]
 	return

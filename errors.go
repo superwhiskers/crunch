@@ -36,51 +36,59 @@ func (e Error) Error() string {
 }
 
 var (
-	// ByteBufferOverreadError represents an instance in which an overread of a ByteBuffer has been attempted
-	ByteBufferOverreadError = Error{
-		scope: "bytebuffer",
+	// BufferOverreadError represents an instance in which a read attempted to
+	// read past the buffer itself
+	BufferOverreadError = Error{
+		scope: "buffer",
 		error: "read exceeds buffer capacity",
 	}
 
-	// ByteBufferOverwriteError represents an instance in which an overwrite of a ByteBuffer has been attempted
-	ByteBufferOverwriteError = Error{
-		scope: "bytebuffer",
-		error: "write exceeds buffer capacity",
+	// BufferUnderreadError represents an instance in which a read attempted to
+	// read before the buffer itself
+	BufferUnderreadError = Error{
+		scope: "buffer",
+		error: "read offset is less than zero",
 	}
 
-	// ByteBufferInvalidIntegerSizeError represents an instance in which an invalid integer size was provided to the read/write function of a ByteBuffer
-	ByteBufferInvalidIntegerSizeError = Error{
-		scope: "bytebuffer",
+	// BufferOverwriteError represents an instance in which a write attempted to
+	// write past the buffer itself
+	BufferOverwriteError = Error{
+		scope: "buffer",
+		error: "write offset exceeds buffer capacity",
+	}
+
+	// BufferUnderwriteError represents an instance in which a write attempted to
+	// write before the buffer itself
+	BufferUnderwriteError = Error{
+		scope: "buffer",
+		error: "write offset is less than zero",
+	}
+
+	// BufferInvalidIntegerSizeError represents an instance in which an invalid
+	// integer size was passed to one of the buffer's methods
+	BufferInvalidIntegerSizeError = Error{
+		scope: "buffer",
 		error: "invalid integer size specified",
 	}
 
-	// ByteBufferInvalidEndiannessError represents an instance in which an invalid endianness was provided to the read/write function of a ByteBuffer
-	ByteBufferInvalidEndiannessError = Error{
-		scope: "bytebuffer",
+	// BufferInvalidEndiannessError represents an instance in which an invalid
+	// endianness was passed to one of the buffer's methods
+	BufferInvalidEndiannessError = Error{
+		scope: "buffer",
 		error: "invalid endianness specified",
 	}
 
-	// ByteBufferInvalidByteCountError represents an instance in which an invalid byte count was provided to a function
-	ByteBufferInvalidByteCountError = Error{
-		scope: "bytebuffer",
+	// BufferInvalidByteCountError represents an instance in which an invalid byte
+	// count was passed to one of the buffer's methods
+	BufferInvalidByteCountError = Error{
+		scope: "buffer",
 		error: "invalid byte count requested",
 	}
 
-	// BitfieldInvalidBitError represents an instance in which an invalid bit was provided to a function
-	BitfieldInvalidBitError = Error{
-		scope: "bitfield",
+	// BufferInvalidBitError represents an instance in which an invalid bit was
+	// passed to one of the buffer's methods
+	BufferInvalidBitError = Error{
+		scope: "buffer",
 		error: "invalid bit value specified",
-	}
-
-	// BitfieldOverreadError represents an instance in which an overread of a Bitfield has been attempted
-	BitfieldOverreadError = Error{
-		scope: "bitfield",
-		error: "read exceeds bitfield capacity",
-	}
-
-	// BitfieldOverwriteError represents an instance in which an overwrite of a Bitfield has been attempted
-	BitfieldOverwriteError = Error{
-		scope: "bitfield",
-		error: "write exceeds bitfield capacity",
 	}
 )
