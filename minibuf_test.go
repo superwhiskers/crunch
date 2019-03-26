@@ -648,6 +648,17 @@ func TestMiniBufferFlipAllBits(t *testing.T) {
 
 }
 
+func TestMiniBufferSetbitPanic(t *testing.T) {
+
+	defer panicChecker(t, BufferInvalidBitError)
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.setbit(0x00, 2)
+
+}
+
 /*
 
 benchmarks
