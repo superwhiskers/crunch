@@ -654,7 +654,6 @@ func TestBufferFlipAllBits(t *testing.T) {
 
 }
 
-
 /*
 
 benchmarks

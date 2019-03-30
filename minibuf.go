@@ -210,13 +210,14 @@ func (b *MiniBuffer) afterbit(out *int64, off ...int64) {
 // write writes a slice of bytes to the buffer at the specified offset
 func (b *MiniBuffer) write(off int64, data []byte) {
 
-	i := int64(len(data) - 1)
+	i := int64(0)
+	n := int64(len(data))
 
 	{
 	write_loop:
 		b.buf[off+i] = data[i]
-		i--
-		if i != -1 {
+		i++
+		if i < n {
 
 			goto write_loop
 

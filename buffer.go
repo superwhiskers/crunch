@@ -267,13 +267,14 @@ func (b *Buffer) write(off int64, data []byte) {
 
 	b.Lock()
 
-	i := int64(len(data) - 1)
+	i := int64(0)
+	n := int64(len(data))
 
 	{
 	write_loop:
 		b.buf[off+i] = data[i]
-		i--
-		if i != -1 {
+		i++
+		if i < n {
 
 			goto write_loop
 
