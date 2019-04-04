@@ -652,6 +652,116 @@ func TestBufferFlipAllBits(t *testing.T) {
 
 }
 
+func TestBufferReadbitPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readbit(0x20)
+
+}
+
+func TestBufferReadbitPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readbit(-0x01)
+
+}
+
+func TestBufferSetbitPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.setbit(0x20, 1)
+
+}
+
+func TestBufferSetbitPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.setbit(-0x01, 1)
+
+}
+
+func TestBufferSetbitPanic3(t *testing.T) {
+
+	defer panicChecker(t, BufferInvalidBitError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.setbit(0x00, 2)
+
+}
+
+func TestBufferFlipbitPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.flipbit(0x20)
+
+}
+
+func TestBufferFlipbitPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.flipbit(-0x01)
+
+}
+
+func TestBufferWritePanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.write(0x04, []byte{0x01, 0x01})
+
+}
+
+func TestBufferWritePanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.write(-0x01, []byte{0x01, 0x01})
+
+}
+
+func TestBufferReadPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.read(0x20, 1)
+
+}
+
+func TestBufferReadPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.read(-0x01, 1)
+
+}
+
 /*
 
 benchmarks
