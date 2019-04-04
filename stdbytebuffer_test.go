@@ -28,9 +28,15 @@ func BenchmarkStdByteBufferRead(b *testing.B) {
 
 	out := []byte{0x00, 0x00}
 
+	var err error
 	for n := 0; n < b.N; n++ {
 
-		buf.Read(out)
+		_, err = buf.Read(out)
+		if err != nil {
+
+			b.Fatal(err)
+
+		}
 		buf.Reset()
 
 	}

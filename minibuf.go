@@ -51,7 +51,6 @@ func NewMiniBuffer(out **MiniBuffer, slices ...[]byte) {
 
 	case 1:
 		(*out).buf = slices[0]
-		break
 
 	default:
 		for _, s := range slices {
@@ -63,7 +62,6 @@ func NewMiniBuffer(out **MiniBuffer, slices ...[]byte) {
 	}
 
 	(*out).refresh()
-	return
 
 }
 
@@ -75,7 +73,6 @@ func NewMiniBuffer(out **MiniBuffer, slices ...[]byte) {
 func (b *MiniBuffer) readbit(out *byte, off int64) {
 
 	*out = atob((b.buf[off/8] & (1 << uint(7-(off%8)))) != 0)
-	return
 
 }
 
@@ -89,8 +86,6 @@ func (b *MiniBuffer) readbits(out *uint64, off, n int64) {
 		*out = (*out << uint64(1)) | uint64(bout)
 
 	}
-
-	return
 
 }
 
@@ -110,8 +105,6 @@ func (b *MiniBuffer) setbit(off int64, data byte) {
 
 	}
 
-	return
-
 }
 
 // setbits sets n bits in the bitfield to the specified value at the specified offset
@@ -123,15 +116,12 @@ func (b *MiniBuffer) setbits(off int64, data uint64, n int64) {
 
 	}
 
-	return
-
 }
 
 // flipbit flips a bit in the bitfield
 func (b *MiniBuffer) flipbit(off int64) {
 
 	b.buf[off/8] ^= (1 << uint(7-(off%8)))
-	return
 
 }
 
@@ -144,8 +134,6 @@ func (b *MiniBuffer) clearallbits() {
 
 	}
 
-	return
-
 }
 
 // setallbits sets all of the buffer's bits to 1
@@ -156,8 +144,6 @@ func (b *MiniBuffer) setallbits() {
 		b.buf[i] = 0xFF
 
 	}
-
-	return
 
 }
 
@@ -170,24 +156,20 @@ func (b *MiniBuffer) flipallbits() {
 
 	}
 
-	return
-
 }
 
 // seekbit seeks to position off of the bitfield relative to the current position or exact
 func (b *MiniBuffer) seekbit(off int64, relative bool) {
 
-	if relative == true {
+	if relative {
 
-		b.boff = b.boff + off
+		b.boff += off
 
 	} else {
 
 		b.boff = off
 
 	}
-
-	return
 
 }
 
@@ -201,7 +183,6 @@ func (b *MiniBuffer) afterbit(out *int64, off ...int64) {
 
 	}
 	*out = b.bcap - off[0] - 1
-	return
 
 }
 
@@ -224,32 +205,27 @@ func (b *MiniBuffer) write(off int64, data []byte) {
 		}
 	}
 
-	return
-
 }
 
 // read reads n bytes from the buffer at the specified offset
 func (b *MiniBuffer) read(out *[]byte, off, n int64) {
 
 	*out = b.buf[off : off+n]
-	return
 
 }
 
 // seek seeks to position off of the byte buffer relative to the current position or exact
 func (b *MiniBuffer) seek(off int64, relative bool) {
 
-	if relative == true {
+	if relative {
 
-		b.off = b.off + off
+		b.off += off
 
 	} else {
 
 		b.off = off
 
 	}
-
-	return
 
 }
 
@@ -263,7 +239,6 @@ func (b *MiniBuffer) after(out *int64, off ...int64) {
 
 	}
 	*out = b.cap - off[0] - 1
-	return
 
 }
 
@@ -275,8 +250,6 @@ func (b *MiniBuffer) grow(n int64) {
 	b.buf = append(b.buf, make([]byte, n)...)
 	b.refresh()
 
-	return
-
 }
 
 // refresh updates the internal statistics of the byte buffer forcefully
@@ -284,8 +257,6 @@ func (b *MiniBuffer) refresh() {
 
 	b.cap = int64(len(b.buf))
 	b.bcap = b.cap * 8
-
-	return
 
 }
 
@@ -309,7 +280,6 @@ func (b *MiniBuffer) alignbyte() {
 func (b *MiniBuffer) Bytes(out *[]byte) {
 
 	*out = b.buf
-	return
 
 }
 
@@ -317,7 +287,6 @@ func (b *MiniBuffer) Bytes(out *[]byte) {
 func (b *MiniBuffer) Capacity(out *int64) {
 
 	*out = b.cap
-	return
 
 }
 
@@ -325,7 +294,6 @@ func (b *MiniBuffer) Capacity(out *int64) {
 func (b *MiniBuffer) BitCapacity(out *int64) {
 
 	*out = b.bcap
-	return
 
 }
 
@@ -333,7 +301,6 @@ func (b *MiniBuffer) BitCapacity(out *int64) {
 func (b *MiniBuffer) Offset(out *int64) {
 
 	*out = b.off
-	return
 
 }
 
@@ -341,7 +308,6 @@ func (b *MiniBuffer) Offset(out *int64) {
 func (b *MiniBuffer) BitOffset(out *int64) {
 
 	*out = b.boff
-	return
 
 }
 
@@ -349,7 +315,6 @@ func (b *MiniBuffer) BitOffset(out *int64) {
 func (b *MiniBuffer) Refresh() {
 
 	b.refresh()
-	return
 
 }
 
@@ -357,7 +322,6 @@ func (b *MiniBuffer) Refresh() {
 func (b *MiniBuffer) Grow(n int64) {
 
 	b.grow(n)
-	return
 
 }
 
@@ -365,7 +329,6 @@ func (b *MiniBuffer) Grow(n int64) {
 func (b *MiniBuffer) Seek(off int64, relative bool) {
 
 	b.seek(off, relative)
-	return
 
 }
 
@@ -373,7 +336,6 @@ func (b *MiniBuffer) Seek(off int64, relative bool) {
 func (b *MiniBuffer) SeekBit(off int64, relative bool) {
 
 	b.seekbit(off, relative)
-	return
 
 }
 
@@ -381,7 +343,6 @@ func (b *MiniBuffer) SeekBit(off int64, relative bool) {
 func (b *MiniBuffer) AlignBit() {
 
 	b.alignbit()
-	return
 
 }
 
@@ -389,7 +350,6 @@ func (b *MiniBuffer) AlignBit() {
 func (b *MiniBuffer) AlignByte() {
 
 	b.alignbyte()
-	return
 
 }
 
@@ -397,7 +357,6 @@ func (b *MiniBuffer) AlignByte() {
 func (b *MiniBuffer) After(out *int64, off ...int64) {
 
 	b.after(out, off...)
-	return
 
 }
 
@@ -405,7 +364,6 @@ func (b *MiniBuffer) After(out *int64, off ...int64) {
 func (b *MiniBuffer) AfterBit(out *int64, off ...int64) {
 
 	b.afterbit(out, off...)
-	return
 
 }
 
@@ -413,7 +371,6 @@ func (b *MiniBuffer) AfterBit(out *int64, off ...int64) {
 func (b *MiniBuffer) ReadBytes(out *[]byte, off, n int64) {
 
 	b.read(out, off, n)
-	return
 
 }
 
@@ -422,7 +379,6 @@ func (b *MiniBuffer) ReadBytesNext(out *[]byte, n int64) {
 
 	b.read(out, b.off, n)
 	b.seek(n, true)
-	return
 
 }
 
@@ -430,7 +386,6 @@ func (b *MiniBuffer) ReadBytesNext(out *[]byte, n int64) {
 func (b *MiniBuffer) WriteBytes(off int64, data []byte) {
 
 	b.write(off, data)
-	return
 
 }
 
@@ -439,7 +394,6 @@ func (b *MiniBuffer) WriteBytesNext(data []byte) {
 
 	b.write(b.off, data)
 	b.seek(int64(len(data)), true)
-	return
 
 }
 
@@ -447,7 +401,6 @@ func (b *MiniBuffer) WriteBytesNext(data []byte) {
 func (b *MiniBuffer) ReadBit(out *byte, off int64) {
 
 	b.readbit(out, off)
-	return
 
 }
 
@@ -455,7 +408,6 @@ func (b *MiniBuffer) ReadBit(out *byte, off int64) {
 func (b *MiniBuffer) ReadBits(out *uint64, off, n int64) {
 
 	b.readbits(out, off, n)
-	return
 
 }
 
@@ -464,7 +416,6 @@ func (b *MiniBuffer) ReadBitNext(out *byte) {
 
 	b.readbit(out, b.boff)
 	b.seekbit(1, true)
-	return
 
 }
 
@@ -473,7 +424,6 @@ func (b *MiniBuffer) ReadBitsNext(out *uint64, n int64) {
 
 	b.readbits(out, b.boff, n)
 	b.seekbit(n, true)
-	return
 
 }
 
@@ -481,7 +431,6 @@ func (b *MiniBuffer) ReadBitsNext(out *uint64, n int64) {
 func (b *MiniBuffer) SetBit(off int64, data byte) {
 
 	b.setbit(off, data)
-	return
 
 }
 
@@ -489,7 +438,6 @@ func (b *MiniBuffer) SetBit(off int64, data byte) {
 func (b *MiniBuffer) SetBits(off int64, data uint64, n int64) {
 
 	b.setbits(off, data, n)
-	return
 
 }
 
@@ -498,7 +446,6 @@ func (b *MiniBuffer) SetBitNext(data byte) {
 
 	b.setbit(b.boff, data)
 	b.seekbit(1, true)
-	return
 
 }
 
@@ -507,7 +454,6 @@ func (b *MiniBuffer) SetBitsNext(data uint64, n int64) {
 
 	b.setbits(b.boff, data, n)
 	b.seekbit(n, true)
-	return
 
 }
 
@@ -515,7 +461,6 @@ func (b *MiniBuffer) SetBitsNext(data uint64, n int64) {
 func (b *MiniBuffer) FlipBit(off int64) {
 
 	b.flipbit(off)
-	return
 
 }
 
@@ -524,7 +469,6 @@ func (b *MiniBuffer) FlipBitNext() {
 
 	b.flipbit(b.boff)
 	b.seekbit(1, true)
-	return
 
 }
 
@@ -532,7 +476,6 @@ func (b *MiniBuffer) FlipBitNext() {
 func (b *MiniBuffer) ClearAllBits() {
 
 	b.clearallbits()
-	return
 
 }
 
@@ -540,7 +483,6 @@ func (b *MiniBuffer) ClearAllBits() {
 func (b *MiniBuffer) SetAllBits() {
 
 	b.setallbits()
-	return
 
 }
 
@@ -548,6 +490,5 @@ func (b *MiniBuffer) SetAllBits() {
 func (b *MiniBuffer) FlipAllBits() {
 
 	b.flipallbits()
-	return
 
 }

@@ -54,9 +54,7 @@ func TestNewBuffer(t *testing.T) {
 		}
 	)
 
-	var out *Buffer
-
-	out = NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+	out := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 	if !cmp.Equal(expected1, out, BufferComparer) {
 
 		t.Fatalf("expected buffer does not match the one gotten (got %#v, expected %#v)", out, expected1)

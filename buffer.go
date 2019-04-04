@@ -52,7 +52,6 @@ func NewBuffer(slices ...[]byte) (buf *Buffer) {
 
 	case 1:
 		buf.buf = slices[0]
-		break
 
 	default:
 		for _, s := range slices {
@@ -64,7 +63,6 @@ func NewBuffer(slices ...[]byte) (buf *Buffer) {
 	}
 
 	buf.refresh()
-
 	return
 
 }
@@ -103,7 +101,6 @@ func (b *Buffer) readbits(off, n int64) (v uint64) {
 		v = (v << uint64(1)) | uint64(b.readbit(off+i))
 
 	}
-
 	return
 
 }
@@ -222,17 +219,15 @@ func (b *Buffer) seekbit(off int64, relative bool) {
 	b.Lock()
 	defer b.Unlock()
 
-	if relative == true {
+	if relative {
 
-		b.boff = b.boff + off
+		b.boff += off
 
 	} else {
 
 		b.boff = off
 
 	}
-
-	return
 
 }
 
@@ -283,8 +278,6 @@ func (b *Buffer) write(off int64, data []byte) {
 
 	b.Unlock()
 
-	return
-
 }
 
 // writeComplex writes a slice of bytes to the buffer at the specified offset with the specified endianness and integer type
@@ -297,11 +290,9 @@ func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, en
 
 	case LittleEndian:
 		endian = binary.LittleEndian
-		break
 
 	case BigEndian:
 		endian = binary.BigEndian
-		break
 
 	default:
 		panic(BufferInvalidEndiannessError)
@@ -314,7 +305,6 @@ func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, en
 	case Unsigned8:
 		// just pass it through
 		data = idata.([]byte)
-		break
 
 	case Unsigned16:
 		adata := idata.([]uint16)
@@ -328,7 +318,6 @@ func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, en
 			data[1+(i*2)] = tdata[1]
 
 		}
-		break
 
 	case Unsigned32:
 		adata := idata.([]uint32)
@@ -344,7 +333,6 @@ func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, en
 			data[3+(i*4)] = tdata[3]
 
 		}
-		break
 
 	case Unsigned64:
 		adata := idata.([]uint64)
@@ -364,7 +352,6 @@ func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, en
 			data[7+(i*8)] = tdata[7]
 
 		}
-		break
 
 	default:
 		panic(BufferInvalidIntegerSizeError)
@@ -407,11 +394,9 @@ func (b *Buffer) readComplex(off, n int64, size IntegerSize, endianness Endianne
 
 	case LittleEndian:
 		endian = binary.LittleEndian
-		break
 
 	case BigEndian:
 		endian = binary.BigEndian
-		break
 
 	default:
 		panic(BufferInvalidEndiannessError)
@@ -466,17 +451,15 @@ func (b *Buffer) seek(off int64, relative bool) {
 	b.Lock()
 	defer b.Unlock()
 
-	if relative == true {
+	if relative {
 
-		b.off = b.off + off
+		b.off += off
 
 	} else {
 
 		b.off = off
 
 	}
-
-	return
 
 }
 
@@ -505,8 +488,6 @@ func (b *Buffer) grow(n int64) {
 
 	b.refresh()
 
-	return
-
 }
 
 // refresh updates the internal statistics of the byte buffer forcefully
@@ -517,8 +498,6 @@ func (b *Buffer) refresh() {
 
 	b.cap = int64(len(b.buf))
 	b.bcap = b.cap * 8
-
-	return
 
 }
 
@@ -583,7 +562,6 @@ func (b *Buffer) BitOffset() int64 {
 func (b *Buffer) Refresh() {
 
 	b.refresh()
-	return
 
 }
 
@@ -591,7 +569,6 @@ func (b *Buffer) Refresh() {
 func (b *Buffer) Grow(n int64) {
 
 	b.grow(n)
-	return
 
 }
 
@@ -599,7 +576,6 @@ func (b *Buffer) Grow(n int64) {
 func (b *Buffer) Seek(off int64, relative bool) {
 
 	b.seek(off, relative)
-	return
 
 }
 
@@ -607,7 +583,6 @@ func (b *Buffer) Seek(off int64, relative bool) {
 func (b *Buffer) SeekBit(off int64, relative bool) {
 
 	b.seekbit(off, relative)
-	return
 
 }
 
@@ -615,7 +590,6 @@ func (b *Buffer) SeekBit(off int64, relative bool) {
 func (b *Buffer) AlignBit() {
 
 	b.alignbit()
-	return
 
 }
 
@@ -623,7 +597,6 @@ func (b *Buffer) AlignBit() {
 func (b *Buffer) AlignByte() {
 
 	b.alignbyte()
-	return
 
 }
 
@@ -693,7 +666,6 @@ func (b *Buffer) ReadComplexNext(n int64, size IntegerSize, endianness Endiannes
 func (b *Buffer) WriteByte(off int64, data byte) {
 
 	b.write(off, []byte{data})
-	return
 
 }
 
@@ -701,7 +673,6 @@ func (b *Buffer) WriteByte(off int64, data byte) {
 func (b *Buffer) WriteBytes(off int64, data []byte) {
 
 	b.write(off, data)
-	return
 
 }
 
@@ -709,7 +680,6 @@ func (b *Buffer) WriteBytes(off int64, data []byte) {
 func (b *Buffer) WriteComplex(off int64, data interface{}, size IntegerSize, endianness Endianness) {
 
 	b.writeComplex(off, data, size, endianness)
-	return
 
 }
 
@@ -718,7 +688,6 @@ func (b *Buffer) WriteByteNext(data byte) {
 
 	b.write(b.off, []byte{data})
 	b.seek(1, true)
-	return
 
 }
 
@@ -727,7 +696,6 @@ func (b *Buffer) WriteBytesNext(data []byte) {
 
 	b.write(b.off, data)
 	b.seek(int64(len(data)), true)
-	return
 
 }
 
@@ -751,8 +719,6 @@ func (b *Buffer) WriteComplexNext(data interface{}, size IntegerSize, endianness
 		b.seek(int64(len(data.([]uint64))*int(size)), true)
 
 	}
-
-	return
 
 }
 
@@ -792,7 +758,6 @@ func (b *Buffer) ReadBitsNext(n int64) (out uint64) {
 func (b *Buffer) SetBit(off int64, data byte) {
 
 	b.setbit(off, data)
-	return
 
 }
 
@@ -800,7 +765,6 @@ func (b *Buffer) SetBit(off int64, data byte) {
 func (b *Buffer) SetBits(off int64, data uint64, n int64) {
 
 	b.setbits(off, data, n)
-	return
 
 }
 
@@ -809,7 +773,6 @@ func (b *Buffer) SetBitNext(data byte) {
 
 	b.setbit(b.boff, data)
 	b.seekbit(1, true)
-	return
 
 }
 
@@ -818,7 +781,6 @@ func (b *Buffer) SetBitsNext(data uint64, n int64) {
 
 	b.setbits(b.boff, data, n)
 	b.seekbit(n, true)
-	return
 
 }
 
@@ -826,7 +788,6 @@ func (b *Buffer) SetBitsNext(data uint64, n int64) {
 func (b *Buffer) FlipBit(off int64) {
 
 	b.flipbit(off)
-	return
 
 }
 
@@ -835,7 +796,6 @@ func (b *Buffer) FlipBitNext() {
 
 	b.flipbit(b.boff)
 	b.seekbit(1, true)
-	return
 
 }
 
@@ -843,7 +803,6 @@ func (b *Buffer) FlipBitNext() {
 func (b *Buffer) ClearAllBits() {
 
 	b.clearallbits()
-	return
 
 }
 
@@ -851,7 +810,6 @@ func (b *Buffer) ClearAllBits() {
 func (b *Buffer) SetAllBits() {
 
 	b.setallbits()
-	return
 
 }
 
@@ -859,6 +817,5 @@ func (b *Buffer) SetAllBits() {
 func (b *Buffer) FlipAllBits() {
 
 	b.flipallbits()
-	return
 
 }

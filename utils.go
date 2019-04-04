@@ -23,7 +23,7 @@ package crunch
 // atob converts a boolean to a byte
 func atob(b bool) byte {
 
-	if b == true {
+	if b {
 
 		return 1
 
