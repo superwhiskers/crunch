@@ -562,16 +562,46 @@ func TestBufferWriteComplex(t *testing.T) {
 
 func TestBufferWriteComplexNext(t *testing.T) {
 
-	var expected = []byte{0x01, 0x02}
+	var expected byte = 0x01
 
-	buf := NewBuffer([]byte{0x01, 0x02, 0x03, 0x04})
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
 	buf.WriteComplexNext([]byte{0x01, 0x02}, Unsigned8, LittleEndian)
 
-	out := buf.ReadBytes(0x00, 2)
-	if !cmp.Equal(expected, out) {
+	out := buf.ReadByte(0x00)
+	if expected != out {
 
-		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out, expected)
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+	buf.Seek(0x00, false)
+	buf.WriteComplexNext([]uint16{0x01}, Unsigned16, LittleEndian)
+
+	out = buf.ReadByte(0x00)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+	buf.Seek(0x00, false)
+	buf.WriteComplexNext([]uint32{0x01}, Unsigned32, LittleEndian)
+
+	out = buf.ReadByte(0x00)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+	buf.Seek(0x00, false)
+	buf.WriteComplexNext([]uint64{0x01}, Unsigned64, LittleEndian)
+
+	out = buf.ReadByte(0x00)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
 
 	}
 
