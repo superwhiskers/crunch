@@ -557,7 +557,7 @@ func TestBufferWriteComplex(t *testing.T) {
 		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
 
 	}
-	
+
 }
 
 func TestBufferWriteComplexNext(t *testing.T) {
