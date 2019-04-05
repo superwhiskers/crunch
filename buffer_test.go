@@ -374,6 +374,71 @@ func TestBufferReadBytesNext(t *testing.T) {
 
 }
 
+func TestBufferReadComplex(t *testing.T) {
+
+	var (
+		expected1 = []byte{0x01}
+		expected2 = []uint16{0x01}
+		expected3 = []uint16{0x100}
+		expected4 = []uint32{0x01}
+		expected5 = []uint64{0x01}
+	)
+
+	buf := NewBuffer([]byte{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	out1 := buf.ReadComplex(0x00, 1, Unsigned8, LittleEndian).([]byte)
+	if !cmp.Equal(out1, expected1) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out1, expected1)
+
+	}
+
+	out2 := buf.ReadComplex(0x00, 1, Unsigned16, LittleEndian).([]uint16)
+	if !cmp.Equal(out2, expected2) {
+
+		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out2, expected2)
+
+	}
+
+	out2 = buf.ReadComplex(0x00, 1, Unsigned16, BigEndian).([]uint16)
+	if !cmp.Equal(out2, expected3) {
+
+		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out2, expected3)
+
+	}
+
+	out3 := buf.ReadComplex(0x00, 1, Unsigned32, LittleEndian).([]uint32)
+	if !cmp.Equal(out3, expected4) {
+
+		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out3, expected4)
+
+	}
+
+	out4 := buf.ReadComplex(0x00, 1, Unsigned64, LittleEndian).([]uint64)
+	if !cmp.Equal(out4, expected5) {
+
+		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out4, expected5)
+
+	}
+
+}
+
+func TestBufferReadComplexNext(t *testing.T) {
+
+	var expected = []byte{0x01, 0x02}
+
+	buf := NewBuffer([]byte{0x01, 0x02, 0x03, 0x04})
+
+	out := buf.ReadComplexNext(2, Unsigned8, LittleEndian).([]byte)
+
+	if !cmp.Equal(expected, out) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out, expected)
+
+	}
+
+}
+
 func TestBufferWriteByte(t *testing.T) {
 
 	var expected byte = 0x04
@@ -759,6 +824,26 @@ func TestBufferReadPanic2(t *testing.T) {
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
 	_ = buf.read(-0x01, 1)
+
+}
+
+func TestBufferReadComplexPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferInvalidEndiannessError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readComplex(0x00, 1, Unsigned8, -1).([]byte)
+
+}
+
+func TestBufferReadComplexPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferInvalidIntegerSizeError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readComplex(0x00, 1, -1, LittleEndian).([]byte)
 
 }
 
