@@ -20,7 +20,10 @@ along with this program.  if not, see <https://www.gnu.org/licenses/>.
 
 package crunch
 
-import "sync"
+import (
+	"encoding/binary"
+	"sync"
+)
 
 // MiniBuffer implements a fast and low-memory buffer type in go that handles multiple types of data easily. it is not safe
 // for concurrent usage out of the box, you are required to handle that yourself by calling the Lock and Unlock methods on it.
@@ -207,10 +210,124 @@ func (b *MiniBuffer) write(off int64, data []byte) {
 
 }
 
+// writeComplex writes a slice of bytes to the buffer at the specified offset with the specified endianness and integer type
+func (b *MiniBuffer) writeComplex(off int64, idata interface{}, size IntegerSize, endian binary.ByteOrder) {
+
+	var (
+		data  []byte
+		tdata []byte
+	)
+
+	switch size {
+
+	case Unsigned8:
+		data = idata.([]byte)
+
+	case Unsigned16:
+		adata := idata.([]uint16)
+		data = make([]byte, 2*len(adata))
+		for i := 0; i < len(adata); i++ {
+
+			tdata = []byte{0x00, 0x00}
+			endian.PutUint16(tdata, adata[i])
+
+			data[0+(i*2)] = tdata[0]
+			data[1+(i*2)] = tdata[1]
+
+		}
+
+	case Unsigned32:
+		adata := idata.([]uint32)
+		data = make([]byte, 4*len(adata))
+		for i := 0; i < len(adata); i++ {
+
+			tdata = []byte{0x00, 0x00, 0x00, 0x00}
+			endian.PutUint32(tdata, adata[i])
+
+			data[0+(i*4)] = tdata[0]
+			data[1+(i*4)] = tdata[1]
+			data[2+(i*4)] = tdata[2]
+			data[3+(i*4)] = tdata[3]
+
+		}
+
+	case Unsigned64:
+		adata := idata.([]uint64)
+		data = make([]byte, 8*len(adata))
+		for i := 0; i < len(adata); i++ {
+
+			tdata = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+			endian.PutUint64(tdata, adata[i])
+
+			data[0+(i*8)] = tdata[0]
+			data[1+(i*8)] = tdata[1]
+			data[2+(i*8)] = tdata[2]
+			data[3+(i*8)] = tdata[3]
+			data[4+(i*8)] = tdata[4]
+			data[5+(i*8)] = tdata[5]
+			data[6+(i*8)] = tdata[6]
+			data[7+(i*8)] = tdata[7]
+
+		}
+
+	default:
+		panic(BufferInvalidIntegerSizeError)
+
+	}
+
+	b.write(off, data)
+
+}
+
 // read reads n bytes from the buffer at the specified offset
 func (b *MiniBuffer) read(out *[]byte, off, n int64) {
 
 	*out = b.buf[off : off+n]
+
+}
+
+// readComplex reads a slice of bytes from the buffer at the specified offset with the specified endianness and integer type
+func (b *MiniBuffer) readComplex(out *interface{}, off, n int64, size IntegerSize, endian binary.ByteOrder) {
+
+	var data []byte
+	b.read(&data, off, n)
+
+	switch size {
+
+	case Unsigned8:
+		*out = data
+
+	case Unsigned16:
+		*out = make([]uint16, n)
+
+		for i := int64(0); i < n; i++ {
+
+			(*out).([]uint16)[i] = endian.Uint16(data[i*2 : (i+1)*2])
+
+		}
+
+	case Unsigned32:
+		*out = make([]uint32, n)
+
+		for i := int64(0); i < n; i++ {
+
+			(*out).([]uint32)[i] = endian.Uint32(data[i*4 : (i+1)*4])
+
+		}
+
+	case Unsigned64:
+		*out = make([]uint64, n)
+
+		for i := int64(0); i < n; i++ {
+
+			(*out).([]uint64)[i] = endian.Uint64(data[i*8 : (i+1)*8])
+
+		}
+
+	default:
+		panic(BufferInvalidIntegerSizeError)
+
+	}
 
 }
 
@@ -374,11 +491,26 @@ func (b *MiniBuffer) ReadBytes(out *[]byte, off, n int64) {
 
 }
 
+// ReadComplex stores the next n uint8/uint16/uint32/uint64-s from the specified offset without modifying the internal offset value
+func (b *MiniBuffer) ReadComplex(out *interface{}, off, n int64, size IntegerSize, endian binary.ByteOrder) {
+
+	b.readComplex(out, off, n, size, endian)
+
+}
+
 // ReadBytesNext stores the next n bytes from the current offset and moves the offset forward the amount of bytes read in out
 func (b *MiniBuffer) ReadBytesNext(out *[]byte, n int64) {
 
 	b.read(out, b.off, n)
 	b.seek(n, true)
+
+}
+
+// ReadComplexNext stores the next n uint8/uint16/uint32/uint64-s from the current offset and moves the offset forward the amount of bytes read
+func (b *MiniBuffer) ReadComplexNext(out *interface{}, n int64, size IntegerSize, endian binary.ByteOrder) {
+
+	b.readComplex(out, b.off, n, size, endian)
+	b.seek(n*int64(size), true)
 
 }
 
@@ -389,11 +521,41 @@ func (b *MiniBuffer) WriteBytes(off int64, data []byte) {
 
 }
 
+// WriteComplex writes a uint8/uint16/uint32/uint64 to the buffer at the specified offset without modifying the internal offset value
+func (b *MiniBuffer) WriteComplex(off int64, data interface{}, size IntegerSize, endian binary.ByteOrder) {
+
+	b.writeComplex(off, data, size, endian)
+
+}
+
 // WriteBytesNext writes bytes to the buffer at the current offset and moves the offset forward the amount of bytes written
 func (b *MiniBuffer) WriteBytesNext(data []byte) {
 
 	b.write(b.off, data)
 	b.seek(int64(len(data)), true)
+
+}
+
+// WriteComplexNext writes a uint8/uint16/uint32/uint64 to the buffer at the current offset and moves the offset forward the amount of bytes written
+func (b *MiniBuffer) WriteComplexNext(data interface{}, size IntegerSize, endian binary.ByteOrder) {
+
+	b.writeComplex(b.off, data, size, endian)
+
+	switch size {
+
+	case Unsigned8:
+		b.seek(int64(len(data.([]uint8))*int(size)), true)
+
+	case Unsigned16:
+		b.seek(int64(len(data.([]uint16))*int(size)), true)
+
+	case Unsigned32:
+		b.seek(int64(len(data.([]uint32))*int(size)), true)
+
+	case Unsigned64:
+		b.seek(int64(len(data.([]uint64))*int(size)), true)
+
+	}
 
 }
 

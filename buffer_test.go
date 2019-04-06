@@ -927,17 +927,7 @@ func TestBufferReadPanic2(t *testing.T) {
 
 }
 
-func TestBufferReadComplexPanic1(t *testing.T) {
-
-	defer panicChecker(t, BufferInvalidEndiannessError)
-
-	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
-
-	_ = buf.readComplex(0x00, 1, Unsigned8, -1).([]byte)
-
-}
-
-func TestBufferReadComplexPanic2(t *testing.T) {
+func TestBufferReadComplexPanic(t *testing.T) {
 
 	defer panicChecker(t, BufferInvalidIntegerSizeError)
 
@@ -947,17 +937,7 @@ func TestBufferReadComplexPanic2(t *testing.T) {
 
 }
 
-func TestBufferWriteComplexPanic1(t *testing.T) {
-
-	defer panicChecker(t, BufferInvalidEndiannessError)
-
-	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
-
-	buf.writeComplex(0x00, 1, Unsigned8, -1)
-
-}
-
-func TestBufferWriteComplexPanic2(t *testing.T) {
+func TestBufferWriteComplexPanic(t *testing.T) {
 
 	defer panicChecker(t, BufferInvalidIntegerSizeError)
 

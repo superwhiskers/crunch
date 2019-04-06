@@ -21,15 +21,14 @@ along with this program.  if not, see <https://www.gnu.org/licenses/>.
 // Package crunch provides various utilities for manipulating bytes and bits easily
 package crunch
 
-// Endianness represents the endianness of the value read or written
-type Endianness int
+import "encoding/binary"
 
-const (
+var (
 	// LittleEndian represents the little-endian byte order
-	LittleEndian Endianness = iota
+	LittleEndian = binary.LittleEndian
 
 	// BigEndian represents the big-endian byte order
-	BigEndian
+	BigEndian = binary.BigEndian
 )
 
 // IntegerSize represents the size of the integer read or written (in bytes)

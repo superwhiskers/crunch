@@ -281,29 +281,16 @@ func (b *Buffer) write(off int64, data []byte) {
 }
 
 // writeComplex writes a slice of bytes to the buffer at the specified offset with the specified endianness and integer type
-func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, endianness Endianness) {
+func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, endian binary.ByteOrder) {
 
-	var data []byte
+	var (
+		data  []byte
+		tdata []byte
+	)
 
-	var endian binary.ByteOrder
-	switch endianness {
-
-	case LittleEndian:
-		endian = binary.LittleEndian
-
-	case BigEndian:
-		endian = binary.BigEndian
-
-	default:
-		panic(BufferInvalidEndiannessError)
-
-	}
-
-	var tdata []byte
 	switch size {
 
 	case Unsigned8:
-		// just pass it through
 		data = idata.([]byte)
 
 	case Unsigned16:
@@ -340,7 +327,7 @@ func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, en
 		for i := 0; i < len(adata); i++ {
 
 			tdata = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
-			binary.LittleEndian.PutUint64(tdata, adata[i])
+			endian.PutUint64(tdata, adata[i])
 
 			data[0+(i*8)] = tdata[0]
 			data[1+(i*8)] = tdata[1]
@@ -385,23 +372,9 @@ func (b *Buffer) read(off, n int64) []byte {
 }
 
 // readComplex reads a slice of bytes from the buffer at the specified offset with the specified endianness and integer type
-func (b *Buffer) readComplex(off, n int64, size IntegerSize, endianness Endianness) interface{} {
+func (b *Buffer) readComplex(off, n int64, size IntegerSize, endian binary.ByteOrder) interface{} {
 
 	data := b.read(off, n)
-
-	var endian binary.ByteOrder
-	switch endianness {
-
-	case LittleEndian:
-		endian = binary.LittleEndian
-
-	case BigEndian:
-		endian = binary.BigEndian
-
-	default:
-		panic(BufferInvalidEndiannessError)
-
-	}
 
 	switch size {
 
@@ -433,7 +406,7 @@ func (b *Buffer) readComplex(off, n int64, size IntegerSize, endianness Endianne
 
 		for i := int64(0); i < n; i++ {
 
-			idata[i] = endian.Uint64(data[(i * 8) : (i+1)*8])
+			idata[i] = endian.Uint64(data[i*8 : (i+1)*8])
 
 		}
 		return idata
@@ -629,9 +602,9 @@ func (b *Buffer) ReadBytes(off, n int64) []byte {
 }
 
 // ReadComplex returns the next n uint8/uint16/uint32/uint64-s from the specified offset without modifying the internal offset value
-func (b *Buffer) ReadComplex(off, n int64, size IntegerSize, endianness Endianness) interface{} {
+func (b *Buffer) ReadComplex(off, n int64, size IntegerSize, endian binary.ByteOrder) interface{} {
 
-	return b.readComplex(off, n, size, endianness)
+	return b.readComplex(off, n, size, endian)
 
 }
 
@@ -654,9 +627,9 @@ func (b *Buffer) ReadBytesNext(n int64) (out []byte) {
 }
 
 // ReadComplexNext returns the next n uint8/uint16/uint32/uint64-s from the current offset and moves the offset forward the amount of bytes read
-func (b *Buffer) ReadComplexNext(n int64, size IntegerSize, endianness Endianness) (out interface{}) {
+func (b *Buffer) ReadComplexNext(n int64, size IntegerSize, endian binary.ByteOrder) (out interface{}) {
 
-	out = b.readComplex(b.off, n, size, endianness)
+	out = b.readComplex(b.off, n, size, endian)
 	b.seek(n*int64(size), true)
 	return
 
@@ -677,9 +650,9 @@ func (b *Buffer) WriteBytes(off int64, data []byte) {
 }
 
 // WriteComplex writes a uint8/uint16/uint32/uint64 to the buffer at the specified offset without modifying the internal offset value
-func (b *Buffer) WriteComplex(off int64, data interface{}, size IntegerSize, endianness Endianness) {
+func (b *Buffer) WriteComplex(off int64, data interface{}, size IntegerSize, endian binary.ByteOrder) {
 
-	b.writeComplex(off, data, size, endianness)
+	b.writeComplex(off, data, size, endian)
 
 }
 
@@ -700,9 +673,9 @@ func (b *Buffer) WriteBytesNext(data []byte) {
 }
 
 // WriteComplexNext writes a uint8/uint16/uint32/uint64 to the buffer at the current offset and moves the offset forward the amount of bytes written
-func (b *Buffer) WriteComplexNext(data interface{}, size IntegerSize, endianness Endianness) {
+func (b *Buffer) WriteComplexNext(data interface{}, size IntegerSize, endian binary.ByteOrder) {
 
-	b.writeComplex(b.off, data, size, endianness)
+	b.writeComplex(b.off, data, size, endian)
 
 	switch size {
 
