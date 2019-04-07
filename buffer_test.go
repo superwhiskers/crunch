@@ -983,3 +983,17 @@ func BenchmarkBufferRead(b *testing.B) {
 	_ = out
 
 }
+
+func BenchmarkBufferWriteComplex(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	for n := 0; n < b.N; n++ {
+
+		buf.WriteComplex(0x00, []uint32{0x01, 0x02}, Unsigned32, LittleEndian)
+
+	}
+
+}

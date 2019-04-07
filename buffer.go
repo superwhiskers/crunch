@@ -296,22 +296,34 @@ func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, en
 	case Unsigned16:
 		adata := idata.([]uint16)
 		data = make([]byte, 2*len(adata))
-		for i := 0; i < len(adata); i++ {
 
-			tdata = []byte{0x00, 0x00}
+		i := 0
+		n := len(adata)
+		tdata = []byte{0x00, 0x00}
+		{
+		write_loop_u16:
 			endian.PutUint16(tdata, adata[i])
 
 			data[0+(i*2)] = tdata[0]
 			data[1+(i*2)] = tdata[1]
 
+			i++
+			if i < n {
+
+				goto write_loop_u16
+
+			}
 		}
 
 	case Unsigned32:
 		adata := idata.([]uint32)
 		data = make([]byte, 4*len(adata))
-		for i := 0; i < len(adata); i++ {
 
-			tdata = []byte{0x00, 0x00, 0x00, 0x00}
+		i := 0
+		n := len(adata)
+		tdata = []byte{0x00, 0x00, 0x00, 0x00}
+		{
+		write_loop_u32:
 			endian.PutUint32(tdata, adata[i])
 
 			data[0+(i*4)] = tdata[0]
@@ -319,14 +331,23 @@ func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, en
 			data[2+(i*4)] = tdata[2]
 			data[3+(i*4)] = tdata[3]
 
+			i++
+			if i < n {
+
+				goto write_loop_u32
+
+			}
 		}
 
 	case Unsigned64:
 		adata := idata.([]uint64)
 		data = make([]byte, 8*len(adata))
-		for i := 0; i < len(adata); i++ {
 
-			tdata = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+		i := 0
+		n := len(adata)
+		tdata = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+		{
+		write_loop_u64:
 			endian.PutUint64(tdata, adata[i])
 
 			data[0+(i*8)] = tdata[0]
@@ -338,6 +359,12 @@ func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, en
 			data[6+(i*8)] = tdata[6]
 			data[7+(i*8)] = tdata[7]
 
+			i++
+			if i < n {
+
+				goto write_loop_u64
+
+			}
 		}
 
 	default:

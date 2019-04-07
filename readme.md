@@ -15,12 +15,12 @@ $ go get github.com/superwhiskers/crunch
 
 `MiniBuffer` performs on average more than twice as fast as `bytes.Buffer` in both writing and reading
 ```
-BenchmarkBufferWrite-4          	30000000	         40.1 ns/op	       0 B/op	       0 allocs/op
-BenchmarkBufferRead-4           	20000000	          126 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferWrite-4      	200000000	         7.45 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferRead-4       	2000000000	         1.83 ns/op	       0 B/op	       0 allocs/op
-BenchmarkStdByteBufferWrite-4   	100000000	         24.1 ns/op	       0 B/op	       0 allocs/op
-BenchmarkStdByteBufferRead-4    	300000000	         5.04 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferWrite-4          	30000000	         47.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferRead-4           	20000000	         111 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferWrite-4      	200000000	         7.29 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferRead-4       	1000000000	         1.73 ns/op	       0 B/op	       0 allocs/op
+BenchmarkStdByteBufferWrite-4   	50000000	         24.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkStdByteBufferRead-4    	200000000	         7.84 ns/op	       0 B/op	       0 allocs/op
 ```
 
 ## example
