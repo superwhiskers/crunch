@@ -175,6 +175,22 @@ func TestBufferRefresh(t *testing.T) {
 
 }
 
+func TestBufferReset(t *testing.T) {
+
+	var expected = []byte{}
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.Reset()
+
+	if !cmp.Equal(expected, buf.buf) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", buf.buf, expected)
+
+	}
+
+}
+
 func TestBufferGrow(t *testing.T) {
 
 	var expected int64 = 4
@@ -995,5 +1011,22 @@ func BenchmarkBufferWriteComplex(b *testing.B) {
 		buf.WriteComplex(0x00, []uint32{0x01, 0x02}, Unsigned32, LittleEndian)
 
 	}
+
+}
+
+func BenchmarkBufferReadComplex(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	var out interface{}
+	for n := 0; n < b.N; n++ {
+
+		out = buf.ReadComplex(0x00, 2, Unsigned32, LittleEndian)
+
+	}
+
+	_ = out
 
 }

@@ -314,6 +314,7 @@ func (b *MiniBuffer) read(out *[]byte, off, n int64) {
 }
 
 // readComplex reads a slice of bytes from the buffer at the specified offset with the specified endianness and integer type
+// TODO: optimize this
 func (b *MiniBuffer) readComplex(out *interface{}, off, n int64, size IntegerSize, endian binary.ByteOrder) {
 
 	var data []byte
@@ -337,7 +338,7 @@ func (b *MiniBuffer) readComplex(out *interface{}, off, n int64, size IntegerSiz
 		*out = make([]uint32, n)
 
 		for i := int64(0); i < n; i++ {
-
+			
 			(*out).([]uint32)[i] = endian.Uint32(data[i*4 : (i+1)*4])
 
 		}
@@ -418,6 +419,17 @@ func (b *MiniBuffer) alignbyte() {
 
 }
 
+// reset resets the buffer
+func (b *MiniBuffer) reset() {
+
+	b.buf = []byte{}
+	b.off = 0x00
+	b.boff = 0x00
+	b.cap = 0
+	b.bcap = 0
+
+}
+
 /* public methods */
 
 // Bytes stores the internal byte slice of the buffer in out
@@ -459,6 +471,13 @@ func (b *MiniBuffer) BitOffset(out *int64) {
 func (b *MiniBuffer) Refresh() {
 
 	b.refresh()
+
+}
+
+// Reset resets the entire buffer
+func (b *MiniBuffer) Reset() {
+
+	b.reset()
 
 }
 

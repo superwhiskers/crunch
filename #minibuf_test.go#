@@ -204,7 +204,6 @@ func TestMiniBufferReset(t *testing.T) {
 	}
 
 }
-		
 
 func TestMiniBufferGrow(t *testing.T) {
 

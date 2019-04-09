@@ -521,6 +521,20 @@ func (b *Buffer) alignbyte() {
 
 }
 
+// reset resets the buffer
+func (b *Buffer) reset() {
+
+	b.Lock()
+	defer b.Unlock()
+
+	b.buf = []byte{}
+	b.off = 0x00
+	b.boff = 0x00
+	b.cap = 0
+	b.bcap = 0
+
+}	
+
 /* public methods */
 
 // Bytes returns the internal byte slice of the buffer
@@ -562,6 +576,13 @@ func (b *Buffer) BitOffset() int64 {
 func (b *Buffer) Refresh() {
 
 	b.refresh()
+
+}
+
+// Reset resets the entire buffer
+func (b *Buffer) Reset() {
+
+	b.reset()
 
 }
 
