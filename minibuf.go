@@ -338,7 +338,7 @@ func (b *MiniBuffer) readComplex(out *interface{}, off, n int64, size IntegerSiz
 		*out = make([]uint32, n)
 
 		for i := int64(0); i < n; i++ {
-			
+
 			(*out).([]uint32)[i] = endian.Uint32(data[i*4 : (i+1)*4])
 
 		}

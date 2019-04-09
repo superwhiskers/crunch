@@ -533,7 +533,7 @@ func (b *Buffer) reset() {
 	b.cap = 0
 	b.bcap = 0
 
-}	
+}
 
 /* public methods */
 
