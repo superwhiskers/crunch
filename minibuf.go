@@ -749,14 +749,47 @@ func (b *MiniBuffer) WriteBytes(off int64, data []byte) {
 
 }
 
-/*
-// WriteComplex writes a uint8/uint16/uint32/uint64 to the buffer at the specified offset without modifying the internal offset value
-func (b *MiniBuffer) WriteComplex(off int64, data interface{}, size IntegerSize, endian binary.ByteOrder) {
+// WriteU16LE writes a slice of uint16s to the buffer at the specified offset in little-endian without modifying the internal offset value
+func (b *MiniBuffer) WriteU16LE(off int64, data []uint16) {
 
-	b.writeComplex(off, data, size, endian)
+	b.writeU16LE(off, data)
 
 }
-*/
+
+// WriteU16BE writes a slice of uint16s to the buffer at the specified offset in big-endian without modifying the internal offset value
+func (b *MiniBuffer) WriteU16BE(off int64, data []uint16) {
+
+	b.writeU16BE(off, data)
+
+}
+
+// WriteU32LE writes a slice of uint32s to the buffer at the specified offset in little-endian without modifying the internal offset value
+func (b *MiniBuffer) WriteU32LE(off int64, data []uint32) {
+
+	b.writeU32LE(off, data)
+
+}
+
+// WriteU32BE writes a slice of uint32s to the buffer at the specified offset in big-endian without modifying the internal offset value
+func (b *MiniBuffer) WriteU32BE(off int64, data []uint32) {
+
+	b.writeU32BE(off, data)
+
+}
+
+// WriteU64LE writes a slice of uint64s to the buffer at the specfied offset in little-endian without modifying the internal offset value
+func (b *MiniBuffer) WriteU64LE(off int64, data []uint64) {
+
+	b.writeU64LE(off, data)
+
+}
+
+// WriteU64BE writes a slice of uint64s to the buffer at the specified offset in big-endian without modifying the internal offset value
+func (b *MiniBuffer) WriteU64BE(off int64, data []uint64) {
+
+	b.writeU64BE(off, data)
+
+}
 
 // WriteBytesNext writes bytes to the buffer at the current offset and moves the offset forward the amount of bytes written
 func (b *MiniBuffer) WriteBytesNext(data []byte) {
@@ -766,30 +799,53 @@ func (b *MiniBuffer) WriteBytesNext(data []byte) {
 
 }
 
-/*
-// WriteComplexNext writes a uint8/uint16/uint32/uint64 to the buffer at the current offset and moves the offset forward the amount of bytes written
-func (b *MiniBuffer) WriteComplexNext(data interface{}, size IntegerSize, endian binary.ByteOrder) {
+// WriteU16LENext writes a slice of uint16s to the buffer at the specified offset in little-endian and moves the offset forward the amount of bytes written
+func (b *MiniBuffer) WriteU16LENext(off int64, data []uint16) {
 
-	b.writeComplex(b.off, data, size, endian)
-
-	switch size {
-
-	case Unsigned8:
-		b.seek(int64(len(data.([]uint8))*int(size)), true)
-
-	case Unsigned16:
-		b.seek(int64(len(data.([]uint16))*int(size)), true)
-
-	case Unsigned32:
-		b.seek(int64(len(data.([]uint32))*int(size)), true)
-
-	case Unsigned64:
-		b.seek(int64(len(data.([]uint64))*int(size)), true)
-
-	}
+	b.writeU16LE(off, data)
+	b.seek(int64(len(data))*2, true)
 
 }
-*/
+
+// WriteU16BENext writes a slice of uint16s to the buffer at the specified offset in big-endian and moves the offset forward the amount of bytes written
+func (b *MiniBuffer) WriteU16BENext(off int64, data []uint16) {
+
+	b.writeU16BE(off, data)
+	b.seek(int64(len(data))*2, true)
+
+}
+
+// WriteU32LENext writes a slice of uint32s to the buffer at the specified offset in little-endian and moves the offset forward the amount of bytes written
+func (b *MiniBuffer) WriteU32LENext(off int64, data []uint32) {
+
+	b.writeU32LE(off, data)
+	b.seek(int64(len(data))*4, true)
+
+}
+
+// WriteU32BENext writes a slice of uint32s to the buffer at the specified offset in big-endian and moves the offset forward the amount of bytes written
+func (b *MiniBuffer) WriteU32BENext(off int64, data []uint32) {
+
+	b.writeU32BE(off, data)
+	b.seek(int64(len(data))*4, true)
+
+}
+
+// WriteU64LENext writes a slice of uint64s to the buffer at the specfied offset in little-endian and moves the offset forward the amount of bytes written
+func (b *MiniBuffer) WriteU64LENext(off int64, data []uint64) {
+
+	b.writeU64LE(off, data)
+	b.seek(int64(len(data))*8, true)
+
+}
+
+// WriteU64BENext writes a slice of uint64s to the buffer at the specified offset in big-endian and moves the offset forward the amount of bytes written
+func (b *MiniBuffer) WriteU64BENext(off int64, data []uint64) {
+
+	b.writeU64BE(off, data)
+	b.seek(int64(len(data))*8, true)
+	
+}
 
 // ReadBit stores the bit located at the specified offset without modifying the internal offset value in out
 func (b *MiniBuffer) ReadBit(out *byte, off int64) {
