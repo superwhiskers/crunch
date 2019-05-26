@@ -621,7 +621,7 @@ func TestMiniBufferWriteUENEN(t *testing.T) {
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
-	buf.WriteU16LE(0x00, []uint16{0x01})
+	buf.WriteU16LE(0x00, []uint16{0x01, 0x01})
 
 	buf.ReadBytes(&out, 0x00, 1)
 	if expected != out[0] {
@@ -630,9 +630,23 @@ func TestMiniBufferWriteUENEN(t *testing.T) {
 
 	}
 
-	buf.WriteU16BE(0x00, []uint16{0x100})
+	buf.ReadBytes(&out, 0x03, 1)
+	if expected != out[0] {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out[0], expected)
+
+	}
+
+	buf.WriteU16BE(0x00, []uint16{0x100, 0x100})
 
 	buf.ReadBytes(&out, 0x00, 1)
+	if expected != out[0] {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out[0], expected)
+
+	}
+
+	buf.ReadBytes(&out, 0x03, 1)
 	if expected != out[0] {
 
 		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out[0], expected)
