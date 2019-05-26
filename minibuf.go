@@ -82,12 +82,21 @@ func (b *MiniBuffer) readbit(out *byte, off int64) {
 // readbits reads n bits from the bitfield at the specified offset
 func (b *MiniBuffer) readbits(out *uint64, off, n int64) {
 
-	var bout byte
-	for i := int64(0); i < n; i++ {
+	var (
+		bout byte
 
+		i = int64(0)
+	)
+	{
+	read_loop:
 		b.readbit(&bout, off+i)
 		*out = (*out << uint64(1)) | uint64(bout)
+		i++
+		if i < n {
 
+			goto read_loop
+
+		}
 	}
 
 }
@@ -113,10 +122,17 @@ func (b *MiniBuffer) setbit(off int64, data byte) {
 // setbits sets n bits in the bitfield to the specified value at the specified offset
 func (b *MiniBuffer) setbits(off int64, data uint64, n int64) {
 
-	for i := int64(0); i < n; i++ {
+	i := int64(0)
 
+	{
+	write_loop:
 		b.setbit(off+i, byte((data>>uint64(n-i-1))&1))
+		i++
+		if i < n {
 
+			goto write_loop
+
+		}
 	}
 
 }
@@ -131,10 +147,19 @@ func (b *MiniBuffer) flipbit(off int64) {
 // clearallbits sets all of the buffer's bits to 0
 func (b *MiniBuffer) clearallbits() {
 
-	for i := range b.buf {
-
+	var (
+		i = int64(0)
+		n = int64(len(b.buf))
+	)
+	{
+	clear_loop:
 		b.buf[i] = 0
+		i++
+		if i < n {
 
+			goto clear_loop
+
+		}
 	}
 
 }
@@ -142,10 +167,19 @@ func (b *MiniBuffer) clearallbits() {
 // setallbits sets all of the buffer's bits to 1
 func (b *MiniBuffer) setallbits() {
 
-	for i := range b.buf {
-
+	var (
+		i = int64(0)
+		n = int64(len(b.buf))
+	)
+	{
+	set_loop:
 		b.buf[i] = 0xFF
+		i++
+		if i < n {
 
+			goto set_loop
+
+		}
 	}
 
 }
@@ -153,9 +187,19 @@ func (b *MiniBuffer) setallbits() {
 // flipallbits flips all of the buffer's bits
 func (b *MiniBuffer) flipallbits() {
 
-	for i := range b.buf {
-
+	var (
+		i = int64(0)
+		n = int64(len(b.buf))
+	)
+	{
+	flip_loop:
 		b.buf[i] = ^b.buf[i]
+		i++
+		if i < n {
+
+			goto flip_loop
+
+		}
 
 	}
 
@@ -194,9 +238,10 @@ func (b *MiniBuffer) afterbit(out *int64, off ...int64) {
 // write writes a slice of bytes to the buffer at the specified offset
 func (b *MiniBuffer) write(off int64, data []byte) {
 
-	i := int64(0)
-	n := int64(len(data))
-
+	var (
+		i = int64(0)
+		n = int64(len(data))
+	)
 	{
 	write_loop:
 		b.buf[off+i] = data[i]
@@ -210,99 +255,151 @@ func (b *MiniBuffer) write(off int64, data []byte) {
 
 }
 
-// writeComplex writes a slice of bytes to the buffer at the specified offset with the specified endianness and integer type
-func (b *MiniBuffer) writeComplex(off int64, idata interface{}, size IntegerSize, endian binary.ByteOrder) {
+// writeU16LE writes a slice of uint16s to the buffer at the specified offset in little-endian
+func (b *MiniBuffer) writeU16LE(off int64, data []uint16) {
 
 	var (
-		data  []byte
-		tdata []byte
+		i = 0
+		n = len(data)
 	)
+	{
+	write_loop_u16_le:
+		b.buf[0+(i*2)] = byte(data[i])
+		b.buf[1+(i*2)] = byte(data[i] >> 8)
 
-	switch size {
+		i++
+		if i < n {
 
-	case Unsigned8:
-		data = idata.([]byte)
+			goto write_loop_u16_le
 
-	case Unsigned16:
-		adata := idata.([]uint16)
-		data = make([]byte, 2*len(adata))
-
-		i := 0
-		n := len(adata)
-		tdata = []byte{0x00, 0x00}
-		{
-		write_loop_u16:
-			endian.PutUint16(tdata, adata[i])
-
-			data[0+(i*2)] = tdata[0]
-			data[1+(i*2)] = tdata[1]
-
-			i++
-			if i < n {
-
-				goto write_loop_u16
-
-			}
 		}
-
-	case Unsigned32:
-		adata := idata.([]uint32)
-		data = make([]byte, 4*len(adata))
-
-		i := 0
-		n := len(adata)
-		tdata = []byte{0x00, 0x00, 0x00, 0x00}
-		{
-		write_loop_u32:
-			endian.PutUint32(tdata, adata[i])
-
-			data[0+(i*4)] = tdata[0]
-			data[1+(i*4)] = tdata[1]
-			data[2+(i*4)] = tdata[2]
-			data[3+(i*4)] = tdata[3]
-
-			i++
-			if i < n {
-
-				goto write_loop_u32
-
-			}
-		}
-
-	case Unsigned64:
-		adata := idata.([]uint64)
-		data = make([]byte, 8*len(adata))
-
-		i := 0
-		n := len(adata)
-		tdata = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
-		{
-		write_loop_u64:
-			endian.PutUint64(tdata, adata[i])
-
-			data[0+(i*8)] = tdata[0]
-			data[1+(i*8)] = tdata[1]
-			data[2+(i*8)] = tdata[2]
-			data[3+(i*8)] = tdata[3]
-			data[4+(i*8)] = tdata[4]
-			data[5+(i*8)] = tdata[5]
-			data[6+(i*8)] = tdata[6]
-			data[7+(i*8)] = tdata[7]
-
-			i++
-			if i < n {
-
-				goto write_loop_u64
-
-			}
-		}
-
-	default:
-		panic(BufferInvalidIntegerSizeError)
-
 	}
 
-	b.write(off, data)
+}
+
+// writeU16BE writes a slice of uint16s to the buffer at the specified offset in big-endian
+func (b *MiniBuffer) writeU16BE(off int64, data []uint16) {
+
+	var (
+		i = 0
+		n = len(data)
+	)
+	{
+	write_loop_u16_be:
+		b.buf[0+(i*2)] = byte(data[i] >> 8)
+		b.buf[1+(i*2)] = byte(data[i])
+
+		i++
+		if i < n {
+
+			goto write_loop_u16_be
+
+		}
+	}
+
+}
+
+// writeU32LE writes a slice of uint32s to the buffer at the specified offset in little-endian
+func (b *MiniBuffer) writeU32LE(off int64, data []uint32) {
+
+	var (
+		i = 0
+		n = len(data)
+	)
+	{
+	write_loop_u32_le:
+		b.buf[0+(i*4)] = byte(data[i])
+		b.buf[1+(i*4)] = byte(data[i] >> 8)
+		b.buf[2+(i*4)] = byte(data[i] >> 16)
+		b.buf[3+(i*4)] = byte(data[i] >> 24)
+
+		i++
+		if i < n {
+
+			goto write_loop_u32_le
+
+		}
+	}
+
+}
+
+// writeU32BE writes a slice of uint32s to the buffer at the specified offset in big-endian
+func (b *MiniBuffer) writeU32BE(off int64, data []uint32) {
+
+	var (
+		i = 0
+		n = len(data)
+	)
+	{
+	write_loop_u32_be:
+		b.buf[0+(i*4)] = byte(data[i] >> 24)
+		b.buf[1+(i*4)] = byte(data[i] >> 16)
+		b.buf[2+(i*4)] = byte(data[i] >> 8)
+		b.buf[3+(i*4)] = byte(data[i])
+
+		i++
+		if i < n {
+
+			goto write_loop_u32_be
+
+		}
+	}
+
+}
+
+// writeU64LE writes a slice of uint64s to the buffer at the specified offset in little-endian
+func (b *MiniBuffer) writeU64LE(off int64, data []uint64) {
+
+	var (
+		i = 0
+		n = len(data)
+	)
+	{
+	write_loop_u64_le:
+		b.buf[0+(i*8)] = byte(data[i])
+		b.buf[1+(i*8)] = byte(data[i] >> 8)
+		b.buf[2+(i*8)] = byte(data[i] >> 16)
+		b.buf[3+(i*8)] = byte(data[i] >> 24)
+		b.buf[4+(i*8)] = byte(data[i] >> 32)
+		b.buf[5+(i*8)] = byte(data[i] >> 40)
+		b.buf[6+(i*8)] = byte(data[i] >> 48)
+		b.buf[7+(i*8)] = byte(data[i] >> 56)
+
+		i++
+		if i < n {
+
+			goto write_loop_u64_le
+
+		}
+	}
+
+}
+
+// writeU64BE writes a slice of uint64s to the buffer at the specified offset in big-endian
+func (b *MiniBuffer) writeU64BE(off int64, data []uint64) {
+
+	var (
+		i = 0
+		n = len(data)
+	)
+	{
+	write_loop_u64_be:
+		b.buf[0+(i*8)] = byte(data[i] >> 56)
+		b.buf[1+(i*8)] = byte(data[i] >> 48)
+		b.buf[2+(i*8)] = byte(data[i] >> 40)
+		b.buf[3+(i*8)] = byte(data[i] >> 32)
+		b.buf[4+(i*8)] = byte(data[i] >> 24)
+		b.buf[5+(i*8)] = byte(data[i] >> 16)
+		b.buf[6+(i*8)] = byte(data[i] >> 8)
+		b.buf[7+(i*8)] = byte(data[i])
+
+		i++
+		if i < n {
+
+			goto write_loop_u64_be
+
+		}
+	}
 
 }
 
@@ -567,12 +664,14 @@ func (b *MiniBuffer) WriteBytes(off int64, data []byte) {
 
 }
 
+/*
 // WriteComplex writes a uint8/uint16/uint32/uint64 to the buffer at the specified offset without modifying the internal offset value
 func (b *MiniBuffer) WriteComplex(off int64, data interface{}, size IntegerSize, endian binary.ByteOrder) {
 
 	b.writeComplex(off, data, size, endian)
 
 }
+*/
 
 // WriteBytesNext writes bytes to the buffer at the current offset and moves the offset forward the amount of bytes written
 func (b *MiniBuffer) WriteBytesNext(data []byte) {
@@ -582,6 +681,7 @@ func (b *MiniBuffer) WriteBytesNext(data []byte) {
 
 }
 
+/*
 // WriteComplexNext writes a uint8/uint16/uint32/uint64 to the buffer at the current offset and moves the offset forward the amount of bytes written
 func (b *MiniBuffer) WriteComplexNext(data interface{}, size IntegerSize, endian binary.ByteOrder) {
 
@@ -604,6 +704,7 @@ func (b *MiniBuffer) WriteComplexNext(data interface{}, size IntegerSize, endian
 	}
 
 }
+*/
 
 // ReadBit stores the bit located at the specified offset without modifying the internal offset value in out
 func (b *MiniBuffer) ReadBit(out *byte, off int64) {
