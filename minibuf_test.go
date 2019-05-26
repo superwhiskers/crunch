@@ -630,7 +630,7 @@ func TestMiniBufferWriteUENEN(t *testing.T) {
 
 	}
 
-	buf.ReadBytes(&out, 0x03, 1)
+	buf.ReadBytes(&out, 0x02, 1)
 	if expected != out[0] {
 
 		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out[0], expected)
@@ -646,7 +646,7 @@ func TestMiniBufferWriteUENEN(t *testing.T) {
 
 	}
 
-	buf.ReadBytes(&out, 0x03, 1)
+	buf.ReadBytes(&out, 0x02, 1)
 	if expected != out[0] {
 
 		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out[0], expected)
