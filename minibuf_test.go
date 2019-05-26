@@ -394,59 +394,69 @@ func TestMiniBufferReadBytesNext(t *testing.T) {
 
 }
 
-/*
-func TestMiniBufferReadComplex(t *testing.T) {
+func TestMiniBufferReadUNEN(t *testing.T) {
 
 	var (
-		expected1 = []byte{0x01}
-		expected2 = []uint16{0x01}
-		expected3 = []uint16{0x100}
-		expected4 = []uint32{0x01}
+		expected1 = []uint16{0x01}
+		expected2 = []uint16{0x100}
+		expected3 = []uint32{0x01}
+		expected4 = []uint32{0x1000000}
 		expected5 = []uint64{0x01}
+		expected6 = []uint64{0x100000000000000}
 	)
 
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
-	var out interface{}
+	out1 := []uint16{0x00}
 
-	buf.ReadComplex(&out, 0x00, 1, Unsigned8, LittleEndian)
-	if !cmp.Equal(out.([]byte), expected1) {
+	buf.ReadU16LE(&out1, 0x00, 1)
+	if !cmp.Equal(out1, expected1) {
 
-		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out.([]byte), expected1)
-
-	}
-
-	buf.ReadComplex(&out, 0x00, 1, Unsigned16, LittleEndian)
-	if !cmp.Equal(out.([]uint16), expected2) {
-
-		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out.([]uint16), expected2)
+		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out1, expected1)
 
 	}
 
-	buf.ReadComplex(&out, 0x00, 1, Unsigned16, BigEndian)
-	if !cmp.Equal(out.([]uint16), expected3) {
+	buf.ReadU16BE(&out1, 0x00, 1)
+	if !cmp.Equal(out1, expected2) {
 
-		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out.([]uint16), expected3)
-
-	}
-
-	buf.ReadComplex(&out, 0x00, 1, Unsigned32, LittleEndian)
-	if !cmp.Equal(out.([]uint32), expected4) {
-
-		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out.([]uint32), expected4)
+		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out1, expected2)
 
 	}
 
-	buf.ReadComplex(&out, 0x00, 1, Unsigned64, LittleEndian)
-	if !cmp.Equal(out.([]uint64), expected5) {
+	out2 := []uint32{0x00}
 
-		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out.([]uint64), expected5)
+	buf.ReadU32LE(&out2, 0x00, 1)
+	if !cmp.Equal(out2, expected3) {
+
+		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out2, expected3)
+
+	}
+
+	buf.ReadU32BE(&out2, 0x00, 1)
+	if !cmp.Equal(out2, expected4) {
+
+		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out2, expected4)
+
+	}
+
+	out3 := []uint64{0x00}
+
+	buf.ReadU64LE(&out3, 0x00, 1)
+	if !cmp.Equal(out3, expected5) {
+
+		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out3, expected5)
+
+	}
+
+	buf.ReadU64BE(&out3, 0x00, 1)
+	if !cmp.Equal(out3, expected6) {
+
+		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out3, expected6)
 
 	}
 
 }
-*/
 
 /*
 func TestMiniBufferReadComplexNext(t *testing.T) {
@@ -467,6 +477,120 @@ func TestMiniBufferReadComplexNext(t *testing.T) {
 
 }
 */
+
+func TestMiniBufferReadUNENNext(t *testing.T) {
+
+	var (
+		expected1 = []uint16{0x01}
+		expected2 = []uint16{0x100}
+		expected3 = []uint32{0x01}
+		expected4 = []uint32{0x1000000}
+		expected5 = []uint64{0x01}
+		expected6 = []uint64{0x100000000000000}
+	)
+
+	var off int64
+	
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	out1 := []uint16{0x00}
+
+	buf.ReadU16LENext(&out1, 1)
+	if !cmp.Equal(out1, expected1) {
+
+		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out1, expected1)
+
+	}
+
+	buf.Offset(&off)
+	if off != 2 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.Seek(0x00, false)
+
+	buf.ReadU16BENext(&out1, 1)
+	if !cmp.Equal(out1, expected2) {
+
+		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out1, expected2)
+
+	}
+
+	buf.Offset(&off)
+	if off != 2 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.Seek(0x00, false)
+	
+	out2 := []uint32{0x00}
+
+	buf.ReadU32LENext(&out2, 1)
+	if !cmp.Equal(out2, expected3) {
+
+		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out2, expected3)
+
+	}
+
+	buf.Offset(&off)
+	if off != 4 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.Seek(0x00, false)
+
+	buf.ReadU32BENext(&out2, 1)
+	if !cmp.Equal(out2, expected4) {
+
+		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out2, expected4)
+
+	}
+
+	buf.Offset(&off)
+	if off != 4 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.Seek(0x00, false)
+	
+	out3 := []uint64{0x00}
+
+	buf.ReadU64LENext(&out3, 1)
+	if !cmp.Equal(out3, expected5) {
+
+		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out3, expected5)
+
+	}
+
+	buf.Offset(&off)
+	if off != 8 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.Seek(0x00, false)
+	
+	buf.ReadU64BENext(&out3, 1)
+	if !cmp.Equal(out3, expected6) {
+
+		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out3, expected6)
+
+	}
+
+	buf.Offset(&off)
+	if off != 8 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.Seek(0x00, false)
+
+}
 
 func TestMiniBufferWriteBytes(t *testing.T) {
 
@@ -855,31 +979,6 @@ func TestMiniBufferSetbitPanic(t *testing.T) {
 }
 
 /*
-func TestMiniBufferReadComplexPanic(t *testing.T) {
-
-	defer panicChecker(t, BufferInvalidIntegerSizeError)
-
-	buf := &MiniBuffer{}
-	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
-
-	var _out interface{}
-	buf.readComplex(&_out, 0x00, 1, -1, LittleEndian)
-
-}
-*/
-
-/*func TestMiniBufferWriteComplexPanic(t *testing.T) {
-
-	defer panicChecker(t, BufferInvalidIntegerSizeError)
-
-	buf := &MiniBuffer{}
-	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
-
-	buf.writeComplex(0x00, 1, -1, LittleEndian)
-
-}*/
-
-/*
 
 benchmarks
 
@@ -917,8 +1016,7 @@ func BenchmarkMiniBufferRead(b *testing.B) {
 
 }
 
-/*
-func BenchmarkMiniBufferWriteComplex(b *testing.B) {
+func BenchmarkMiniBufferWriteU32LE(b *testing.B) {
 
 	b.ReportAllocs()
 
@@ -927,29 +1025,26 @@ func BenchmarkMiniBufferWriteComplex(b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
 
-		buf.WriteComplex(0x00, []uint32{0x01, 0x02}, Unsigned32, LittleEndian)
+		buf.WriteU32LE(0x00, []uint32{0x01, 0x02})
 
 	}
 
 }
-*/
 
-/*
-func BenchmarkMiniBufferReadComplex(b *testing.B) {
+func BenchmarkMiniBufferReadU32LE(b *testing.B) {
 
 	b.ReportAllocs()
 
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
-	var out interface{}
+	out := []uint32{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 	for n := 0; n < b.N; n++ {
 
-		buf.ReadComplex(&out, 0x00, 2, Unsigned32, LittleEndian)
+		buf.ReadU32LE(&out, 0x00, 2)
 
 	}
 
 	_ = out
 
 }
-*/
