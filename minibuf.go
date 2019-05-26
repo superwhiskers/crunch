@@ -20,10 +20,7 @@ along with this program.  if not, see <https://www.gnu.org/licenses/>.
 
 package crunch
 
-import (
-	"encoding/binary"
-	"sync"
-)
+import "sync"
 
 // MiniBuffer implements a fast and low-memory buffer type in go that handles multiple types of data easily. it is not safe
 // for concurrent usage out of the box, you are required to handle that yourself by calling the Lock and Unlock methods on it.
@@ -263,14 +260,14 @@ func (b *MiniBuffer) writeU16LE(off int64, data []uint16) {
 		n = len(data)
 	)
 	{
-	write_loop_u16_le:
-		b.buf[0+(i*2)] = byte(data[i])
+	write_loop:
+		b.buf[i*2] = byte(data[i])
 		b.buf[1+(i*2)] = byte(data[i] >> 8)
 
 		i++
 		if i < n {
 
-			goto write_loop_u16_le
+			goto write_loop
 
 		}
 	}
@@ -285,14 +282,14 @@ func (b *MiniBuffer) writeU16BE(off int64, data []uint16) {
 		n = len(data)
 	)
 	{
-	write_loop_u16_be:
-		b.buf[0+(i*2)] = byte(data[i] >> 8)
+	write_loop:
+		b.buf[i*2] = byte(data[i] >> 8)
 		b.buf[1+(i*2)] = byte(data[i])
 
 		i++
 		if i < n {
 
-			goto write_loop_u16_be
+			goto write_loop
 
 		}
 	}
@@ -307,8 +304,8 @@ func (b *MiniBuffer) writeU32LE(off int64, data []uint32) {
 		n = len(data)
 	)
 	{
-	write_loop_u32_le:
-		b.buf[0+(i*4)] = byte(data[i])
+	write_loop:
+		b.buf[i*4] = byte(data[i])
 		b.buf[1+(i*4)] = byte(data[i] >> 8)
 		b.buf[2+(i*4)] = byte(data[i] >> 16)
 		b.buf[3+(i*4)] = byte(data[i] >> 24)
@@ -316,7 +313,7 @@ func (b *MiniBuffer) writeU32LE(off int64, data []uint32) {
 		i++
 		if i < n {
 
-			goto write_loop_u32_le
+			goto write_loop
 
 		}
 	}
@@ -331,8 +328,8 @@ func (b *MiniBuffer) writeU32BE(off int64, data []uint32) {
 		n = len(data)
 	)
 	{
-	write_loop_u32_be:
-		b.buf[0+(i*4)] = byte(data[i] >> 24)
+	write_loop:
+		b.buf[i*4] = byte(data[i] >> 24)
 		b.buf[1+(i*4)] = byte(data[i] >> 16)
 		b.buf[2+(i*4)] = byte(data[i] >> 8)
 		b.buf[3+(i*4)] = byte(data[i])
@@ -340,7 +337,7 @@ func (b *MiniBuffer) writeU32BE(off int64, data []uint32) {
 		i++
 		if i < n {
 
-			goto write_loop_u32_be
+			goto write_loop
 
 		}
 	}
@@ -355,8 +352,8 @@ func (b *MiniBuffer) writeU64LE(off int64, data []uint64) {
 		n = len(data)
 	)
 	{
-	write_loop_u64_le:
-		b.buf[0+(i*8)] = byte(data[i])
+	write_loop:
+		b.buf[i*8] = byte(data[i])
 		b.buf[1+(i*8)] = byte(data[i] >> 8)
 		b.buf[2+(i*8)] = byte(data[i] >> 16)
 		b.buf[3+(i*8)] = byte(data[i] >> 24)
@@ -368,7 +365,7 @@ func (b *MiniBuffer) writeU64LE(off int64, data []uint64) {
 		i++
 		if i < n {
 
-			goto write_loop_u64_le
+			goto write_loop
 
 		}
 	}
@@ -383,8 +380,8 @@ func (b *MiniBuffer) writeU64BE(off int64, data []uint64) {
 		n = len(data)
 	)
 	{
-	write_loop_u64_be:
-		b.buf[0+(i*8)] = byte(data[i] >> 56)
+	write_loop:
+		b.buf[i*8] = byte(data[i] >> 56)
 		b.buf[1+(i*8)] = byte(data[i] >> 48)
 		b.buf[2+(i*8)] = byte(data[i] >> 40)
 		b.buf[3+(i*8)] = byte(data[i] >> 32)
@@ -396,7 +393,7 @@ func (b *MiniBuffer) writeU64BE(off int64, data []uint64) {
 		i++
 		if i < n {
 
-			goto write_loop_u64_be
+			goto write_loop
 
 		}
 	}
@@ -410,48 +407,132 @@ func (b *MiniBuffer) read(out *[]byte, off, n int64) {
 
 }
 
-// readComplex reads a slice of bytes from the buffer at the specified offset with the specified endianness and integer type
-// TODO: optimize this
-func (b *MiniBuffer) readComplex(out *interface{}, off, n int64, size IntegerSize, endian binary.ByteOrder) {
+// readU16LE reads a slice of uint16s from the buffer at the specified offset in little-endian
+func (b *MiniBuffer) readU16LE(out *[]uint16, off, n int64) {
 
-	var data []byte
-	b.read(&data, off, n)
+	i := int64(0)
+	{
+	read_loop:
+		(*out)[i] = uint16(b.buf[i*2]) |
+			uint16(b.buf[1+(i*2)])<<8
 
-	switch size {
+		i++
+		if i < n {
 
-	case Unsigned8:
-		*out = data
-
-	case Unsigned16:
-		*out = make([]uint16, n)
-
-		for i := int64(0); i < n; i++ {
-
-			(*out).([]uint16)[i] = endian.Uint16(data[i*2 : (i+1)*2])
+			goto read_loop
 
 		}
+	}
 
-	case Unsigned32:
-		*out = make([]uint32, n)
+}
 
-		for i := int64(0); i < n; i++ {
+// readU16BE reads a slice of uint16s from the buffer at the specified offset in big-endian
+func (b *MiniBuffer) readU16BE(out *[]uint16, off, n int64) {
 
-			(*out).([]uint32)[i] = endian.Uint32(data[i*4 : (i+1)*4])
+	i := int64(0)
+	{
+	read_loop:
+		(*out)[i] = uint16(b.buf[1+(i*2)]) |
+			uint16(b.buf[i*2])<<8
+
+		i++
+		if i < n {
+
+			goto read_loop
 
 		}
+	}
 
-	case Unsigned64:
-		*out = make([]uint64, n)
+}
 
-		for i := int64(0); i < n; i++ {
+// readU32LE reads a slice of uint32s from the buffer at the specified offset in little-endian
+func (b *MiniBuffer) readU32LE(out *[]uint32, off, n int64) {
 
-			(*out).([]uint64)[i] = endian.Uint64(data[i*8 : (i+1)*8])
+	i := int64(0)
+	{
+	read_loop:
+		(*out)[i] = uint32(b.buf[i*4]) |
+			uint32(b.buf[1+(i*4)])<<8 |
+			uint32(b.buf[2+(i*4)])<<16 |
+			uint32(b.buf[3+(i*4)])<<24
+
+		i++
+		if i < n {
+
+			goto read_loop
 
 		}
+	}
 
-	default:
-		panic(BufferInvalidIntegerSizeError)
+}
 
+// readU32BE reads a slice of uint32s from the buffer at the specified offset in big-endian
+func (b *MiniBuffer) readU32BE(out *[]uint32, off, n int64) {
+
+	i := int64(0)
+	{
+	read_loop:
+		(*out)[i] = uint32(b.buf[3+(i*4)]) |
+			uint32(b.buf[2+(i*4)])<<8 |
+			uint32(b.buf[1+(i*4)])<<16 |
+			uint32(b.buf[i*4])<<24
+
+		i++
+		if i < n {
+
+			goto read_loop
+
+		}
+	}
+
+}
+
+// readU64LE reads a slice of uint64s from the buffer at the specified offset in little-endian
+func (b *MiniBuffer) readU64LE(out *[]uint64, off, n int64) {
+
+	i := int64(0)
+	{
+	read_loop:
+		(*out)[i] = uint64(b.buf[i*8]) |
+			uint64(b.buf[1+(i*8)])<<8 |
+			uint64(b.buf[2+(i*8)])<<16 |
+			uint64(b.buf[3+(i*8)])<<24 |
+			uint64(b.buf[4+(i*8)])<<32 |
+			uint64(b.buf[5+(i*8)])<<40 |
+			uint64(b.buf[6+(i*8)])<<48 |
+			uint64(b.buf[7+(i*8)])<<56
+
+		i++
+		if i < n {
+
+			goto read_loop
+
+		}
+	}
+
+}
+
+// readU64BE reads a slice of uint64s from the buffer at the specified offset in big-endian
+func (b *MiniBuffer) readU64BE(out *[]uint64, off, n int64) {
+
+	i := int64(0)
+	{
+	read_loop:
+		(*out)[i] = uint64(b.buf[7+(i*8)]) |
+			uint64(b.buf[6+(i*8)])<<8 |
+			uint64(b.buf[5+(i*8)])<<16 |
+			uint64(b.buf[4+(i*8)])<<24 |
+			uint64(b.buf[3+(i*8)])<<32 |
+			uint64(b.buf[2+(i*8)])<<40 |
+			uint64(b.buf[1+(i*8)])<<48 |
+			uint64(b.buf[i*8])<<56
+
+		i++
+		if i < n {
+
+			goto read_loop
+
+		}
 	}
 
 }
@@ -634,12 +715,14 @@ func (b *MiniBuffer) ReadBytes(out *[]byte, off, n int64) {
 
 }
 
+/*
 // ReadComplex stores the next n uint8/uint16/uint32/uint64-s from the specified offset without modifying the internal offset value
 func (b *MiniBuffer) ReadComplex(out *interface{}, off, n int64, size IntegerSize, endian binary.ByteOrder) {
 
 	b.readComplex(out, off, n, size, endian)
 
 }
+*/
 
 // ReadBytesNext stores the next n bytes from the current offset and moves the offset forward the amount of bytes read in out
 func (b *MiniBuffer) ReadBytesNext(out *[]byte, n int64) {
@@ -649,6 +732,7 @@ func (b *MiniBuffer) ReadBytesNext(out *[]byte, n int64) {
 
 }
 
+/*
 // ReadComplexNext stores the next n uint8/uint16/uint32/uint64-s from the current offset and moves the offset forward the amount of bytes read
 func (b *MiniBuffer) ReadComplexNext(out *interface{}, n int64, size IntegerSize, endian binary.ByteOrder) {
 
@@ -656,6 +740,7 @@ func (b *MiniBuffer) ReadComplexNext(out *interface{}, n int64, size IntegerSize
 	b.seek(n*int64(size), true)
 
 }
+*/
 
 // WriteBytes writes bytes to the buffer at the specified offset without modifying the internal offset value
 func (b *MiniBuffer) WriteBytes(off int64, data []byte) {

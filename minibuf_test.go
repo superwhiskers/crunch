@@ -394,6 +394,7 @@ func TestMiniBufferReadBytesNext(t *testing.T) {
 
 }
 
+/*
 func TestMiniBufferReadComplex(t *testing.T) {
 
 	var (
@@ -445,7 +446,9 @@ func TestMiniBufferReadComplex(t *testing.T) {
 	}
 
 }
+*/
 
+/*
 func TestMiniBufferReadComplexNext(t *testing.T) {
 
 	var expected = []byte{0x01, 0x02}
@@ -463,6 +466,7 @@ func TestMiniBufferReadComplexNext(t *testing.T) {
 	}
 
 }
+*/
 
 func TestMiniBufferWriteBytes(t *testing.T) {
 
@@ -850,6 +854,7 @@ func TestMiniBufferSetbitPanic(t *testing.T) {
 
 }
 
+/*
 func TestMiniBufferReadComplexPanic(t *testing.T) {
 
 	defer panicChecker(t, BufferInvalidIntegerSizeError)
@@ -861,6 +866,7 @@ func TestMiniBufferReadComplexPanic(t *testing.T) {
 	buf.readComplex(&_out, 0x00, 1, -1, LittleEndian)
 
 }
+*/
 
 /*func TestMiniBufferWriteComplexPanic(t *testing.T) {
 
@@ -928,6 +934,7 @@ func BenchmarkMiniBufferWriteComplex(b *testing.B) {
 }
 */
 
+/*
 func BenchmarkMiniBufferReadComplex(b *testing.B) {
 
 	b.ReportAllocs()
@@ -945,3 +952,4 @@ func BenchmarkMiniBufferReadComplex(b *testing.B) {
 	_ = out
 
 }
+*/
