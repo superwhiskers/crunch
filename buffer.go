@@ -20,10 +20,7 @@ along with this program.  if not, see <https://www.gnu.org/licenses/>.
 
 package crunch
 
-import (
-	"encoding/binary"
-	"sync"
-)
+import "sync"
 
 // Buffer implements a concurrent-safe buffer type in go that handles multiple types of data
 type Buffer struct {
@@ -94,13 +91,21 @@ func (b *Buffer) readbit(off int64) byte {
 }
 
 // readbits reads n bits from the bitfield at the specified offset
-func (b *Buffer) readbits(off, n int64) (v uint64) {
+func (b *Buffer) readbits(off, n int64) (out uint64) {
 
-	for i := int64(0); i < n; i++ {
+	i := int64(0)
 
-		v = (v << uint64(1)) | uint64(b.readbit(off+i))
+	{
+	read_loop:
+		out = (out << uint64(1)) | uint64(b.readbit(off+i))
+		i++
+		if i < n {
 
+			goto read_loop
+
+		}
 	}
+
 	return
 
 }
@@ -141,10 +146,17 @@ func (b *Buffer) setbit(off int64, data byte) {
 // setbits sets n bits in the bitfield to the specified value at the specified offset
 func (b *Buffer) setbits(off int64, data uint64, n int64) {
 
-	for i := int64(0); i < n; i++ {
+	i := int64(0)
 
+	{
+	write_loop:
 		b.setbit(off+i, byte((data>>uint64(n-i-1))&1))
+		i++
+		if i < n {
 
+			goto write_loop
+
+		}
 	}
 
 }
@@ -177,10 +189,19 @@ func (b *Buffer) clearallbits() {
 	b.Lock()
 	defer b.Unlock()
 
-	for i := range b.buf {
-
+	var (
+		i = int64(0)
+		n = int64(len(b.buf))
+	)
+	{
+	clear_loop:
 		b.buf[i] = 0
+		i++
+		if i < n {
 
+			goto clear_loop
+
+		}
 	}
 
 }
@@ -191,10 +212,19 @@ func (b *Buffer) setallbits() {
 	b.Lock()
 	defer b.Unlock()
 
-	for i := range b.buf {
-
+	var (
+		i = int64(0)
+		n = int64(len(b.buf))
+	)
+	{
+	set_loop:
 		b.buf[i] = 0xFF
+		i++
+		if i < n {
 
+			goto set_loop
+
+		}
 	}
 
 }
@@ -205,9 +235,19 @@ func (b *Buffer) flipallbits() {
 	b.Lock()
 	defer b.Unlock()
 
-	for i := range b.buf {
-
+	var (
+		i = int64(0)
+		n = int64(len(b.buf))
+	)
+	{
+	flip_loop:
 		b.buf[i] = ^b.buf[i]
+		i++
+		if i < n {
+
+			goto flip_loop
+
+		}
 
 	}
 
@@ -262,9 +302,10 @@ func (b *Buffer) write(off int64, data []byte) {
 
 	b.Lock()
 
-	i := int64(0)
-	n := int64(len(data))
-
+	var (
+		i = int64(0)
+		n = int64(len(data))
+	)
 	{
 	write_loop:
 		b.buf[off+i] = data[i]
@@ -280,99 +321,247 @@ func (b *Buffer) write(off int64, data []byte) {
 
 }
 
-// writeComplex writes a slice of bytes to the buffer at the specified offset with the specified endianness and integer type
-func (b *Buffer) writeComplex(off int64, idata interface{}, size IntegerSize, endian binary.ByteOrder) {
+// writeU16LE writes a slice of uint16s to the buffer at the specified offset in little-endian
+func (b *Buffer) writeU16LE(off int64, data []uint16) {
 
-	var (
-		data  []byte
-		tdata []byte
-	)
+	if (off + int64(len(data))*2) > b.cap {
 
-	switch size {
-
-	case Unsigned8:
-		data = idata.([]byte)
-
-	case Unsigned16:
-		adata := idata.([]uint16)
-		data = make([]byte, 2*len(adata))
-
-		i := 0
-		n := len(adata)
-		tdata = []byte{0x00, 0x00}
-		{
-		write_loop_u16:
-			endian.PutUint16(tdata, adata[i])
-
-			data[0+(i*2)] = tdata[0]
-			data[1+(i*2)] = tdata[1]
-
-			i++
-			if i < n {
-
-				goto write_loop_u16
-
-			}
-		}
-
-	case Unsigned32:
-		adata := idata.([]uint32)
-		data = make([]byte, 4*len(adata))
-
-		i := 0
-		n := len(adata)
-		tdata = []byte{0x00, 0x00, 0x00, 0x00}
-		{
-		write_loop_u32:
-			endian.PutUint32(tdata, adata[i])
-
-			data[0+(i*4)] = tdata[0]
-			data[1+(i*4)] = tdata[1]
-			data[2+(i*4)] = tdata[2]
-			data[3+(i*4)] = tdata[3]
-
-			i++
-			if i < n {
-
-				goto write_loop_u32
-
-			}
-		}
-
-	case Unsigned64:
-		adata := idata.([]uint64)
-		data = make([]byte, 8*len(adata))
-
-		i := 0
-		n := len(adata)
-		tdata = []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
-		{
-		write_loop_u64:
-			endian.PutUint64(tdata, adata[i])
-
-			data[0+(i*8)] = tdata[0]
-			data[1+(i*8)] = tdata[1]
-			data[2+(i*8)] = tdata[2]
-			data[3+(i*8)] = tdata[3]
-			data[4+(i*8)] = tdata[4]
-			data[5+(i*8)] = tdata[5]
-			data[6+(i*8)] = tdata[6]
-			data[7+(i*8)] = tdata[7]
-
-			i++
-			if i < n {
-
-				goto write_loop_u64
-
-			}
-		}
-
-	default:
-		panic(BufferInvalidIntegerSizeError)
+		panic(BufferOverwriteError)
 
 	}
 
-	b.write(off, data)
+	if off < 0x00 {
+
+		panic(BufferUnderwriteError)
+
+	}
+
+	b.Lock()
+
+	var (
+		i = 0
+		n = len(data)
+	)
+	{
+	write_loop:
+		b.buf[off+int64(i*2)] = byte(data[i])
+		b.buf[off+int64(1+(i*2))] = byte(data[i] >> 8)
+
+		i++
+		if i < n {
+
+			goto write_loop
+
+		}
+	}
+
+	b.Unlock()
+
+}
+
+// writeU16BE writes a slice of uint16s to the buffer at the specified offset in big-endian
+func (b *Buffer) writeU16BE(off int64, data []uint16) {
+
+	if (off + int64(len(data))*2) > b.cap {
+
+		panic(BufferOverwriteError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderwriteError)
+
+	}
+
+	b.Lock()
+
+	var (
+		i = 0
+		n = len(data)
+	)
+	{
+	write_loop:
+		b.buf[off+int64(i*2)] = byte(data[i] >> 8)
+		b.buf[off+int64(1+(i*2))] = byte(data[i])
+
+		i++
+		if i < n {
+
+			goto write_loop
+
+		}
+	}
+
+	b.Unlock()
+
+}
+
+// writeU32LE writes a slice of uint32s to the buffer at the specified offset in little-endian
+func (b *Buffer) writeU32LE(off int64, data []uint32) {
+
+	if (off + int64(len(data))*4) > b.cap {
+
+		panic(BufferOverwriteError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderwriteError)
+
+	}
+
+	b.Lock()
+
+	var (
+		i = 0
+		n = len(data)
+	)
+	{
+	write_loop:
+		b.buf[off+int64(i*4)] = byte(data[i])
+		b.buf[off+int64(1+(i*4))] = byte(data[i] >> 8)
+		b.buf[off+int64(2+(i*4))] = byte(data[i] >> 16)
+		b.buf[off+int64(3+(i*4))] = byte(data[i] >> 24)
+
+		i++
+		if i < n {
+
+			goto write_loop
+
+		}
+	}
+
+	b.Unlock()
+
+}
+
+// writeU32BE writes a slice of uint32s to the buffer at the specified offset in big-endian
+func (b *Buffer) writeU32BE(off int64, data []uint32) {
+
+	if (off + int64(len(data))*4) > b.cap {
+
+		panic(BufferOverwriteError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderwriteError)
+
+	}
+
+	b.Lock()
+
+	var (
+		i = 0
+		n = len(data)
+	)
+	{
+	write_loop:
+		b.buf[off+int64(i*4)] = byte(data[i] >> 24)
+		b.buf[off+int64(1+(i*4))] = byte(data[i] >> 16)
+		b.buf[off+int64(2+(i*4))] = byte(data[i] >> 8)
+		b.buf[off+int64(3+(i*4))] = byte(data[i])
+
+		i++
+		if i < n {
+
+			goto write_loop
+
+		}
+	}
+
+	b.Unlock()
+
+}
+
+// writeU64LE writes a slice of uint64s to the buffer at the specified offset in little-endian
+func (b *Buffer) writeU64LE(off int64, data []uint64) {
+
+	if (off + int64(len(data))*8) > b.cap {
+
+		panic(BufferOverwriteError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderwriteError)
+
+	}
+
+	b.Lock()
+
+	var (
+		i = 0
+		n = len(data)
+	)
+	{
+	write_loop:
+		b.buf[off+int64(i*8)] = byte(data[i])
+		b.buf[off+int64(1+(i*8))] = byte(data[i] >> 8)
+		b.buf[off+int64(2+(i*8))] = byte(data[i] >> 16)
+		b.buf[off+int64(3+(i*8))] = byte(data[i] >> 24)
+		b.buf[off+int64(4+(i*8))] = byte(data[i] >> 32)
+		b.buf[off+int64(5+(i*8))] = byte(data[i] >> 40)
+		b.buf[off+int64(6+(i*8))] = byte(data[i] >> 48)
+		b.buf[off+int64(7+(i*8))] = byte(data[i] >> 56)
+
+		i++
+		if i < n {
+
+			goto write_loop
+
+		}
+	}
+
+	b.Unlock()
+
+}
+
+// writeU64BE writes a slice of uint64s to the buffer at the specified offset in big-endian
+func (b *Buffer) writeU64BE(off int64, data []uint64) {
+
+	if (off + int64(len(data))*8) > b.cap {
+
+		panic(BufferOverwriteError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderwriteError)
+
+	}
+
+	b.Lock()
+
+	var (
+		i = 0
+		n = len(data)
+	)
+	{
+	write_loop:
+		b.buf[off+int64(i*8)] = byte(data[i] >> 56)
+		b.buf[off+int64(1+(i*8))] = byte(data[i] >> 48)
+		b.buf[off+int64(2+(i*8))] = byte(data[i] >> 40)
+		b.buf[off+int64(3+(i*8))] = byte(data[i] >> 32)
+		b.buf[off+int64(4+(i*8))] = byte(data[i] >> 24)
+		b.buf[off+int64(5+(i*8))] = byte(data[i] >> 16)
+		b.buf[off+int64(6+(i*8))] = byte(data[i] >> 8)
+		b.buf[off+int64(7+(i*8))] = byte(data[i])
+
+		i++
+		if i < n {
+
+			goto write_loop
+
+		}
+	}
+
+	b.Unlock()
 
 }
 
@@ -398,50 +587,246 @@ func (b *Buffer) read(off, n int64) []byte {
 
 }
 
-// readComplex reads a slice of bytes from the buffer at the specified offset with the specified endianness and integer type
-func (b *Buffer) readComplex(off, n int64, size IntegerSize, endian binary.ByteOrder) interface{} {
+// readU16LE reads a slice of uint16s from the buffer at the specified offset in little-endian
+func (b *Buffer) readU16LE(off, n int64) (out []uint16) {
 
-	data := b.read(off, n)
+	if (off + n*2) > b.cap {
 
-	switch size {
-
-	case Unsigned8:
-		return data
-
-	case Unsigned16:
-		idata := make([]uint16, n)
-
-		for i := int64(0); i < n; i++ {
-
-			idata[i] = endian.Uint16(data[i*2 : (i+1)*2])
-
-		}
-		return idata
-
-	case Unsigned32:
-		idata := make([]uint32, n)
-
-		for i := int64(0); i < n; i++ {
-
-			idata[i] = endian.Uint32(data[i*4 : (i+1)*4])
-
-		}
-		return idata
-
-	case Unsigned64:
-		idata := make([]uint64, n)
-
-		for i := int64(0); i < n; i++ {
-
-			idata[i] = endian.Uint64(data[i*8 : (i+1)*8])
-
-		}
-		return idata
-
-	default:
-		panic(BufferInvalidIntegerSizeError)
+		panic(BufferOverreadError)
 
 	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderreadError)
+
+	}
+
+	out = make([]uint16, n)
+
+	b.Lock()
+	defer b.Unlock()
+
+	i := int64(0)
+	{
+	read_loop:
+		out[i] = uint16(b.buf[off+(i*2)]) |
+			uint16(b.buf[off+(1+(i*2))])<<8
+
+		i++
+		if i < n {
+
+			goto read_loop
+
+		}
+	}
+
+	return
+
+}
+
+// readU16BE reads a slice of uint16s from the buffer at the specified offset in big-endian
+func (b *Buffer) readU16BE(off, n int64) (out []uint16) {
+
+	if (off + n*2) > b.cap {
+
+		panic(BufferOverreadError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderreadError)
+
+	}
+
+	out = make([]uint16, n)
+
+	b.Lock()
+	defer b.Unlock()
+
+	i := int64(0)
+	{
+	read_loop:
+		out[i] = uint16(b.buf[off+(1+(i*2))]) |
+			uint16(b.buf[off+(i*2)])<<8
+
+		i++
+		if i < n {
+
+			goto read_loop
+
+		}
+	}
+
+	return
+
+}
+
+// readU32LE reads a slice of uint32s from the buffer at the specified offset in little-endian
+func (b *Buffer) readU32LE(off, n int64) (out []uint32) {
+
+	if (off + n*4) > b.cap {
+
+		panic(BufferOverreadError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderreadError)
+
+	}
+
+	out = make([]uint32, n)
+
+	b.Lock()
+	defer b.Unlock()
+
+	i := int64(0)
+	{
+	read_loop:
+		out[i] = uint32(b.buf[off+(i*4)]) |
+			uint32(b.buf[off+(1+(i*4))])<<8 |
+			uint32(b.buf[off+(2+(i*4))])<<16 |
+			uint32(b.buf[off+(3+(i*4))])<<24
+
+		i++
+		if i < n {
+
+			goto read_loop
+
+		}
+	}
+
+	return
+
+}
+
+// readU32BE reads a slice of uint32s from the buffer at the specified offset in big-endian
+func (b *Buffer) readU32BE(off, n int64) (out []uint32) {
+
+	if (off + n*4) > b.cap {
+
+		panic(BufferOverreadError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderreadError)
+
+	}
+
+	out = make([]uint32, n)
+
+	b.Lock()
+	defer b.Unlock()
+
+	i := int64(0)
+	{
+	read_loop:
+		out[i] = uint32(b.buf[off+(3+(i*4))]) |
+			uint32(b.buf[off+(2+(i*4))])<<8 |
+			uint32(b.buf[off+(1+(i*4))])<<16 |
+			uint32(b.buf[off+(i*4)])<<24
+
+		i++
+		if i < n {
+
+			goto read_loop
+
+		}
+	}
+
+	return
+
+}
+
+// readU64LE reads a slice of uint64s from the buffer at the specified offset in little-endian
+func (b *Buffer) readU64LE(off, n int64) (out []uint64) {
+
+	if (off + n*8) > b.cap {
+
+		panic(BufferOverreadError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderreadError)
+
+	}
+
+	out = make([]uint64, n)
+
+	b.Lock()
+	defer b.Unlock()
+
+	i := int64(0)
+	{
+	read_loop:
+		out[i] = uint64(b.buf[off+(i*8)]) |
+			uint64(b.buf[off+(1+(i*8))])<<8 |
+			uint64(b.buf[off+(2+(i*8))])<<16 |
+			uint64(b.buf[off+(3+(i*8))])<<24 |
+			uint64(b.buf[off+(4+(i*8))])<<32 |
+			uint64(b.buf[off+(5+(i*8))])<<40 |
+			uint64(b.buf[off+(6+(i*8))])<<48 |
+			uint64(b.buf[off+(7+(i*8))])<<56
+
+		i++
+		if i < n {
+
+			goto read_loop
+
+		}
+	}
+
+	return
+
+}
+
+// readU64BE reads a slice of uint64s from the buffer at the specified offset in big-endian
+func (b *Buffer) readU64BE(off, n int64) (out []uint64) {
+
+	if (off + n*8) > b.cap {
+
+		panic(BufferOverreadError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderreadError)
+
+	}
+
+	out = make([]uint64, n)
+
+	b.Lock()
+	defer b.Unlock()
+	i := int64(0)
+	{
+	read_loop:
+		out[i] = uint64(b.buf[off+(7+(i*8))]) |
+			uint64(b.buf[off+(6+(i*8))])<<8 |
+			uint64(b.buf[off+(5+(i*8))])<<16 |
+			uint64(b.buf[off+(4+(i*8))])<<24 |
+			uint64(b.buf[off+(3+(i*8))])<<32 |
+			uint64(b.buf[off+(2+(i*8))])<<40 |
+			uint64(b.buf[off+(1+(i*8))])<<48 |
+			uint64(b.buf[off+(i*8)])<<56
+
+		i++
+		if i < n {
+
+			goto read_loop
+
+		}
+	}
+
+	return
 
 }
 
@@ -649,10 +1034,45 @@ func (b *Buffer) ReadBytes(off, n int64) []byte {
 
 }
 
-// ReadComplex returns the next n uint8/uint16/uint32/uint64-s from the specified offset without modifying the internal offset value
-func (b *Buffer) ReadComplex(off, n int64, size IntegerSize, endian binary.ByteOrder) interface{} {
+// ReadU16LE reads a slice of uint16s from the buffer at the specified offset in little-endian without modifying the internal offset value
+func (b *Buffer) ReadU16LE(off, n int64) []uint16 {
 
-	return b.readComplex(off, n, size, endian)
+	return b.readU16LE(off, n)
+
+}
+
+// ReadU16BE reads a slice of uint16s from the buffer at the specified offset in big-endian without modifying the internal offset value
+func (b *Buffer) ReadU16BE(off, n int64) []uint16 {
+
+	return b.readU16BE(off, n)
+
+}
+
+// ReadU32LE reads a slice of uint32s from the buffer at the specified offset in little-endian without modifying the internal offset value
+func (b *Buffer) ReadU32LE(off, n int64) []uint32 {
+
+	return b.readU32LE(off, n)
+
+}
+
+// ReadU32BE reads a slice of uint32s from the buffer at the specified offset in big-endian without modifying the internal offset value
+func (b *Buffer) ReadU32BE(off, n int64) []uint32 {
+
+	return b.readU32BE(off, n)
+
+}
+
+// ReadU64LE reads a slice of uint64s from the buffer at the specified offset in little-endian without modifying the internal offset value
+func (b *Buffer) ReadU64LE(off, n int64) []uint64 {
+
+	return b.readU64LE(off, n)
+
+}
+
+// ReadU64BE reads a slice of uint64s from the buffer at the specified offset in big-endian without modifying the internal offset value
+func (b *Buffer) ReadU64BE(off, n int64) []uint64 {
+
+	return b.readU64BE(off, n)
 
 }
 
@@ -674,11 +1094,56 @@ func (b *Buffer) ReadBytesNext(n int64) (out []byte) {
 
 }
 
-// ReadComplexNext returns the next n uint8/uint16/uint32/uint64-s from the current offset and moves the offset forward the amount of bytes read
-func (b *Buffer) ReadComplexNext(n int64, size IntegerSize, endian binary.ByteOrder) (out interface{}) {
+// ReadU16LENext reads a slice of uint16s from the buffer at the current offset in little-endian and moves the offset forward the amount of bytes read
+func (b *Buffer) ReadU16LENext(n int64) (out []uint16) {
 
-	out = b.readComplex(b.off, n, size, endian)
-	b.seek(n*int64(size), true)
+	out = b.readU16LE(b.off, n)
+	b.seek(n*2, true)
+	return
+
+}
+
+// ReadU16BENext reads a slice of uint16s from the buffer at the current offset in big-endian and moves the offset forward the amount of bytes read
+func (b *Buffer) ReadU16BENext(n int64) (out []uint16) {
+
+	out = b.readU16BE(b.off, n)
+	b.seek(n*2, true)
+	return
+
+}
+
+// ReadU32LENext reads a slice of uint32s from the buffer at the current offset in little-endian and moves the offset forward the amount of bytes read
+func (b *Buffer) ReadU32LENext(n int64) (out []uint32) {
+
+	out = b.readU32LE(b.off, n)
+	b.seek(n*4, true)
+	return
+
+}
+
+// ReadU32BENext reads a slice of uint32s from the buffer at the current offset in big-endian and moves the offset forward the amount of bytes read
+func (b *Buffer) ReadU32BENext(n int64) (out []uint32) {
+
+	out = b.readU32BE(b.off, n)
+	b.seek(n*4, true)
+	return
+
+}
+
+// ReadU64LENext reads a slice of uint64s from the buffer at the current offset in little-endian and moves the offset forward the amount of bytes read
+func (b *Buffer) ReadU64LENext(n int64) (out []uint64) {
+
+	out = b.readU64LE(b.off, n)
+	b.seek(n*8, true)
+	return
+
+}
+
+// ReadU64BENext reads a slice of uint64s from the buffer at the current offset in big-endian and moves the offset forward the amount of bytes read
+func (b *Buffer) ReadU64BENext(n int64) (out []uint64) {
+
+	out = b.readU64BE(b.off, n)
+	b.seek(n*8, true)
 	return
 
 }
@@ -697,10 +1162,45 @@ func (b *Buffer) WriteBytes(off int64, data []byte) {
 
 }
 
-// WriteComplex writes a uint8/uint16/uint32/uint64 to the buffer at the specified offset without modifying the internal offset value
-func (b *Buffer) WriteComplex(off int64, data interface{}, size IntegerSize, endian binary.ByteOrder) {
+// WriteU16LE writes a slice of uint16s to the buffer at the specified offset in little-endian without modifying the internal offset value
+func (b *Buffer) WriteU16LE(off int64, data []uint16) {
 
-	b.writeComplex(off, data, size, endian)
+	b.writeU16LE(off, data)
+
+}
+
+// WriteU16BE writes a slice of uint16s to the buffer at the specified offset in big-endian without modifying the internal offset value
+func (b *Buffer) WriteU16BE(off int64, data []uint16) {
+
+	b.writeU16BE(off, data)
+
+}
+
+// WriteU32LE writes a slice of uint32s to the buffer at the specified offset in little-endian without modifying the internal offset value
+func (b *Buffer) WriteU32LE(off int64, data []uint32) {
+
+	b.writeU32LE(off, data)
+
+}
+
+// WriteU32BE writes a slice of uint32s to the buffer at the specified offset in big-endian without modifying the internal offset value
+func (b *Buffer) WriteU32BE(off int64, data []uint32) {
+
+	b.writeU32BE(off, data)
+
+}
+
+// WriteU64LE writes a slice of uint64s to the buffer at the specfied offset in little-endian without modifying the internal offset value
+func (b *Buffer) WriteU64LE(off int64, data []uint64) {
+
+	b.writeU64LE(off, data)
+
+}
+
+// WriteU64BE writes a slice of uint64s to the buffer at the specified offset in big-endian without modifying the internal offset value
+func (b *Buffer) WriteU64BE(off int64, data []uint64) {
+
+	b.writeU64BE(off, data)
 
 }
 
@@ -720,26 +1220,51 @@ func (b *Buffer) WriteBytesNext(data []byte) {
 
 }
 
-// WriteComplexNext writes a uint8/uint16/uint32/uint64 to the buffer at the current offset and moves the offset forward the amount of bytes written
-func (b *Buffer) WriteComplexNext(data interface{}, size IntegerSize, endian binary.ByteOrder) {
+// WriteU16LENext writes a slice of uint16s to the buffer at the current offset in little-endian and moves the offset forward the amount of bytes written
+func (b *Buffer) WriteU16LENext(data []uint16) {
 
-	b.writeComplex(b.off, data, size, endian)
+	b.writeU16LE(b.off, data)
+	b.seek(int64(len(data))*2, true)
 
-	switch size {
+}
 
-	case Unsigned8:
-		b.seek(int64(len(data.([]uint8))*int(size)), true)
+// WriteU16BENext writes a slice of uint16s to the buffer at the current offset in big-endian and moves the offset forward the amount of bytes written
+func (b *Buffer) WriteU16BENext(data []uint16) {
 
-	case Unsigned16:
-		b.seek(int64(len(data.([]uint16))*int(size)), true)
+	b.writeU16BE(b.off, data)
+	b.seek(int64(len(data))*2, true)
 
-	case Unsigned32:
-		b.seek(int64(len(data.([]uint32))*int(size)), true)
+}
 
-	case Unsigned64:
-		b.seek(int64(len(data.([]uint64))*int(size)), true)
+// WriteU32LENext writes a slice of uint32s to the buffer at the current offset in little-endian and moves the offset forward the amount of bytes written
+func (b *Buffer) WriteU32LENext(data []uint32) {
 
-	}
+	b.writeU32LE(b.off, data)
+	b.seek(int64(len(data))*4, true)
+
+}
+
+// WriteU32BENext writes a slice of uint32s to the buffer at the current offset in big-endian and moves the offset forward the amount of bytes written
+func (b *Buffer) WriteU32BENext(data []uint32) {
+
+	b.writeU32BE(b.off, data)
+	b.seek(int64(len(data))*4, true)
+
+}
+
+// WriteU64LENext writes a slice of uint64s to the buffer at the current offset in little-endian and moves the offset forward the amount of bytes written
+func (b *Buffer) WriteU64LENext(data []uint64) {
+
+	b.writeU64LE(b.off, data)
+	b.seek(int64(len(data))*8, true)
+
+}
+
+// WriteU64BENext writes a slice of uint64s to the buffer at the current offset in big-endian and moves the offset forward the amount of bytes written
+func (b *Buffer) WriteU64BENext(data []uint64) {
+
+	b.writeU64BE(b.off, data)
+	b.seek(int64(len(data))*8, true)
 
 }
 
