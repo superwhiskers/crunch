@@ -64,20 +64,6 @@ var (
 		error: "write offset is less than zero",
 	}
 
-	// BufferInvalidIntegerSizeError represents an instance in which an invalid
-	// integer size was passed to one of the buffer's methods
-	BufferInvalidIntegerSizeError = Error{
-		scope: "buffer",
-		error: "invalid integer size specified",
-	}
-
-	// BufferInvalidEndiannessError represents an instance in which an invalid
-	// endianness was passed to one of the buffer's methods
-	BufferInvalidEndiannessError = Error{
-		scope: "buffer",
-		error: "invalid endianness specified",
-	}
-
 	// BufferInvalidByteCountError represents an instance in which an invalid byte
 	// count was passed to one of the buffer's methods
 	BufferInvalidByteCountError = Error{

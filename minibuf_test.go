@@ -610,7 +610,7 @@ func TestMiniBufferWriteBytesNext(t *testing.T) {
 
 }
 
-func TestMiniBufferWriteUENEN(t *testing.T) {
+func TestMiniBufferWriteUNEN(t *testing.T) {
 
 	var (
 		expected byte = 0x01
@@ -691,7 +691,7 @@ func TestMiniBufferWriteUENEN(t *testing.T) {
 
 }
 
-func TestMiniBufferWriteUENENNext(t *testing.T) {
+func TestMiniBufferWriteUNENNext(t *testing.T) {
 
 	var (
 		expected byte = 0x01

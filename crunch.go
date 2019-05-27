@@ -20,30 +20,3 @@ along with this program.  if not, see <https://www.gnu.org/licenses/>.
 
 // Package crunch provides various utilities for manipulating bytes and bits easily
 package crunch
-
-import "encoding/binary"
-
-var (
-	// LittleEndian represents the little-endian byte order
-	LittleEndian = binary.LittleEndian
-
-	// BigEndian represents the big-endian byte order
-	BigEndian = binary.BigEndian
-)
-
-// IntegerSize represents the size of the integer read or written (in bytes)
-type IntegerSize int
-
-const (
-	// Unsigned8 represents the 8-bit unsigned integer size
-	Unsigned8 = 1
-
-	// Unsigned16 represents the 16-bit unsigned integer size
-	Unsigned16 = 2
-
-	// Unsigned32 represents the 32-bit unsigned integer size
-	Unsigned32 = 4
-
-	// Unsigned64 represents the 64-bit unsigned integer size
-	Unsigned64 = 8
-)
