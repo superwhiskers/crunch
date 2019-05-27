@@ -945,25 +945,245 @@ func TestBufferReadPanic2(t *testing.T) {
 
 }
 
-/*func TestBufferReadComplexPanic(t *testing.T) {
+func TestBufferWriteU16LEPanic1(t *testing.T) {
 
-	defer panicChecker(t, BufferInvalidIntegerSizeError)
+	defer panicChecker(t, BufferOverwriteError)
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readComplex(0x00, 1, -1, LittleEndian).([]byte)
+	buf.writeU16LE(0x00, []uint16{0x01, 0x02, 0x03, 0x04})
 
 }
 
-func TestBufferWriteComplexPanic(t *testing.T) {
+func TestBufferWriteU16LEPanic2(t *testing.T) {
 
-	defer panicChecker(t, BufferInvalidIntegerSizeError)
+	defer panicChecker(t, BufferUnderwriteError)
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.writeComplex(0x00, 1, -1, LittleEndian)
+	buf.writeU16LE(-0x01, []uint16{0x01, 0x02})
 
-}*/
+}
+
+func TestBufferWriteU16BEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.writeU16BE(0x00, []uint16{0x01, 0x02, 0x03, 0x04})
+
+}
+
+func TestBufferWriteU16BEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.writeU16BE(-0x01, []uint16{0x01, 0x02})
+
+}
+
+func TestBufferWriteU32LEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.writeU32LE(0x00, []uint32{0x01, 0x02, 0x03, 0x04})
+
+}
+
+func TestBufferWriteU32LEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.writeU32LE(-0x01, []uint32{0x01})
+
+}
+
+func TestBufferWriteU32BEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.writeU32BE(0x00, []uint32{0x01, 0x02, 0x03, 0x04})
+
+}
+
+func TestBufferWriteU32BEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.writeU32BE(-0x01, []uint32{0x01})
+
+}
+
+func TestBufferWriteU64LEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.writeU64LE(0x00, []uint64{0x01, 0x02, 0x03, 0x04})
+
+}
+
+func TestBufferWriteU64LEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	buf.writeU64LE(-0x01, []uint64{0x01})
+
+}
+
+func TestBufferWriteU64BEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.writeU64BE(0x00, []uint64{0x01, 0x02, 0x03, 0x04})
+
+}
+
+func TestBufferWriteU64BEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	buf.writeU64BE(-0x01, []uint64{0x01})
+
+}
+
+func TestBufferReadU16LEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readU16LE(0x04, 1)
+
+}
+
+func TestBufferReadU16LEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readU16LE(-0x01, 1)
+
+}
+
+func TestBufferReadU16BEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readU16BE(0x04, 1)
+
+}
+
+func TestBufferReadU16BEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readU16BE(-0x01, 1)
+
+}
+
+func TestBufferReadU32LEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readU32LE(0x04, 1)
+
+}
+
+func TestBufferReadU32LEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readU32LE(-0x01, 1)
+
+}
+
+func TestBufferReadU32BEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readU32BE(0x04, 1)
+
+}
+
+func TestBufferReadU32BEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readU32BE(-0x01, 1)
+
+}
+
+func TestBufferReadU64LEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readU64LE(0x04, 1)
+
+}
+
+func TestBufferReadU64LEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readU64LE(-0x01, 1)
+
+}
+
+func TestBufferReadU64BEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readU64BE(0x04, 1)
+
+}
+
+func TestBufferReadU64BEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.readU64BE(-0x01, 1)
+
+}
 
 /*
 
@@ -1002,8 +1222,7 @@ func BenchmarkBufferRead(b *testing.B) {
 
 }
 
-/*
-func BenchmarkBufferWriteComplex(b *testing.B) {
+func BenchmarkBufferWriteU32LE(b *testing.B) {
 
 	b.ReportAllocs()
 
@@ -1011,25 +1230,25 @@ func BenchmarkBufferWriteComplex(b *testing.B) {
 
 	for n := 0; n < b.N; n++ {
 
-		buf.WriteComplex(0x00, []uint32{0x01, 0x02}, Unsigned32, LittleEndian)
+		buf.WriteU32LE(0x00, []uint32{0x01, 0x02})
 
 	}
 
 }
 
-func BenchmarkBufferReadComplex(b *testing.B) {
+func BenchmarkBufferReadU32LE(b *testing.B) {
 
 	b.ReportAllocs()
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
-	var out interface{}
+	var out []uint32
 	for n := 0; n < b.N; n++ {
 
-		out = buf.ReadComplex(0x00, 2, Unsigned32, LittleEndian)
+		out = buf.ReadU32LE(0x00, 2)
 
 	}
 
 	_ = out
 
-}*/
+}
