@@ -390,71 +390,167 @@ func TestBufferReadBytesNext(t *testing.T) {
 
 }
 
-/*
-func TestBufferReadComplex(t *testing.T) {
+func TestBufferReadUNEN(t *testing.T) {
 
 	var (
-		expected1 = []byte{0x01}
-		expected2 = []uint16{0x01}
-		expected3 = []uint16{0x100}
-		expected4 = []uint32{0x01}
+		expected1 = []uint16{0x01}
+		expected2 = []uint16{0x100}
+		expected3 = []uint32{0x01}
+		expected4 = []uint32{0x1000000}
 		expected5 = []uint64{0x01}
+		expected6 = []uint64{0x100000000000000}
 	)
 
 	buf := NewBuffer([]byte{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
-	out1 := buf.ReadComplex(0x00, 1, Unsigned8, LittleEndian).([]byte)
+	out1 := buf.ReadU16LE(0x00, 1)
 	if !cmp.Equal(out1, expected1) {
 
-		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out1, expected1)
+		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out1, expected1)
 
 	}
 
-	out2 := buf.ReadComplex(0x00, 1, Unsigned16, LittleEndian).([]uint16)
-	if !cmp.Equal(out2, expected2) {
+	out1 = buf.ReadU16BE(0x00, 1)
+	if !cmp.Equal(out1, expected2) {
 
-		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out2, expected2)
+		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out1, expected2)
 
 	}
 
-	out2 = buf.ReadComplex(0x00, 1, Unsigned16, BigEndian).([]uint16)
+	out2 := buf.ReadU32LE(0x00, 1)
 	if !cmp.Equal(out2, expected3) {
 
-		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out2, expected3)
+		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out2, expected3)
 
 	}
 
-	out3 := buf.ReadComplex(0x00, 1, Unsigned32, LittleEndian).([]uint32)
-	if !cmp.Equal(out3, expected4) {
+	out2 = buf.ReadU32BE(0x00, 1)
+	if !cmp.Equal(out2, expected4) {
 
-		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out3, expected4)
+		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out2, expected4)
 
 	}
 
-	out4 := buf.ReadComplex(0x00, 1, Unsigned64, LittleEndian).([]uint64)
-	if !cmp.Equal(out4, expected5) {
+	out3 := buf.ReadU64LE(0x00, 1)
+	if !cmp.Equal(out3, expected5) {
 
-		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out4, expected5)
+		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out3, expected5)
+
+	}
+
+	out3 = buf.ReadU64BE(0x00, 1)
+	if !cmp.Equal(out3, expected6) {
+
+		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out3, expected6)
 
 	}
 
 }
 
-func TestBufferReadComplexNext(t *testing.T) {
+func TestBufferReadUNENNext(t *testing.T) {
 
-	var expected = []byte{0x01, 0x02}
+	var (
+		expected1 = []uint16{0x01}
+		expected2 = []uint16{0x100}
+		expected3 = []uint32{0x01}
+		expected4 = []uint32{0x1000000}
+		expected5 = []uint64{0x01}
+		expected6 = []uint64{0x100000000000000}
+	)
 
-	buf := NewBuffer([]byte{0x01, 0x02, 0x03, 0x04})
+	buf := NewBuffer([]byte{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
-	out := buf.ReadComplexNext(2, Unsigned8, LittleEndian).([]byte)
+	out1 := buf.ReadU16LENext(1)
+	if !cmp.Equal(out1, expected1) {
 
-	if !cmp.Equal(expected, out) {
-
-		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out, expected)
+		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out1, expected1)
 
 	}
 
-}*/
+	off := buf.Offset()
+	if off != 2 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.Seek(0x00, false)
+
+	out1 = buf.ReadU16BENext(1)
+	if !cmp.Equal(out1, expected2) {
+
+		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out1, expected2)
+
+	}
+
+	off = buf.Offset()
+	if off != 2 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.Seek(0x00, false)
+
+	out2 := buf.ReadU32LENext(1)
+	if !cmp.Equal(out2, expected3) {
+
+		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out2, expected3)
+
+	}
+
+	off = buf.Offset()
+	if off != 4 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.Seek(0x00, false)
+
+	out2 = buf.ReadU32BENext(1)
+	if !cmp.Equal(out2, expected4) {
+
+		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out2, expected4)
+
+	}
+
+	off = buf.Offset()
+	if off != 4 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.Seek(0x00, false)
+
+	out3 := buf.ReadU64LENext(1)
+	if !cmp.Equal(out3, expected5) {
+
+		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out3, expected5)
+
+	}
+
+	off = buf.Offset()
+	if off != 8 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.Seek(0x00, false)
+
+	out3 = buf.ReadU64BENext(1)
+	if !cmp.Equal(out3, expected6) {
+
+		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out3, expected6)
+
+	}
+
+	off = buf.Offset()
+	if off != 8 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.Seek(0x00, false)
+
+}
 
 func TestBufferWriteByte(t *testing.T) {
 
