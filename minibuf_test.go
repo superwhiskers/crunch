@@ -96,7 +96,7 @@ func TestMiniBufferBytes(t *testing.T) {
 
 }
 
-func TestMiniBufferCapacity(t *testing.T) {
+func TestMiniBufferByteCapacity(t *testing.T) {
 
 	var expected int64 = 4
 
@@ -104,7 +104,7 @@ func TestMiniBufferCapacity(t *testing.T) {
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
 
 	var out int64
-	buf.Capacity(&out)
+	buf.ByteCapacity(&out)
 	if expected != out {
 
 		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
@@ -130,17 +130,17 @@ func TestMiniBufferBitCapacity(t *testing.T) {
 
 }
 
-func TestMiniBufferOffset(t *testing.T) {
+func TestMiniBufferByteOffset(t *testing.T) {
 
 	var expected int64 = 0x02
 
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.Seek(0x02, false)
+	buf.SeekByte(0x02, false)
 
 	var out int64
-	buf.Offset(&out)
+	buf.ByteOffset(&out)
 	if expected != out {
 
 		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
@@ -215,7 +215,7 @@ func TestMiniBufferGrow(t *testing.T) {
 	buf.Grow(2)
 
 	var out int64
-	buf.Capacity(&out)
+	buf.ByteCapacity(&out)
 	if expected != out {
 
 		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
@@ -224,18 +224,18 @@ func TestMiniBufferGrow(t *testing.T) {
 
 }
 
-func TestMiniBufferSeek(t *testing.T) {
+func TestMiniBufferSeekByte(t *testing.T) {
 
 	var expected int64 = 0x04
 
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.Seek(2, true)
-	buf.Seek(2, true)
+	buf.SeekByte(2, true)
+	buf.SeekByte(2, true)
 
 	var out int64
-	buf.Offset(&out)
+	buf.ByteOffset(&out)
 	if expected != out {
 
 		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
@@ -271,7 +271,7 @@ func TestMiniBufferAlignBit(t *testing.T) {
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.Seek(0x04, false)
+	buf.SeekByte(0x04, false)
 	buf.AlignBit()
 
 	var out int64
@@ -295,7 +295,7 @@ func TestMiniBufferAlignByte(t *testing.T) {
 	buf.AlignByte()
 
 	var out int64
-	buf.Offset(&out)
+	buf.ByteOffset(&out)
 	if expected != out {
 
 		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
@@ -304,7 +304,7 @@ func TestMiniBufferAlignByte(t *testing.T) {
 
 }
 
-func TestMiniBufferAfter(t *testing.T) {
+func TestMiniBufferAfterByte(t *testing.T) {
 
 	var expected int64 = 2
 
@@ -313,8 +313,8 @@ func TestMiniBufferAfter(t *testing.T) {
 
 	var out int64
 
-	buf.Seek(0x01, false)
-	buf.After(&out)
+	buf.SeekByte(0x01, false)
+	buf.AfterByte(&out)
 
 	if expected != out {
 
@@ -322,7 +322,7 @@ func TestMiniBufferAfter(t *testing.T) {
 
 	}
 
-	buf.After(&out, 0x01)
+	buf.AfterByte(&out, 0x01)
 
 	if expected != out {
 
@@ -483,13 +483,13 @@ func TestMiniBufferReadUNENNext(t *testing.T) {
 
 	}
 
-	buf.Offset(&off)
+	buf.ByteOffset(&off)
 	if off != 2 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	buf.ReadU16BENext(&out1, 1)
 	if !cmp.Equal(out1, expected2) {
@@ -498,13 +498,13 @@ func TestMiniBufferReadUNENNext(t *testing.T) {
 
 	}
 
-	buf.Offset(&off)
+	buf.ByteOffset(&off)
 	if off != 2 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	out2 := []uint32{0x00}
 
@@ -515,13 +515,13 @@ func TestMiniBufferReadUNENNext(t *testing.T) {
 
 	}
 
-	buf.Offset(&off)
+	buf.ByteOffset(&off)
 	if off != 4 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	buf.ReadU32BENext(&out2, 1)
 	if !cmp.Equal(out2, expected4) {
@@ -530,13 +530,13 @@ func TestMiniBufferReadUNENNext(t *testing.T) {
 
 	}
 
-	buf.Offset(&off)
+	buf.ByteOffset(&off)
 	if off != 4 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	out3 := []uint64{0x00}
 
@@ -547,13 +547,13 @@ func TestMiniBufferReadUNENNext(t *testing.T) {
 
 	}
 
-	buf.Offset(&off)
+	buf.ByteOffset(&off)
 	if off != 8 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	buf.ReadU64BENext(&out3, 1)
 	if !cmp.Equal(out3, expected6) {
@@ -562,13 +562,13 @@ func TestMiniBufferReadUNENNext(t *testing.T) {
 
 	}
 
-	buf.Offset(&off)
+	buf.ByteOffset(&off)
 	if off != 8 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 }
 
@@ -712,13 +712,13 @@ func TestMiniBufferWriteUNENNext(t *testing.T) {
 
 	}
 
-	buf.Offset(&off)
+	buf.ByteOffset(&off)
 	if off != 2 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	buf.WriteU16BENext([]uint16{0x100})
 
@@ -729,13 +729,13 @@ func TestMiniBufferWriteUNENNext(t *testing.T) {
 
 	}
 
-	buf.Offset(&off)
+	buf.ByteOffset(&off)
 	if off != 2 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	buf.WriteU32LENext([]uint32{0x01})
 
@@ -746,13 +746,13 @@ func TestMiniBufferWriteUNENNext(t *testing.T) {
 
 	}
 
-	buf.Offset(&off)
+	buf.ByteOffset(&off)
 	if off != 4 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	buf.WriteU32BENext([]uint32{0x1000000})
 
@@ -763,13 +763,13 @@ func TestMiniBufferWriteUNENNext(t *testing.T) {
 
 	}
 
-	buf.Offset(&off)
+	buf.ByteOffset(&off)
 	if off != 4 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	buf.WriteU64LENext([]uint64{0x01})
 
@@ -780,13 +780,13 @@ func TestMiniBufferWriteUNENNext(t *testing.T) {
 
 	}
 
-	buf.Offset(&off)
+	buf.ByteOffset(&off)
 	if off != 8 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	buf.WriteU64BENext([]uint64{0x100000000000000})
 
@@ -797,13 +797,13 @@ func TestMiniBufferWriteUNENNext(t *testing.T) {
 
 	}
 
-	buf.Offset(&off)
+	buf.ByteOffset(&off)
 	if off != 8 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 }
 
@@ -1047,7 +1047,7 @@ func TestMiniBufferSetbitPanic(t *testing.T) {
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.setbit(0x00, 2)
+	buf.SetBit(0x00, 2)
 
 }
 
@@ -1057,7 +1057,7 @@ benchmarks
 
 */
 
-func BenchmarkMiniBufferWrite(b *testing.B) {
+func BenchmarkMiniBufferWriteBytes(b *testing.B) {
 
 	b.ReportAllocs()
 
@@ -1072,7 +1072,7 @@ func BenchmarkMiniBufferWrite(b *testing.B) {
 
 }
 
-func BenchmarkMiniBufferRead(b *testing.B) {
+func BenchmarkMiniBufferReadBytes(b *testing.B) {
 
 	b.ReportAllocs()
 
