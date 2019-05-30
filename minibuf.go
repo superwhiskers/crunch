@@ -18,6 +18,9 @@ along with this program.  if not, see <https://www.gnu.org/licenses/>.
 
 */
 
+// TODO: mirror over modified bitfield methods to Buffer for performance
+// TODO: finish major code restructure in Buffer
+
 package crunch
 
 import (
@@ -35,6 +38,7 @@ type MiniBuffer struct {
 	boff int64
 	bcap int64
 
+	// temp?
 	obuf uintptr
 
 	sync.Mutex
@@ -75,7 +79,7 @@ func NewMiniBuffer(out **MiniBuffer, slices ...[]byte) {
 // ReadBit stores the bit located at the specified offset without modifying the internal offset value in out
 func (b *MiniBuffer) ReadBit(out *byte, off int64) {
 
-	*out = atob((b.buf[off/8] & (1 << uint(7-(off%8)))) != 0)
+	*out = (b.buf[off/8] >> (7-uint64(off%8))) & 1
 
 }
 
@@ -118,27 +122,31 @@ func (b *MiniBuffer) ReadBitsNext(out *uint64, n int64) {
 }
 
 // SetBit sets the bit located at the specified offset without modifying the internal offset value
-func (b *MiniBuffer) SetBit(off int64, data byte) {
+func (b *MiniBuffer) SetBit(off int64) {
 
-	switch data {
-
-	case 0:
-		b.buf[off/8] &= ^(1 << uint(7-(off%8)))
-
-	case 1:
-		b.buf[off/8] |= (1 << uint(7-(off%8)))
-
-	default:
-		panic(BufferInvalidBitError)
-
-	}
+	b.buf[off/8] |= (1 << uint(7-(off%8)))
 
 }
 
 // SetBitNext sets the next bit from the current offset and moves the offset forward a bit
-func (b *MiniBuffer) SetBitNext(data byte) {
+func (b *MiniBuffer) SetBitNext() {
 
-	b.SetBit(b.boff, data)
+	b.SetBit(b.boff)
+	b.SeekBit(1, true)
+
+}
+
+// ClearBit clears the bit located at the specified offset without modifying the internal offset value
+func (b *MiniBuffer) ClearBit(off int64) {
+
+	b.buf[off/8] &= ^(1 << uint(7-(off%8)))
+
+}
+
+// ClearBitNext clears the next bit from the current offset and moves the offset forward a bit
+func (b *MiniBuffer) ClearBitNext() {
+
+	b.ClearBit(b.boff)
 	b.SeekBit(1, true)
 
 }
@@ -150,7 +158,15 @@ func (b *MiniBuffer) SetBits(off int64, data uint64, n int64) {
 
 	{
 	write_loop:
-		b.SetBit(off+i, byte((data>>uint64(n-i-1))&1))
+		if byte((data>>uint64(n-i-1))&1) == 0 {
+
+			b.ClearBit(off+i)
+
+		} else {
+
+			b.SetBit(off+i)
+
+		}
 		i++
 		if i < n {
 

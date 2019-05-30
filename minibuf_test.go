@@ -882,7 +882,7 @@ func TestMiniBufferSetBit(t *testing.T) {
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.SetBit(0x00, 1)
+	buf.SetBit(0x00)
 
 	var out byte
 	buf.ReadBit(&out, 0x00)
@@ -901,7 +901,45 @@ func TestMiniBufferSetBitNext(t *testing.T) {
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.SetBitNext(1)
+	buf.SetBitNext()
+
+	var out byte
+	buf.ReadBit(&out, 0x00)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestMiniBufferClearBit(t *testing.T) {
+
+	var expected byte = 0
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.ClearBit(0x00)
+
+	var out byte
+	buf.ReadBit(&out, 0x00)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestMiniBufferClearBitNext(t *testing.T) {
+
+	var expected byte = 0
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.ClearBitNext()
 
 	var out byte
 	buf.ReadBit(&out, 0x00)
@@ -1040,17 +1078,6 @@ func TestMiniBufferFlipAllBits(t *testing.T) {
 
 }
 
-func TestMiniBufferSetbitPanic(t *testing.T) {
-
-	defer panicChecker(t, BufferInvalidBitError)
-
-	buf := &MiniBuffer{}
-	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
-
-	buf.SetBit(0x00, 2)
-
-}
-
 /*
 
 benchmarks
@@ -1119,5 +1146,72 @@ func BenchmarkMiniBufferReadU32LE(b *testing.B) {
 	}
 
 	_ = out
+
+}
+
+func BenchmarkMiniBufferReadBit(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
+
+	var out byte
+	for n := 0; n < b.N; n++ {
+
+		buf.ReadBit(&out, 0x00)
+
+	}
+
+	_ = out
+
+}
+
+func BenchmarkMiniBufferReadBits(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
+
+	var out uint64
+	for n := 0; n < b.N; n++ {
+
+		buf.ReadBits(&out, 0x00, 2)
+
+	}
+
+	_ = out
+
+}
+	
+
+func BenchmarkMiniBufferSetBit(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
+
+	for n := 0; n < b.N; n++ {
+
+		buf.SetBit(0x00)
+
+	}
+
+}
+
+func BenchmarkMiniBufferClearBit(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
+
+	for n := 0; n < b.N; n++ {
+
+		buf.ClearBit(0x00)
+
+	}
 
 }

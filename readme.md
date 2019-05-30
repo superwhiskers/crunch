@@ -11,16 +11,24 @@ manipulate bytes and bits in golang with ease
 $ go get github.com/superwhiskers/crunch
 ```
 
-## benchmarks
+## benchmarks (temporary, will be updated once changes are mirrored between the buffers)
 
 `MiniBuffer` performs on average more than twice as fast as `bytes.Buffer` in both writing and reading
 ```
-BenchmarkBufferWrite-4          	30000000	         47.6 ns/op	       0 B/op	       0 allocs/op
-BenchmarkBufferRead-4           	20000000	         111 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferWrite-4      	200000000	         7.29 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferRead-4       	1000000000	         1.73 ns/op	       0 B/op	       0 allocs/op
-BenchmarkStdByteBufferWrite-4   	50000000	         24.6 ns/op	       0 B/op	       0 allocs/op
-BenchmarkStdByteBufferRead-4    	200000000	         7.84 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferWrite-4            	50000000	         37.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferRead-4             	20000000	         106 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferWriteU32LE-4       	30000000	         46.2 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferReadU32LE-4        	10000000	         156 ns/op	       8 B/op	       1 allocs/op
+BenchmarkMiniBufferWriteBytes-4   	200000000	         6.61 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferReadBytes-4    	2000000000	         1.47 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferWriteU32LE-4   	100000000	         21.5 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferReadU32LE-4    	100000000	         12.2 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferReadBit-4      	2000000000	         1.55 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferReadBits-4     	100000000	         14.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferSetBit-4       	500000000	         3.11 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferClearBit-4     	500000000	         3.13 ns/op	       0 B/op	       0 allocs/op
+BenchmarkStdByteBufferWrite-4     	100000000	         23.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkStdByteBufferRead-4      	200000000	         7.09 ns/op	       0 B/op	       0 allocs/op
 ```
 
 ## example
