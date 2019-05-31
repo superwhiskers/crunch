@@ -20,7 +20,10 @@ along with this program.  if not, see <https://www.gnu.org/licenses/>.
 
 package crunch
 
-import "sync"
+import (
+	"sync"
+	"unsafe"
+)
 
 // Buffer implements a concurrent-safe buffer type in go that handles multiple types of data
 type Buffer struct {
@@ -29,6 +32,9 @@ type Buffer struct {
 	cap  int64
 	boff int64
 	bcap int64
+
+	// temp?
+	obuf uintptr
 
 	sync.Mutex
 }
@@ -68,8 +74,6 @@ func NewBuffer(slices ...[]byte) (buf *Buffer) {
 
 /* bitfield methods */
 
-// TODO: rework the algorithm used to extract a bit from a byte
-
 // ReadBit returns the bit located at the specified offset without modifying the internal offset value
 func (b *Buffer) ReadBit(off int64) byte {
 
@@ -88,7 +92,7 @@ func (b *Buffer) ReadBit(off int64) byte {
 	b.Lock()
 	defer b.Unlock()
 
-	return atob((b.buf[off/8] & (1 << uint(7-(off%8)))) != 0)
+	return (b.buf[off/8] >> (7 - uint64(off%8))) & 1
 
 }
 
@@ -100,7 +104,6 @@ func (b *Buffer) ReadBitNext() (out byte) {
 	return
 
 }
-
 
 // ReadBits returns the next n bits from the specified offset without modifying the internal offset value
 func (b *Buffer) ReadBits(off, n int64) (out uint64) {
@@ -132,7 +135,7 @@ func (b *Buffer) ReadBitsNext(n int64) (out uint64) {
 }
 
 // SetBit sets the bit located at the specified offset without modifying the internal offset value
-func (b *Buffer) SetBit(off int64, data byte) {
+func (b *Buffer) SetBit(off int64) {
 
 	if off > (b.bcap - 1) {
 
@@ -149,32 +152,47 @@ func (b *Buffer) SetBit(off int64, data byte) {
 	b.Lock()
 	defer b.Unlock()
 
-	switch data {
-
-	case 0:
-		b.buf[off/8] &= ^(1 << uint(7-(off%8)))
-
-	case 1:
-		b.buf[off/8] |= (1 << uint(7-(off%8)))
-
-	default:
-		panic(BufferInvalidBitError)
-
-	}
+	b.buf[off/8] |= (1 << uint(7-(off%8)))
 
 }
 
 // SetBitNext sets the next bit from the current offset and moves the offset forward a bit
-func (b *Buffer) SetBitNext(data byte) {
+func (b *Buffer) SetBitNext() {
 
-	b.SetBit(b.boff, data)
+	b.SetBit(b.boff)
 	b.SeekBit(1, true)
 
 }
 
 // ClearBit
+func (b *Buffer) ClearBit(off int64) {
+
+	if off > (b.bcap - 1) {
+
+		panic(BufferOverwriteError)
+
+	}
+
+	if off < 0x00 {
+
+		panic(BufferUnderwriteError)
+
+	}
+
+	b.Lock()
+	defer b.Unlock()
+
+	b.buf[off/8] &= ^(1 << uint(7-(off%8)))
+
+}
 
 // ClearBitNext (tbd)
+func (b *Buffer) ClearBitNext() {
+
+	b.ClearBit(b.boff)
+	b.SeekBit(1, true)
+
+}
 
 // SetBits sets the next n bits from the specified offset without modifying the internal offset value
 func (b *Buffer) SetBits(off int64, data uint64, n int64) {
@@ -183,7 +201,15 @@ func (b *Buffer) SetBits(off int64, data uint64, n int64) {
 
 	{
 	write_loop:
-		b.SetBit(off+i, byte((data>>uint64(n-i-1))&1))
+		if byte((data>>uint64(n-i-1))&1) == 0 {
+
+			b.ClearBit(off + i)
+
+		} else {
+
+			b.SetBit(off + i)
+
+		}
 		i++
 		if i < n {
 
@@ -361,7 +387,8 @@ func (b *Buffer) WriteBytes(off int64, data []byte) {
 
 	b.Lock()
 
-	var (
+	/* same as in minibuffer, leaving here incase this new method proves to be slower in some edge cases */
+	/*var (
 		i = int64(0)
 		n = int64(len(data))
 	)
@@ -369,6 +396,23 @@ func (b *Buffer) WriteBytes(off int64, data []byte) {
 	write_loop:
 		b.buf[off+i] = data[i]
 		i++
+		if i < n {
+
+			goto write_loop
+
+		}
+	}*/
+
+	var (
+		p = uintptr(off) + b.obuf
+		i = int64(0)
+		n = int64(len(data))
+	)
+	{
+	write_loop:
+		*(*byte)(unsafe.Pointer(p)) = data[i]
+		i++
+		p++
 		if i < n {
 
 			goto write_loop
@@ -1103,6 +1147,12 @@ func (b *Buffer) Refresh() {
 	b.cap = int64(len(b.buf))
 	b.bcap = b.cap * 8
 
+	if len(b.buf) > 0 {
+
+		b.obuf = (uintptr)(unsafe.Pointer(&b.buf[0]))
+
+	}
+
 }
 
 // Reset resets the entire buffer
@@ -1155,6 +1205,3 @@ func (b *Buffer) BitOffset() int64 {
 	return b.boff
 
 }
-
-
-

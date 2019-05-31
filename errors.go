@@ -70,11 +70,4 @@ var (
 		scope: "buffer",
 		error: "invalid byte count requested",
 	}
-
-	// BufferInvalidBitError represents an instance in which an invalid bit was
-	// passed to one of the buffer's methods
-	BufferInvalidBitError = Error{
-		scope: "buffer",
-		error: "invalid bit value specified",
-	}
 )

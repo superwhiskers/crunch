@@ -872,7 +872,7 @@ func TestBufferSetBit(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.SetBit(0x00, 1)
+	buf.SetBit(0x00)
 
 	out := buf.ReadBit(0x00)
 	if expected != out {
@@ -889,7 +889,41 @@ func TestBufferSetBitNext(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.SetBitNext(1)
+	buf.SetBitNext()
+
+	out := buf.ReadBit(0x00)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferClearBit(t *testing.T) {
+
+	var expected byte = 0
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.ClearBit(0x00)
+
+	out := buf.ReadBit(0x00)
+	if expected != out {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
+func TestBufferClearBitNext(t *testing.T) {
+
+	var expected byte = 0
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.ClearBitNext()
 
 	out := buf.ReadBit(0x00)
 	if expected != out {
@@ -1042,7 +1076,7 @@ func TestBufferSetbitPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.SetBit(0x20, 1)
+	buf.SetBit(0x20)
 
 }
 
@@ -1052,17 +1086,27 @@ func TestBufferSetbitPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.SetBit(-0x01, 1)
+	buf.SetBit(-0x01)
 
 }
 
-func TestBufferSetbitPanic3(t *testing.T) {
+func TestBufferClearbitPanic1(t *testing.T) {
 
-	defer panicChecker(t, BufferInvalidBitError)
+	defer panicChecker(t, BufferOverwriteError)
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.SetBit(0x00, 2)
+	buf.ClearBit(0x20)
+
+}
+
+func TestBufferClearbitPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.ClearBit(-0x01)
 
 }
 
@@ -1434,3 +1478,58 @@ func BenchmarkBufferReadU32LE(b *testing.B) {
 
 }
 
+func BenchmarkBufferReadBit(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	for n := 0; n < b.N; n++ {
+
+		_ = buf.ReadBit(0x00)
+
+	}
+
+}
+
+func BenchmarkBufferReadBits(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	for n := 0; n < b.N; n++ {
+
+		_ = buf.ReadBits(0x00, 2)
+
+	}
+
+}
+
+func BenchmarkBufferSetBit(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	for n := 0; n < b.N; n++ {
+
+		buf.SetBit(0x00)
+
+	}
+
+}
+
+func BenchmarkBufferClearBit(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	for n := 0; n < b.N; n++ {
+
+		buf.ClearBit(0x00)
+
+	}
+
+}
