@@ -15,20 +15,24 @@ $ go get github.com/superwhiskers/crunch
 
 `MiniBuffer` performs on average more than twice as fast as `bytes.Buffer` in both writing and reading
 ```
-BenchmarkBufferWrite-4            	50000000	         37.8 ns/op	       0 B/op	       0 allocs/op
-BenchmarkBufferRead-4             	20000000	         106 ns/op	       0 B/op	       0 allocs/op
-BenchmarkBufferWriteU32LE-4       	30000000	         46.2 ns/op	       0 B/op	       0 allocs/op
-BenchmarkBufferReadU32LE-4        	10000000	         156 ns/op	       8 B/op	       1 allocs/op
-BenchmarkMiniBufferWriteBytes-4   	200000000	         6.61 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferReadBytes-4    	2000000000	         1.47 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferWriteU32LE-4   	100000000	         21.5 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferReadU32LE-4    	100000000	         12.2 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferReadBit-4      	2000000000	         1.55 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferReadBits-4     	100000000	         14.4 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferSetBit-4       	500000000	         3.11 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferClearBit-4     	500000000	         3.13 ns/op	       0 B/op	       0 allocs/op
-BenchmarkStdByteBufferWrite-4     	100000000	         23.8 ns/op	       0 B/op	       0 allocs/op
-BenchmarkStdByteBufferRead-4      	200000000	         7.09 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferWriteBytes-4       	50000000	        36.3 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferReadBytes-4        	20000000	       100 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferWriteU32LE-4       	30000000	        47.7 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferReadU32LE-4        	10000000	       170 ns/op	       8 B/op	       1 allocs/op
+BenchmarkBufferReadBit-4          	20000000	       113 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferReadBits-4         	 5000000	       253 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferSetBit-4           	20000000	       101 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferClearBit-4         	20000000	        99.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferWriteBytes-4   	200000000	         6.71 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferReadBytes-4    	2000000000	         1.48 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferWriteU32LE-4   	100000000	        21.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferReadU32LE-4    	100000000	        11.7 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferReadBit-4      	2000000000	         1.71 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferReadBits-4     	100000000	        14.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferSetBit-4       	500000000	         3.05 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferClearBit-4     	500000000	         3.16 ns/op	       0 B/op	       0 allocs/op
+BenchmarkStdByteBufferWrite-4     	50000000	        23.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkStdByteBufferRead-4      	200000000	         7.18 ns/op	       0 B/op	       0 allocs/op
 ```
 
 ## example
