@@ -19,7 +19,6 @@ along with this program.  if not, see <https://www.gnu.org/licenses/>.
 */
 
 // TODO: mirror over modified bitfield methods to Buffer for performance
-// TODO: finish major code restructure in Buffer
 
 package crunch
 

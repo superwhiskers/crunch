@@ -92,13 +92,13 @@ func TestBufferBytes(t *testing.T) {
 
 }
 
-func TestBufferCapacity(t *testing.T) {
+func TestBufferByteCapacity(t *testing.T) {
 
 	var expected int64 = 4
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	out := buf.Capacity()
+	out := buf.ByteCapacity()
 	if expected != out {
 
 		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
@@ -122,15 +122,15 @@ func TestBufferBitCapacity(t *testing.T) {
 
 }
 
-func TestBufferOffset(t *testing.T) {
+func TestBufferByteOffset(t *testing.T) {
 
 	var expected int64 = 0x02
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.Seek(0x02, false)
+	buf.SeekByte(0x02, false)
 
-	out := buf.Offset()
+	out := buf.ByteOffset()
 	if expected != out {
 
 		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
@@ -199,7 +199,7 @@ func TestBufferGrow(t *testing.T) {
 
 	buf.Grow(2)
 
-	out := buf.Capacity()
+	out := buf.ByteCapacity()
 	if expected != out {
 
 		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
@@ -208,16 +208,16 @@ func TestBufferGrow(t *testing.T) {
 
 }
 
-func TestBufferSeek(t *testing.T) {
+func TestBufferSeekByte(t *testing.T) {
 
 	var expected int64 = 0x04
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.Seek(2, true)
-	buf.Seek(2, true)
+	buf.SeekByte(2, true)
+	buf.SeekByte(2, true)
 
-	out := buf.Offset()
+	out := buf.ByteOffset()
 	if expected != out {
 
 		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
@@ -250,7 +250,7 @@ func TestBufferAlignBit(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.Seek(0x04, false)
+	buf.SeekByte(0x04, false)
 	buf.AlignBit()
 
 	out := buf.BitOffset()
@@ -271,7 +271,7 @@ func TestBufferAlignByte(t *testing.T) {
 	buf.SeekBit(0x20, false)
 	buf.AlignByte()
 
-	out := buf.Offset()
+	out := buf.ByteOffset()
 	if expected != out {
 
 		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
@@ -280,14 +280,14 @@ func TestBufferAlignByte(t *testing.T) {
 
 }
 
-func TestBufferAfter(t *testing.T) {
+func TestBufferAfterByte(t *testing.T) {
 
 	var expected int64 = 2
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.Seek(0x01, false)
-	out := buf.After()
+	buf.SeekByte(0x01, false)
+	out := buf.AfterByte()
 
 	if expected != out {
 
@@ -295,7 +295,7 @@ func TestBufferAfter(t *testing.T) {
 
 	}
 
-	out = buf.After(0x01)
+	out = buf.AfterByte(0x01)
 
 	if expected != out {
 
@@ -467,13 +467,13 @@ func TestBufferReadUNENNext(t *testing.T) {
 
 	}
 
-	off := buf.Offset()
+	off := buf.ByteOffset()
 	if off != 2 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	out1 = buf.ReadU16BENext(1)
 	if !cmp.Equal(out1, expected2) {
@@ -482,13 +482,13 @@ func TestBufferReadUNENNext(t *testing.T) {
 
 	}
 
-	off = buf.Offset()
+	off = buf.ByteOffset()
 	if off != 2 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	out2 := buf.ReadU32LENext(1)
 	if !cmp.Equal(out2, expected3) {
@@ -497,13 +497,13 @@ func TestBufferReadUNENNext(t *testing.T) {
 
 	}
 
-	off = buf.Offset()
+	off = buf.ByteOffset()
 	if off != 4 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	out2 = buf.ReadU32BENext(1)
 	if !cmp.Equal(out2, expected4) {
@@ -512,13 +512,13 @@ func TestBufferReadUNENNext(t *testing.T) {
 
 	}
 
-	off = buf.Offset()
+	off = buf.ByteOffset()
 	if off != 4 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	out3 := buf.ReadU64LENext(1)
 	if !cmp.Equal(out3, expected5) {
@@ -527,13 +527,13 @@ func TestBufferReadUNENNext(t *testing.T) {
 
 	}
 
-	off = buf.Offset()
+	off = buf.ByteOffset()
 	if off != 8 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	out3 = buf.ReadU64BENext(1)
 	if !cmp.Equal(out3, expected6) {
@@ -542,13 +542,13 @@ func TestBufferReadUNENNext(t *testing.T) {
 
 	}
 
-	off = buf.Offset()
+	off = buf.ByteOffset()
 	if off != 8 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 }
 
@@ -711,13 +711,13 @@ func TestBufferWriteUNENNext(t *testing.T) {
 
 	}
 
-	off := buf.Offset()
+	off := buf.ByteOffset()
 	if off != 2 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	buf.WriteU16BENext([]uint16{0x100})
 
@@ -728,13 +728,13 @@ func TestBufferWriteUNENNext(t *testing.T) {
 
 	}
 
-	off = buf.Offset()
+	off = buf.ByteOffset()
 	if off != 2 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	buf.WriteU32LENext([]uint32{0x01})
 
@@ -745,13 +745,13 @@ func TestBufferWriteUNENNext(t *testing.T) {
 
 	}
 
-	off = buf.Offset()
+	off = buf.ByteOffset()
 	if off != 4 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	buf.WriteU32BENext([]uint32{0x1000000})
 
@@ -762,13 +762,13 @@ func TestBufferWriteUNENNext(t *testing.T) {
 
 	}
 
-	off = buf.Offset()
+	off = buf.ByteOffset()
 	if off != 4 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	buf.WriteU64LENext([]uint64{0x01})
 
@@ -779,13 +779,13 @@ func TestBufferWriteUNENNext(t *testing.T) {
 
 	}
 
-	off = buf.Offset()
+	off = buf.ByteOffset()
 	if off != 8 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 	buf.WriteU64BENext([]uint64{0x100000000000000})
 
@@ -796,13 +796,13 @@ func TestBufferWriteUNENNext(t *testing.T) {
 
 	}
 
-	off = buf.Offset()
+	off = buf.ByteOffset()
 	if off != 8 {
 
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
-	buf.Seek(0x00, false)
+	buf.SeekByte(0x00, false)
 
 }
 
@@ -1022,7 +1022,7 @@ func TestBufferReadbitPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readbit(0x20)
+	_ = buf.ReadBit(0x20)
 
 }
 
@@ -1032,7 +1032,7 @@ func TestBufferReadbitPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readbit(-0x01)
+	_ = buf.ReadBit(-0x01)
 
 }
 
@@ -1042,7 +1042,7 @@ func TestBufferSetbitPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.setbit(0x20, 1)
+	buf.SetBit(0x20, 1)
 
 }
 
@@ -1052,7 +1052,7 @@ func TestBufferSetbitPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.setbit(-0x01, 1)
+	buf.SetBit(-0x01, 1)
 
 }
 
@@ -1062,7 +1062,7 @@ func TestBufferSetbitPanic3(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.setbit(0x00, 2)
+	buf.SetBit(0x00, 2)
 
 }
 
@@ -1072,7 +1072,7 @@ func TestBufferFlipbitPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.flipbit(0x20)
+	buf.FlipBit(0x20)
 
 }
 
@@ -1082,47 +1082,47 @@ func TestBufferFlipbitPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.flipbit(-0x01)
+	buf.FlipBit(-0x01)
 
 }
 
-func TestBufferWritePanic1(t *testing.T) {
+func TestBufferWriteBytesPanic1(t *testing.T) {
 
 	defer panicChecker(t, BufferOverwriteError)
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.write(0x04, []byte{0x01, 0x01})
+	buf.WriteBytes(0x04, []byte{0x01, 0x01})
 
 }
 
-func TestBufferWritePanic2(t *testing.T) {
+func TestBufferWriteBytesPanic2(t *testing.T) {
 
 	defer panicChecker(t, BufferUnderwriteError)
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.write(-0x01, []byte{0x01, 0x01})
+	buf.WriteBytes(-0x01, []byte{0x01, 0x01})
 
 }
 
-func TestBufferReadPanic1(t *testing.T) {
+func TestBufferReadBytesPanic1(t *testing.T) {
 
 	defer panicChecker(t, BufferOverreadError)
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.read(0x20, 1)
+	_ = buf.ReadBytes(0x20, 1)
 
 }
 
-func TestBufferReadPanic2(t *testing.T) {
+func TestBufferReadBytesPanic2(t *testing.T) {
 
 	defer panicChecker(t, BufferUnderreadError)
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.read(-0x01, 1)
+	_ = buf.ReadBytes(-0x01, 1)
 
 }
 
@@ -1132,7 +1132,7 @@ func TestBufferWriteU16LEPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.writeU16LE(0x00, []uint16{0x01, 0x02, 0x03, 0x04})
+	buf.WriteU16LE(0x00, []uint16{0x01, 0x02, 0x03, 0x04})
 
 }
 
@@ -1142,7 +1142,7 @@ func TestBufferWriteU16LEPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.writeU16LE(-0x01, []uint16{0x01, 0x02})
+	buf.WriteU16LE(-0x01, []uint16{0x01, 0x02})
 
 }
 
@@ -1152,7 +1152,7 @@ func TestBufferWriteU16BEPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.writeU16BE(0x00, []uint16{0x01, 0x02, 0x03, 0x04})
+	buf.WriteU16BE(0x00, []uint16{0x01, 0x02, 0x03, 0x04})
 
 }
 
@@ -1162,7 +1162,7 @@ func TestBufferWriteU16BEPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.writeU16BE(-0x01, []uint16{0x01, 0x02})
+	buf.WriteU16BE(-0x01, []uint16{0x01, 0x02})
 
 }
 
@@ -1172,7 +1172,7 @@ func TestBufferWriteU32LEPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.writeU32LE(0x00, []uint32{0x01, 0x02, 0x03, 0x04})
+	buf.WriteU32LE(0x00, []uint32{0x01, 0x02, 0x03, 0x04})
 
 }
 
@@ -1182,7 +1182,7 @@ func TestBufferWriteU32LEPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.writeU32LE(-0x01, []uint32{0x01})
+	buf.WriteU32LE(-0x01, []uint32{0x01})
 
 }
 
@@ -1192,7 +1192,7 @@ func TestBufferWriteU32BEPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.writeU32BE(0x00, []uint32{0x01, 0x02, 0x03, 0x04})
+	buf.WriteU32BE(0x00, []uint32{0x01, 0x02, 0x03, 0x04})
 
 }
 
@@ -1202,7 +1202,7 @@ func TestBufferWriteU32BEPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.writeU32BE(-0x01, []uint32{0x01})
+	buf.WriteU32BE(-0x01, []uint32{0x01})
 
 }
 
@@ -1212,7 +1212,7 @@ func TestBufferWriteU64LEPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.writeU64LE(0x00, []uint64{0x01, 0x02, 0x03, 0x04})
+	buf.WriteU64LE(0x00, []uint64{0x01, 0x02, 0x03, 0x04})
 
 }
 
@@ -1222,7 +1222,7 @@ func TestBufferWriteU64LEPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
-	buf.writeU64LE(-0x01, []uint64{0x01})
+	buf.WriteU64LE(-0x01, []uint64{0x01})
 
 }
 
@@ -1232,7 +1232,7 @@ func TestBufferWriteU64BEPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	buf.writeU64BE(0x00, []uint64{0x01, 0x02, 0x03, 0x04})
+	buf.WriteU64BE(0x00, []uint64{0x01, 0x02, 0x03, 0x04})
 
 }
 
@@ -1242,7 +1242,7 @@ func TestBufferWriteU64BEPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
-	buf.writeU64BE(-0x01, []uint64{0x01})
+	buf.WriteU64BE(-0x01, []uint64{0x01})
 
 }
 
@@ -1252,7 +1252,7 @@ func TestBufferReadU16LEPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readU16LE(0x04, 1)
+	_ = buf.ReadU16LE(0x04, 1)
 
 }
 
@@ -1262,7 +1262,7 @@ func TestBufferReadU16LEPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readU16LE(-0x01, 1)
+	_ = buf.ReadU16LE(-0x01, 1)
 
 }
 
@@ -1272,7 +1272,7 @@ func TestBufferReadU16BEPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readU16BE(0x04, 1)
+	_ = buf.ReadU16BE(0x04, 1)
 
 }
 
@@ -1282,7 +1282,7 @@ func TestBufferReadU16BEPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readU16BE(-0x01, 1)
+	_ = buf.ReadU16BE(-0x01, 1)
 
 }
 
@@ -1292,7 +1292,7 @@ func TestBufferReadU32LEPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readU32LE(0x04, 1)
+	_ = buf.ReadU32LE(0x04, 1)
 
 }
 
@@ -1302,7 +1302,7 @@ func TestBufferReadU32LEPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readU32LE(-0x01, 1)
+	_ = buf.ReadU32LE(-0x01, 1)
 
 }
 
@@ -1312,7 +1312,7 @@ func TestBufferReadU32BEPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readU32BE(0x04, 1)
+	_ = buf.ReadU32BE(0x04, 1)
 
 }
 
@@ -1322,7 +1322,7 @@ func TestBufferReadU32BEPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readU32BE(-0x01, 1)
+	_ = buf.ReadU32BE(-0x01, 1)
 
 }
 
@@ -1332,7 +1332,7 @@ func TestBufferReadU64LEPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readU64LE(0x04, 1)
+	_ = buf.ReadU64LE(0x04, 1)
 
 }
 
@@ -1342,7 +1342,7 @@ func TestBufferReadU64LEPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readU64LE(-0x01, 1)
+	_ = buf.ReadU64LE(-0x01, 1)
 
 }
 
@@ -1352,7 +1352,7 @@ func TestBufferReadU64BEPanic1(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readU64BE(0x04, 1)
+	_ = buf.ReadU64BE(0x04, 1)
 
 }
 
@@ -1362,7 +1362,7 @@ func TestBufferReadU64BEPanic2(t *testing.T) {
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
-	_ = buf.readU64BE(-0x01, 1)
+	_ = buf.ReadU64BE(-0x01, 1)
 
 }
 
@@ -1372,7 +1372,7 @@ benchmarks
 
 */
 
-func BenchmarkBufferWrite(b *testing.B) {
+func BenchmarkBufferWriteBytes(b *testing.B) {
 
 	b.ReportAllocs()
 
@@ -1386,7 +1386,7 @@ func BenchmarkBufferWrite(b *testing.B) {
 
 }
 
-func BenchmarkBufferRead(b *testing.B) {
+func BenchmarkBufferReadBytes(b *testing.B) {
 
 	b.ReportAllocs()
 
@@ -1433,3 +1433,4 @@ func BenchmarkBufferReadU32LE(b *testing.B) {
 	_ = out
 
 }
+
