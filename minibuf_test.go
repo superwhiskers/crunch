@@ -1184,7 +1184,7 @@ func BenchmarkMiniBufferReadBits(b *testing.B) {
 	_ = out
 
 }
-	
+
 func BenchmarkMiniBufferSetBit(b *testing.B) {
 
 	b.ReportAllocs()

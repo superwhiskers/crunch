@@ -78,7 +78,7 @@ func NewMiniBuffer(out **MiniBuffer, slices ...[]byte) {
 // ReadBit stores the bit located at the specified offset without modifying the internal offset value in out
 func (b *MiniBuffer) ReadBit(out *byte, off int64) {
 
-	*out = (b.buf[off/8] >> (7-uint64(off%8))) & 1
+	*out = (b.buf[off/8] >> (7 - uint64(off%8))) & 1
 
 }
 
@@ -159,11 +159,11 @@ func (b *MiniBuffer) SetBits(off int64, data uint64, n int64) {
 	write_loop:
 		if byte((data>>uint64(n-i-1))&1) == 0 {
 
-			b.ClearBit(off+i)
+			b.ClearBit(off + i)
 
 		} else {
 
-			b.SetBit(off+i)
+			b.SetBit(off + i)
 
 		}
 		i++
@@ -315,7 +315,7 @@ func (b *MiniBuffer) WriteBytes(off int64, data []byte) {
 
 		}
 	}*/
-	
+
 	var (
 		p = uintptr(off) + b.obuf
 		i = int64(0)
@@ -332,7 +332,6 @@ func (b *MiniBuffer) WriteBytes(off int64, data []byte) {
 
 		}
 	}
-
 
 }
 
