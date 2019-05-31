@@ -902,7 +902,7 @@ func TestBufferSetBitNext(t *testing.T) {
 
 func TestBufferClearBit(t *testing.T) {
 
-	var expected byte = 0
+	var expected byte
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 
@@ -919,7 +919,7 @@ func TestBufferClearBit(t *testing.T) {
 
 func TestBufferClearBitNext(t *testing.T) {
 
-	var expected byte = 0
+	var expected byte
 
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
 

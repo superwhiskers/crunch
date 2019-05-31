@@ -164,7 +164,7 @@ func (b *Buffer) SetBitNext() {
 
 }
 
-// ClearBit
+// ClearBit clears the bit located at the specified offset without modifying the internal offset value
 func (b *Buffer) ClearBit(off int64) {
 
 	if off > (b.bcap - 1) {
@@ -186,7 +186,7 @@ func (b *Buffer) ClearBit(off int64) {
 
 }
 
-// ClearBitNext (tbd)
+// ClearBitNext clears the next bit from the current offset and moves the offset forward a bit
 func (b *Buffer) ClearBitNext() {
 
 	b.ClearBit(b.boff)

@@ -915,7 +915,7 @@ func TestMiniBufferSetBitNext(t *testing.T) {
 
 func TestMiniBufferClearBit(t *testing.T) {
 
-	var expected byte = 0
+	var expected byte
 
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
@@ -934,7 +934,7 @@ func TestMiniBufferClearBit(t *testing.T) {
 
 func TestMiniBufferClearBitNext(t *testing.T) {
 
-	var expected byte = 0
+	var expected byte
 
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00})
