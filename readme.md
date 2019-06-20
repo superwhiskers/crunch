@@ -57,7 +57,7 @@ func main() {
 	buf.WriteByteNext(0x01)
 	
 	// seek the offset back one
-	buf.Seek(-1, true)
+	buf.SeekByte(-1, true)
 	
 	// write the bytes `0x02` and `0x03` to the second and third offsets, respectively
 	buf.WriteBytesNext([]byte{0x02, 0x03})
