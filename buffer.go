@@ -20,10 +20,7 @@ along with this program.  if not, see <https://www.gnu.org/licenses/>.
 
 package crunch
 
-import (
-	"sync"
-	"unsafe"
-)
+import "unsafe"
 
 // Buffer implements a concurrent-safe buffer type in go that handles multiple types of data
 type Buffer struct {
@@ -35,8 +32,6 @@ type Buffer struct {
 
 	// temp?
 	obuf unsafe.Pointer
-
-	sync.Mutex
 }
 
 // NewBuffer initilaizes a new Buffer with the provided byte slice(s) stored inside in the order provided
@@ -57,10 +52,19 @@ func NewBuffer(slices ...[]byte) (buf *Buffer) {
 		buf.buf = slices[0]
 
 	default:
-		for _, s := range slices {
+		var (
+			i = int64(0)
+			n = int64(len(slices))
+		)
+		{
+		append_loop:
+			buf.buf = append(buf.buf, slices[i]...)
+			i++
+			if i < n {
 
-			buf.buf = append(buf.buf, s...)
+				goto append_loop
 
+			}
 		}
 
 	}
@@ -88,9 +92,6 @@ func (b *Buffer) ReadBit(off int64) byte {
 		panic(BufferUnderreadError)
 
 	}
-
-	b.Lock()
-	defer b.Unlock()
 
 	return (b.buf[off/8] >> (7 - uint64(off%8))) & 1
 
@@ -149,9 +150,6 @@ func (b *Buffer) SetBit(off int64) {
 
 	}
 
-	b.Lock()
-	defer b.Unlock()
-
 	b.buf[off/8] |= (1 << uint(7-(off%8)))
 
 }
@@ -178,9 +176,6 @@ func (b *Buffer) ClearBit(off int64) {
 		panic(BufferUnderwriteError)
 
 	}
-
-	b.Lock()
-	defer b.Unlock()
 
 	b.buf[off/8] &= ^(1 << uint(7-(off%8)))
 
@@ -243,9 +238,6 @@ func (b *Buffer) FlipBit(off int64) {
 
 	}
 
-	b.Lock()
-	defer b.Unlock()
-
 	b.buf[off/8] ^= (1 << uint(7-(off%8)))
 
 }
@@ -260,9 +252,6 @@ func (b *Buffer) FlipBitNext() {
 
 // ClearAllBits sets all of the buffer's bits to 0
 func (b *Buffer) ClearAllBits() {
-
-	b.Lock()
-	defer b.Unlock()
 
 	var (
 		i = int64(0)
@@ -284,9 +273,6 @@ func (b *Buffer) ClearAllBits() {
 // SetAllBits sets all of the buffer's bits to 1
 func (b *Buffer) SetAllBits() {
 
-	b.Lock()
-	defer b.Unlock()
-
 	var (
 		i = int64(0)
 		n = int64(len(b.buf))
@@ -306,9 +292,6 @@ func (b *Buffer) SetAllBits() {
 
 // FlipAllBits flips all of the buffer's bits
 func (b *Buffer) FlipAllBits() {
-
-	b.Lock()
-	defer b.Unlock()
 
 	var (
 		i = int64(0)
@@ -330,9 +313,6 @@ func (b *Buffer) FlipAllBits() {
 
 // SeekBit seeks to bit position off of the the buffer relative to the current position or exact
 func (b *Buffer) SeekBit(off int64, relative bool) {
-
-	b.Lock()
-	defer b.Unlock()
 
 	if relative {
 
@@ -361,9 +341,6 @@ func (b *Buffer) AfterBit(off ...int64) int64 {
 // AlignBit aligns the bit offset to the byte offset
 func (b *Buffer) AlignBit() {
 
-	b.Lock()
-	defer b.Unlock()
-
 	b.boff = b.off * 8
 
 }
@@ -385,8 +362,6 @@ func (b *Buffer) WriteBytes(off int64, data []byte) {
 
 	}
 
-	b.Lock()
-
 	/* same as in minibuffer, leaving here incase this new method proves to be slower in some edge cases */
 	/*var (
 		i = int64(0)
@@ -404,10 +379,10 @@ func (b *Buffer) WriteBytes(off int64, data []byte) {
 	}*/
 
 	var (
-		p = unsafe.Pointer(uintptr(b.obuf) + uintptr(off))
+		p      = unsafe.Pointer(uintptr(b.obuf) + uintptr(off))
 		offset uintptr
-		i = int64(0)
-		n = int64(len(data))
+		i      = int64(0)
+		n      = int64(len(data))
 	)
 	{
 	write_loop:
@@ -420,8 +395,6 @@ func (b *Buffer) WriteBytes(off int64, data []byte) {
 
 		}
 	}
-
-	b.Unlock()
 
 }
 
@@ -463,8 +436,6 @@ func (b *Buffer) WriteU16LE(off int64, data []uint16) {
 
 	}
 
-	b.Lock()
-
 	var (
 		i = 0
 		n = len(data)
@@ -481,8 +452,6 @@ func (b *Buffer) WriteU16LE(off int64, data []uint16) {
 
 		}
 	}
-
-	b.Unlock()
 
 }
 
@@ -509,8 +478,6 @@ func (b *Buffer) WriteU16BE(off int64, data []uint16) {
 
 	}
 
-	b.Lock()
-
 	var (
 		i = 0
 		n = len(data)
@@ -527,8 +494,6 @@ func (b *Buffer) WriteU16BE(off int64, data []uint16) {
 
 		}
 	}
-
-	b.Unlock()
 
 }
 
@@ -555,8 +520,6 @@ func (b *Buffer) WriteU32LE(off int64, data []uint32) {
 
 	}
 
-	b.Lock()
-
 	var (
 		i = 0
 		n = len(data)
@@ -575,8 +538,6 @@ func (b *Buffer) WriteU32LE(off int64, data []uint32) {
 
 		}
 	}
-
-	b.Unlock()
 
 }
 
@@ -603,8 +564,6 @@ func (b *Buffer) WriteU32BE(off int64, data []uint32) {
 
 	}
 
-	b.Lock()
-
 	var (
 		i = 0
 		n = len(data)
@@ -623,8 +582,6 @@ func (b *Buffer) WriteU32BE(off int64, data []uint32) {
 
 		}
 	}
-
-	b.Unlock()
 
 }
 
@@ -651,8 +608,6 @@ func (b *Buffer) WriteU64LE(off int64, data []uint64) {
 
 	}
 
-	b.Lock()
-
 	var (
 		i = 0
 		n = len(data)
@@ -675,8 +630,6 @@ func (b *Buffer) WriteU64LE(off int64, data []uint64) {
 
 		}
 	}
-
-	b.Unlock()
 
 }
 
@@ -703,8 +656,6 @@ func (b *Buffer) WriteU64BE(off int64, data []uint64) {
 
 	}
 
-	b.Lock()
-
 	var (
 		i = 0
 		n = len(data)
@@ -727,8 +678,6 @@ func (b *Buffer) WriteU64BE(off int64, data []uint64) {
 
 		}
 	}
-
-	b.Unlock()
 
 }
 
@@ -754,9 +703,6 @@ func (b *Buffer) ReadBytes(off, n int64) []byte {
 		panic(BufferUnderreadError)
 
 	}
-
-	b.Lock()
-	defer b.Unlock()
 
 	return b.buf[off : off+n]
 
@@ -804,9 +750,6 @@ func (b *Buffer) ReadU16LE(off, n int64) (out []uint16) {
 
 	out = make([]uint16, n)
 
-	b.Lock()
-	defer b.Unlock()
-
 	i := int64(0)
 	{
 	read_loop:
@@ -851,9 +794,6 @@ func (b *Buffer) ReadU16BE(off, n int64) (out []uint16) {
 
 	out = make([]uint16, n)
 
-	b.Lock()
-	defer b.Unlock()
-
 	i := int64(0)
 	{
 	read_loop:
@@ -897,9 +837,6 @@ func (b *Buffer) ReadU32LE(off, n int64) (out []uint32) {
 	}
 
 	out = make([]uint32, n)
-
-	b.Lock()
-	defer b.Unlock()
 
 	i := int64(0)
 	{
@@ -947,9 +884,6 @@ func (b *Buffer) ReadU32BE(off, n int64) (out []uint32) {
 
 	out = make([]uint32, n)
 
-	b.Lock()
-	defer b.Unlock()
-
 	i := int64(0)
 	{
 	read_loop:
@@ -995,9 +929,6 @@ func (b *Buffer) ReadU64LE(off, n int64) (out []uint64) {
 	}
 
 	out = make([]uint64, n)
-
-	b.Lock()
-	defer b.Unlock()
 
 	i := int64(0)
 	{
@@ -1049,8 +980,6 @@ func (b *Buffer) ReadU64BE(off, n int64) (out []uint64) {
 
 	out = make([]uint64, n)
 
-	b.Lock()
-	defer b.Unlock()
 	i := int64(0)
 	{
 	read_loop:
@@ -1087,9 +1016,6 @@ func (b *Buffer) ReadU64BENext(n int64) (out []uint64) {
 // SeekByte seeks to position off of the buffer relative to the current position or exact
 func (b *Buffer) SeekByte(off int64, relative bool) {
 
-	b.Lock()
-	defer b.Unlock()
-
 	if relative {
 
 		b.off += off
@@ -1117,9 +1043,6 @@ func (b *Buffer) AfterByte(off ...int64) int64 {
 // AlignByte aligns the byte offset to the bit offset
 func (b *Buffer) AlignByte() {
 
-	b.Lock()
-	defer b.Unlock()
-
 	b.off = b.boff / 8
 
 }
@@ -1129,11 +1052,7 @@ func (b *Buffer) AlignByte() {
 // Grow makes the buffer's capacity bigger by n bytes
 func (b *Buffer) Grow(n int64) {
 
-	b.Lock()
-
 	b.buf = append(b.buf, make([]byte, n)...)
-
-	b.Unlock()
 
 	b.Refresh()
 
@@ -1141,9 +1060,6 @@ func (b *Buffer) Grow(n int64) {
 
 // Refresh updates the cached internal statistics of the buffer forcefully
 func (b *Buffer) Refresh() {
-
-	b.Lock()
-	defer b.Unlock()
 
 	b.cap = int64(len(b.buf))
 	b.bcap = b.cap * 8
@@ -1158,9 +1074,6 @@ func (b *Buffer) Refresh() {
 
 // Reset resets the entire buffer
 func (b *Buffer) Reset() {
-
-	b.Lock()
-	defer b.Unlock()
 
 	b.buf = []byte{}
 	b.off = 0x00

@@ -20,10 +20,7 @@ along with this program.  if not, see <https://www.gnu.org/licenses/>.
 
 package crunch
 
-import (
-	"sync"
-	"unsafe"
-)
+import "unsafe"
 
 // MiniBuffer implements a fast and low-memory buffer type in go that handles multiple types of data easily. it is not safe
 // for concurrent usage out of the box, you are required to handle that yourself by calling the Lock and Unlock methods on it.
@@ -37,8 +34,6 @@ type MiniBuffer struct {
 
 	// temp?
 	obuf unsafe.Pointer
-
-	sync.Mutex
 }
 
 // NewMiniBuffer initilaizes a new MiniBuffer with the provided byte slice(s) stored inside in the order provided
@@ -59,10 +54,19 @@ func NewMiniBuffer(out **MiniBuffer, slices ...[]byte) {
 		(*out).buf = slices[0]
 
 	default:
-		for _, s := range slices {
+		var (
+			i = int64(0)
+			n = int64(len(slices))
+		)
+		{
+		append_loop:
+			(*out).buf = append((*out).buf, slices[i]...)
+			i++
+			if i < n {
 
-			(*out).buf = append((*out).buf, s...)
+				goto append_loop
 
+			}
 		}
 
 	}
@@ -315,10 +319,10 @@ func (b *MiniBuffer) WriteBytes(off int64, data []byte) {
 	}*/
 
 	var (
-		p = unsafe.Pointer(uintptr(b.obuf) + uintptr(off))
+		p      = unsafe.Pointer(uintptr(b.obuf) + uintptr(off))
 		offset uintptr
-		i = int64(0)
-		n = int64(len(data))
+		i      = int64(0)
+		n      = int64(len(data))
 	)
 	{
 	write_loop:
