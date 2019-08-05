@@ -13,26 +13,26 @@ $ go get github.com/superwhiskers/crunch
 
 ## benchmarks
 
-`MiniBuffer` performs on average more than twice as fast as `bytes.Buffer` in both writing and reading
+both `Buffer` and `MiniBuffer` perform on average more than twice as fast as `bytes.Buffer` in both writing and reading
 ```
-BenchmarkBufferWriteBytes-4       	50000000	        36.3 ns/op	       0 B/op	       0 allocs/op
-BenchmarkBufferReadBytes-4        	20000000	       100 ns/op	       0 B/op	       0 allocs/op
-BenchmarkBufferWriteU32LE-4       	30000000	        47.7 ns/op	       0 B/op	       0 allocs/op
-BenchmarkBufferReadU32LE-4        	10000000	       170 ns/op	       8 B/op	       1 allocs/op
-BenchmarkBufferReadBit-4          	20000000	       113 ns/op	       0 B/op	       0 allocs/op
-BenchmarkBufferReadBits-4         	 5000000	       253 ns/op	       0 B/op	       0 allocs/op
-BenchmarkBufferSetBit-4           	20000000	       101 ns/op	       0 B/op	       0 allocs/op
-BenchmarkBufferClearBit-4         	20000000	        99.6 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferWriteBytes-4   	200000000	         6.71 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferReadBytes-4    	2000000000	         1.48 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferWriteU32LE-4   	100000000	        21.6 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferReadU32LE-4    	100000000	        11.7 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferReadBit-4      	2000000000	         1.71 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferReadBits-4     	100000000	        14.4 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferSetBit-4       	500000000	         3.05 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMiniBufferClearBit-4     	500000000	         3.16 ns/op	       0 B/op	       0 allocs/op
-BenchmarkStdByteBufferWrite-4     	50000000	        23.6 ns/op	       0 B/op	       0 allocs/op
-BenchmarkStdByteBufferRead-4      	200000000	         7.18 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferWriteBytes-4             2000000000               1.45 ns/op            0 B/op          0 allocs/op
+BenchmarkBufferReadBytes-4              2000000000               0.84 ns/op            0 B/op          0 allocs/op
+BenchmarkBufferWriteU32LE-4             200000000                9.28 ns/op            0 B/op          0 allocs/op
+BenchmarkBufferReadU32LE-4              50000000                26.6 ns/op             8 B/op          1 allocs/op
+BenchmarkBufferReadBit-4                2000000000               0.84 ns/op            0 B/op          0 allocs/op
+BenchmarkBufferReadBits-4               1000000000               2.25 ns/op            0 B/op          0 allocs/op
+BenchmarkBufferSetBit-4                 1000000000               2.07 ns/op            0 B/op          0 allocs/op
+BenchmarkBufferClearBit-4               1000000000               2.05 ns/op            0 B/op          0 allocs/op
+BenchmarkMiniBufferWriteBytes-4         2000000000               1.42 ns/op            0 B/op          0 allocs/op
+BenchmarkMiniBufferReadBytes-4          2000000000               0.58 ns/op            0 B/op          0 allocs/op
+BenchmarkMiniBufferWriteU32LE-4         200000000                8.79 ns/op            0 B/op          0 allocs/op
+BenchmarkMiniBufferReadU32LE-4          500000000                3.91 ns/op            0 B/op          0 allocs/op
+BenchmarkMiniBufferReadBit-4            2000000000               0.64 ns/op            0 B/op          0 allocs/op
+BenchmarkMiniBufferReadBits-4           300000000                5.64 ns/op            0 B/op          0 allocs/op
+BenchmarkMiniBufferSetBit-4             1000000000               2.03 ns/op            0 B/op          0 allocs/op
+BenchmarkMiniBufferClearBit-4           1000000000               2.10 ns/op            0 B/op          0 allocs/op
+BenchmarkStdByteBufferWrite-4           200000000                9.42 ns/op            0 B/op          0 allocs/op
+BenchmarkStdByteBufferRead-4            500000000                3.36 ns/op            0 B/op          0 allocs/op
 ```
 
 ## example

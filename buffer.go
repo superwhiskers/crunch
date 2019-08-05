@@ -379,16 +379,14 @@ func (b *Buffer) WriteBytes(off int64, data []byte) {
 	}*/
 
 	var (
-		p      = unsafe.Pointer(uintptr(b.obuf) + uintptr(off))
-		offset uintptr
-		i      = int64(0)
-		n      = int64(len(data))
+		p = unsafe.Pointer(uintptr(b.obuf) + uintptr(off))
+		i = int64(0)
+		n = int64(len(data))
 	)
 	{
 	write_loop:
-		*(*byte)(unsafe.Pointer(uintptr(p) + offset)) = data[i]
+		*(*byte)(unsafe.Pointer(uintptr(p) + uintptr(i))) = data[i]
 		i++
-		offset++
 		if i < n {
 
 			goto write_loop
