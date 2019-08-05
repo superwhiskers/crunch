@@ -36,7 +36,7 @@ type MiniBuffer struct {
 	bcap int64
 
 	// temp?
-	obuf uintptr
+	obuf unsafe.Pointer
 
 	sync.Mutex
 }
@@ -315,15 +315,16 @@ func (b *MiniBuffer) WriteBytes(off int64, data []byte) {
 	}*/
 
 	var (
-		p = uintptr(off) + b.obuf
+		p = unsafe.Pointer(uintptr(b.obuf) + uintptr(off))
+		offset uintptr
 		i = int64(0)
 		n = int64(len(data))
 	)
 	{
 	write_loop:
-		*(*byte)(unsafe.Pointer(p)) = data[i]
+		*(*byte)(unsafe.Pointer(uintptr(p) + offset)) = data[i]
 		i++
-		p++
+		offset++
 		if i < n {
 
 			goto write_loop
@@ -783,7 +784,7 @@ func (b *MiniBuffer) Refresh() {
 
 	if len(b.buf) > 0 {
 
-		b.obuf = (uintptr)(unsafe.Pointer(&b.buf[0]))
+		b.obuf = unsafe.Pointer(&b.buf[0])
 
 	}
 
