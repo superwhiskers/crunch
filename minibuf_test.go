@@ -1214,3 +1214,19 @@ func BenchmarkMiniBufferClearBit(b *testing.B) {
 	}
 
 }
+
+func BenchmarkMiniBufferGrow(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf)
+
+	for n := 0; n < b.N; n++ {
+
+		buf.Grow(1)
+		buf.Reset()
+
+	}
+
+}

@@ -844,7 +844,14 @@ func (b *MiniBuffer) AlignByte() {
 // Grow makes the buffer's capacity bigger by n bytes
 func (b *MiniBuffer) Grow(n int64) {
 
+	if n <= int64(cap(b.buf))-b.cap {
+
+		b.buf = b.buf[0 : b.cap+n]
+		return
+
+	}
 	b.buf = append(b.buf, make([]byte, n)...)
+
 	b.Refresh()
 
 }
@@ -866,7 +873,7 @@ func (b *MiniBuffer) Refresh() {
 // Reset resets the entire buffer
 func (b *MiniBuffer) Reset() {
 
-	b.buf = []byte{}
+	b.buf = b.buf[0:0]
 	b.off = 0x00
 	b.boff = 0x00
 	b.cap = 0

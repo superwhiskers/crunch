@@ -1533,3 +1533,18 @@ func BenchmarkBufferClearBit(b *testing.B) {
 	}
 
 }
+
+func BenchmarkBufferGrow(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := NewBuffer()
+
+	for n := 0; n < b.N; n++ {
+
+		buf.Grow(1)
+		buf.Reset()
+
+	}
+
+}

@@ -1126,6 +1126,12 @@ func (b *Buffer) AlignByte() {
 // Grow makes the buffer's capacity bigger by n bytes
 func (b *Buffer) Grow(n int64) {
 
+	if n <= int64(cap(b.buf))-b.cap {
+
+		b.buf = b.buf[0 : b.cap+n]
+		return
+
+	}
 	b.buf = append(b.buf, make([]byte, n)...)
 
 	b.Refresh()
@@ -1149,7 +1155,7 @@ func (b *Buffer) Refresh() {
 // Reset resets the entire buffer
 func (b *Buffer) Reset() {
 
-	b.buf = []byte{}
+	b.buf = b.buf[0:0]
 	b.off = 0x00
 	b.boff = 0x00
 	b.cap = 0

@@ -51,3 +51,18 @@ func BenchmarkStdByteBufferRead(b *testing.B) {
 	}
 
 }
+
+func BenchmarkStdByteBufferGrow(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := &bytes.Buffer{}
+
+	for n := 0; n < b.N; n++ {
+
+		buf.Grow(1)
+		buf.Reset()
+
+	}
+
+}
