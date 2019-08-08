@@ -22,9 +22,9 @@ package crunch
 
 import "unsafe"
 
-// MiniBuffer implements a fast and low-memory buffer type in go that handles multiple types of data easily. it is not safe
-// for concurrent usage out of the box, you are required to handle that yourself by calling the Lock and Unlock methods on it.
-// it also lacks the overwrite/read and underwrite/read checks that Buffer has
+// MiniBuffer implements a fast and low-memory buffer type in go that
+// handles multiple types of data easily. it lacks the overwrite/read
+// and underwrite/read checks that Buffer has
 type MiniBuffer struct {
 	buf  []byte
 	off  int64
@@ -36,7 +36,8 @@ type MiniBuffer struct {
 	obuf unsafe.Pointer
 }
 
-// NewMiniBuffer initilaizes a new MiniBuffer with the provided byte slice(s) stored inside in the order provided
+// NewMiniBuffer initilaizes a new MiniBuffer with the provided byte
+// slice(s) stored inside in the order provided
 func NewMiniBuffer(out **MiniBuffer, slices ...[]byte) {
 
 	*out = &MiniBuffer{
@@ -77,14 +78,16 @@ func NewMiniBuffer(out **MiniBuffer, slices ...[]byte) {
 
 /* bitfield methods */
 
-// ReadBit stores the bit located at the specified offset without modifying the internal offset value in out
+// ReadBit stores the bit located at the specified offset without
+// modifying the internal offset value in out
 func (b *MiniBuffer) ReadBit(out *byte, off int64) {
 
 	*out = (b.buf[off/8] >> (7 - uint64(off%8))) & 1
 
 }
 
-// ReadBitNext stores the next bit from the current offset and moves the offset forward a bit in out
+// ReadBitNext stores the next bit from the current offset and moves
+// the offset forward a bit in out
 func (b *MiniBuffer) ReadBitNext(out *byte) {
 
 	b.ReadBit(out, b.boff)
@@ -92,7 +95,8 @@ func (b *MiniBuffer) ReadBitNext(out *byte) {
 
 }
 
-// ReadBits stores the next n bits from the specified offset without modifying the internal offset value in out
+// ReadBits stores the next n bits from the specified offset without
+// modifying the internal offset value in out
 func (b *MiniBuffer) ReadBits(out *uint64, off, n int64) {
 
 	var (
@@ -114,7 +118,8 @@ func (b *MiniBuffer) ReadBits(out *uint64, off, n int64) {
 
 }
 
-// ReadBitsNext stores the next n bits from the current offset and moves the offset forward the amount of bits read in out
+// ReadBitsNext stores the next n bits from the current offset and
+// moves the offset forward the amount of bits read in out
 func (b *MiniBuffer) ReadBitsNext(out *uint64, n int64) {
 
 	b.ReadBits(out, b.boff, n)
@@ -122,14 +127,16 @@ func (b *MiniBuffer) ReadBitsNext(out *uint64, n int64) {
 
 }
 
-// SetBit sets the bit located at the specified offset without modifying the internal offset value
+// SetBit sets the bit located at the specified offset without
+// modifying the internal offset value
 func (b *MiniBuffer) SetBit(off int64) {
 
 	b.buf[off/8] |= (1 << uint(7-(off%8)))
 
 }
 
-// SetBitNext sets the next bit from the current offset and moves the offset forward a bit
+// SetBitNext sets the next bit from the current offset and moves the
+// offset forward a bit
 func (b *MiniBuffer) SetBitNext() {
 
 	b.SetBit(b.boff)
@@ -137,14 +144,16 @@ func (b *MiniBuffer) SetBitNext() {
 
 }
 
-// ClearBit clears the bit located at the specified offset without modifying the internal offset value
+// ClearBit clears the bit located at the specified offset without
+// modifying the internal offset value
 func (b *MiniBuffer) ClearBit(off int64) {
 
 	b.buf[off/8] &= ^(1 << uint(7-(off%8)))
 
 }
 
-// ClearBitNext clears the next bit from the current offset and moves the offset forward a bit
+// ClearBitNext clears the next bit from the current offset and moves
+// the offset forward a bit
 func (b *MiniBuffer) ClearBitNext() {
 
 	b.ClearBit(b.boff)
@@ -152,7 +161,8 @@ func (b *MiniBuffer) ClearBitNext() {
 
 }
 
-// SetBits sets the next n bits from the specified offset without modifying the internal offset value
+// SetBits sets the next n bits from the specified offset without
+// modifying the internal offset value
 func (b *MiniBuffer) SetBits(off int64, data uint64, n int64) {
 
 	i := int64(0)
@@ -178,7 +188,8 @@ func (b *MiniBuffer) SetBits(off int64, data uint64, n int64) {
 
 }
 
-// SetBitsNext sets the next n bits from the current offset and moves the offset forward the amount of bits set
+// SetBitsNext sets the next n bits from the current offset and moves
+// the offset forward the amount of bits set
 func (b *MiniBuffer) SetBitsNext(data uint64, n int64) {
 
 	b.SetBits(b.boff, data, n)
@@ -186,14 +197,16 @@ func (b *MiniBuffer) SetBitsNext(data uint64, n int64) {
 
 }
 
-// FlipBit flips the bit located at the specified offset without modifying the internal offset value
+// FlipBit flips the bit located at the specified offset without
+// modifying the internal offset value
 func (b *MiniBuffer) FlipBit(off int64) {
 
 	b.buf[off/8] ^= (1 << uint(7-(off%8)))
 
 }
 
-// FlipBitNext flips the next bit from the current offset and moves the offset forward a bit
+// FlipBitNext flips the next bit from the current offset and moves
+// the offset forward a bit
 func (b *MiniBuffer) FlipBitNext() {
 
 	b.FlipBit(b.boff)
@@ -262,7 +275,8 @@ func (b *MiniBuffer) FlipAllBits() {
 
 }
 
-// SeekBit seeks to bit position off of the the buffer relative to the current position or exact
+// SeekBit seeks to bit position off of the the buffer relative to
+// the current position or exact
 func (b *MiniBuffer) SeekBit(off int64, relative bool) {
 
 	if relative {
@@ -277,7 +291,8 @@ func (b *MiniBuffer) SeekBit(off int64, relative bool) {
 
 }
 
-// AfterBit stores the amount of bits located after the current bit position or the specified one in out
+// AfterBit stores the amount of bits located after the current bit
+// position or the specified one in out
 func (b *MiniBuffer) AfterBit(out *int64, off ...int64) {
 
 	if len(off) == 0 {
@@ -299,10 +314,14 @@ func (b *MiniBuffer) AlignBit() {
 
 /* byte buffer methods */
 
-// WriteBytes writes bytes to the buffer at the specified offset without modifying the internal offset value
+// WriteBytes writes bytes to the buffer at the specified offset
+// without modifying the internal offset value
 func (b *MiniBuffer) WriteBytes(off int64, data []byte) {
 
-	/* i'm just leaving this here incase this new method proves to be slower in some edge cases */
+	/*
+	   i'm just leaving this here incase this new
+	   method proves to be slower in some edge cases
+	*/
 	/*var (
 		i = int64(0)
 		n = int64(len(data))
@@ -336,7 +355,8 @@ func (b *MiniBuffer) WriteBytes(off int64, data []byte) {
 
 }
 
-// WriteBytesNext writes bytes to the buffer at the current offset and moves the offset forward the amount of bytes written
+// WriteBytesNext writes bytes to the buffer at the current offset
+// and moves the offset forward the amount of bytes written
 func (b *MiniBuffer) WriteBytesNext(data []byte) {
 
 	b.WriteBytes(b.off, data)
@@ -344,7 +364,9 @@ func (b *MiniBuffer) WriteBytesNext(data []byte) {
 
 }
 
-// WriteU16LE writes a slice of uint16s to the buffer at the specified offset in little-endian without modifying the internal offset value
+// WriteU16LE writes a slice of uint16s to the buffer at the
+// specified offset in little-endian without modifying the internal
+// offset value
 func (b *MiniBuffer) WriteU16LE(off int64, data []uint16) {
 
 	var (
@@ -366,7 +388,9 @@ func (b *MiniBuffer) WriteU16LE(off int64, data []uint16) {
 
 }
 
-// WriteU16LENext writes a slice of uint16s to the buffer at the current offset in little-endian and moves the offset forward the amount of bytes written
+// WriteU16LENext writes a slice of uint16s to the buffer at the
+// current offset in little-endian and moves the offset forward the
+// amount of bytes written
 func (b *MiniBuffer) WriteU16LENext(data []uint16) {
 
 	b.WriteU16LE(b.off, data)
@@ -374,7 +398,9 @@ func (b *MiniBuffer) WriteU16LENext(data []uint16) {
 
 }
 
-// WriteU16BE writes a slice of uint16s to the buffer at the specified offset in big-endian without modifying the internal offset value
+// WriteU16BE writes a slice of uint16s to the buffer at the
+// specified offset in big-endian without modifying the internal
+// offset value
 func (b *MiniBuffer) WriteU16BE(off int64, data []uint16) {
 
 	var (
@@ -396,7 +422,9 @@ func (b *MiniBuffer) WriteU16BE(off int64, data []uint16) {
 
 }
 
-// WriteU16BENext writes a slice of uint16s to the buffer at the current offset in big-endian and moves the offset forward the amount of bytes written
+// WriteU16BENext writes a slice of uint16s to the buffer at the
+// current offset in big-endian and moves the offset forward the
+// amount of bytes written
 func (b *MiniBuffer) WriteU16BENext(data []uint16) {
 
 	b.WriteU16BE(b.off, data)
@@ -404,7 +432,9 @@ func (b *MiniBuffer) WriteU16BENext(data []uint16) {
 
 }
 
-// WriteU32LE writes a slice of uint32s to the buffer at the specified offset in little-endian without modifying the internal offset value
+// WriteU32LE writes a slice of uint32s to the buffer at the
+// specified offset in little-endian without modifying the internal
+// offset value
 func (b *MiniBuffer) WriteU32LE(off int64, data []uint32) {
 
 	var (
@@ -428,7 +458,9 @@ func (b *MiniBuffer) WriteU32LE(off int64, data []uint32) {
 
 }
 
-// WriteU32LENext writes a slice of uint32s to the buffer at the current offset in little-endian and moves the offset forward the amount of bytes written
+// WriteU32LENext writes a slice of uint32s to the buffer at the
+// current offset in little-endian and moves the offset forward the
+// amount of bytes written
 func (b *MiniBuffer) WriteU32LENext(data []uint32) {
 
 	b.WriteU32LE(b.off, data)
@@ -436,7 +468,9 @@ func (b *MiniBuffer) WriteU32LENext(data []uint32) {
 
 }
 
-// WriteU32BE writes a slice of uint32s to the buffer at the specified offset in big-endian without modifying the internal offset value
+// WriteU32BE writes a slice of uint32s to the buffer at the
+// specified offset in big-endian without modifying the internal
+// offset value
 func (b *MiniBuffer) WriteU32BE(off int64, data []uint32) {
 
 	var (
@@ -460,7 +494,9 @@ func (b *MiniBuffer) WriteU32BE(off int64, data []uint32) {
 
 }
 
-// WriteU32BENext writes a slice of uint32s to the buffer at the current offset in big-endian and moves the offset forward the amount of bytes written
+// WriteU32BENext writes a slice of uint32s to the buffer at the
+// current offset in big-endian and moves the offset forward the
+// amount of bytes written
 func (b *MiniBuffer) WriteU32BENext(data []uint32) {
 
 	b.WriteU32BE(b.off, data)
@@ -468,7 +504,8 @@ func (b *MiniBuffer) WriteU32BENext(data []uint32) {
 
 }
 
-// WriteU64LE writes a slice of uint64s to the buffer at the specfied offset in little-endian without modifying the internal offset value
+// WriteU64LE writes a slice of uint64s to the buffer at the specfied
+// offset in little-endian without modifying the internal offset value
 func (b *MiniBuffer) WriteU64LE(off int64, data []uint64) {
 
 	var (
@@ -496,7 +533,9 @@ func (b *MiniBuffer) WriteU64LE(off int64, data []uint64) {
 
 }
 
-// WriteU64LENext writes a slice of uint64s to the buffer at the current offset in little-endian and moves the offset forward the amount of bytes written
+// WriteU64LENext writes a slice of uint64s to the buffer at the
+// current offset in little-endian and moves the offset forward the
+// amount of bytes written
 func (b *MiniBuffer) WriteU64LENext(data []uint64) {
 
 	b.WriteU64LE(b.off, data)
@@ -504,7 +543,9 @@ func (b *MiniBuffer) WriteU64LENext(data []uint64) {
 
 }
 
-// WriteU64BE writes a slice of uint64s to the buffer at the specified offset in big-endian without modifying the internal offset value
+// WriteU64BE writes a slice of uint64s to the buffer at the
+// specified offset in big-endian without modifying the internal
+// offset value
 func (b *MiniBuffer) WriteU64BE(off int64, data []uint64) {
 
 	var (
@@ -532,7 +573,9 @@ func (b *MiniBuffer) WriteU64BE(off int64, data []uint64) {
 
 }
 
-// WriteU64BENext writes a slice of uint64s to the buffer at the current offset in big-endian and moves the offset forward the amount of bytes written
+// WriteU64BENext writes a slice of uint64s to the buffer at the
+// current offset in big-endian and moves the offset forward the
+// amount of bytes written
 func (b *MiniBuffer) WriteU64BENext(data []uint64) {
 
 	b.WriteU64BE(b.off, data)
@@ -540,14 +583,16 @@ func (b *MiniBuffer) WriteU64BENext(data []uint64) {
 
 }
 
-// ReadBytes stores the next n bytes from the specified offset without modifying the internal offset value in out
+// ReadBytes stores the next n bytes from the specified offset
+// without modifying the internal offset value in out
 func (b *MiniBuffer) ReadBytes(out *[]byte, off, n int64) {
 
 	*out = b.buf[off : off+n]
 
 }
 
-// ReadBytesNext stores the next n bytes from the current offset and moves the offset forward the amount of bytes read in out
+// ReadBytesNext stores the next n bytes from the current offset and
+// moves the offset forward the amount of bytes read in out
 func (b *MiniBuffer) ReadBytesNext(out *[]byte, n int64) {
 
 	b.ReadBytes(out, b.off, n)
@@ -555,7 +600,9 @@ func (b *MiniBuffer) ReadBytesNext(out *[]byte, n int64) {
 
 }
 
-// ReadU16LE reads a slice of uint16s from the buffer at the specified offset in little-endian without modifying the internal offset value
+// ReadU16LE reads a slice of uint16s from the buffer at the
+// specified offset in little-endian without modifying the internal
+// offset value
 func (b *MiniBuffer) ReadU16LE(out *[]uint16, off, n int64) {
 
 	i := int64(0)
@@ -574,7 +621,9 @@ func (b *MiniBuffer) ReadU16LE(out *[]uint16, off, n int64) {
 
 }
 
-// ReadU16LENext reads a slice of uint16s from the buffer at the current offset in little-endian and moves the offset forward the amount of bytes read
+// ReadU16LENext reads a slice of uint16s from the buffer at the
+// current offset in little-endian and moves the offset forward the
+// amount of bytes read
 func (b *MiniBuffer) ReadU16LENext(out *[]uint16, n int64) {
 
 	b.ReadU16LE(out, b.off, n)
@@ -582,7 +631,9 @@ func (b *MiniBuffer) ReadU16LENext(out *[]uint16, n int64) {
 
 }
 
-// ReadU16BE reads a slice of uint16s from the buffer at the specified offset in big-endian without modifying the internal offset value
+// ReadU16BE reads a slice of uint16s from the buffer at the
+// specified offset in big-endian without modifying the internal
+// offset value
 func (b *MiniBuffer) ReadU16BE(out *[]uint16, off, n int64) {
 
 	i := int64(0)
@@ -601,7 +652,9 @@ func (b *MiniBuffer) ReadU16BE(out *[]uint16, off, n int64) {
 
 }
 
-// ReadU16BENext reads a slice of uint16s from the buffer at the current offset in big-endian and moves the offset forward the amount of bytes read
+// ReadU16BENext reads a slice of uint16s from the buffer at the
+// current offset in big-endian and moves the offset forward the
+// amount of bytes read
 func (b *MiniBuffer) ReadU16BENext(out *[]uint16, n int64) {
 
 	b.ReadU16BE(out, b.off, n)
@@ -609,7 +662,9 @@ func (b *MiniBuffer) ReadU16BENext(out *[]uint16, n int64) {
 
 }
 
-// ReadU32LE reads a slice of uint32s from the buffer at the specified offset in little-endian without modifying the internal offset value
+// ReadU32LE reads a slice of uint32s from the buffer at the
+// specified offset in little-endian without modifying the internal
+// offset value
 func (b *MiniBuffer) ReadU32LE(out *[]uint32, off, n int64) {
 
 	i := int64(0)
@@ -630,7 +685,9 @@ func (b *MiniBuffer) ReadU32LE(out *[]uint32, off, n int64) {
 
 }
 
-// ReadU32LENext reads a slice of uint32s from the buffer at the current offset in little-endian and moves the offset forward the amount of bytes read
+// ReadU32LENext reads a slice of uint32s from the buffer at the
+// current offset in little-endian and moves the offset forward the
+// amount of bytes read
 func (b *MiniBuffer) ReadU32LENext(out *[]uint32, n int64) {
 
 	b.ReadU32LE(out, b.off, n)
@@ -638,7 +695,9 @@ func (b *MiniBuffer) ReadU32LENext(out *[]uint32, n int64) {
 
 }
 
-// ReadU32BE reads a slice of uint32s from the buffer at the specified offset in big-endian without modifying the internal offset value
+// ReadU32BE reads a slice of uint32s from the buffer at the
+// specified offset in big-endian without modifying the internal
+// offset value
 func (b *MiniBuffer) ReadU32BE(out *[]uint32, off, n int64) {
 
 	i := int64(0)
@@ -659,7 +718,9 @@ func (b *MiniBuffer) ReadU32BE(out *[]uint32, off, n int64) {
 
 }
 
-// ReadU32BENext reads a slice of uint32s from the buffer at the current offset in big-endian and moves the offset forward the amount of bytes read
+// ReadU32BENext reads a slice of uint32s from the buffer at the
+// current offset in big-endian and moves the offset forward the
+// amount of bytes read
 func (b *MiniBuffer) ReadU32BENext(out *[]uint32, n int64) {
 
 	b.ReadU32BE(out, b.off, n)
@@ -667,7 +728,9 @@ func (b *MiniBuffer) ReadU32BENext(out *[]uint32, n int64) {
 
 }
 
-// ReadU64LE reads a slice of uint64s from the buffer at the specified offset in little-endian without modifying the internal offset value
+// ReadU64LE reads a slice of uint64s from the buffer at the
+// specified offset in little-endian without modifying the internal
+// offset value
 func (b *MiniBuffer) ReadU64LE(out *[]uint64, off, n int64) {
 
 	i := int64(0)
@@ -692,7 +755,9 @@ func (b *MiniBuffer) ReadU64LE(out *[]uint64, off, n int64) {
 
 }
 
-// ReadU64LENext reads a slice of uint64s from the buffer at the current offset in little-endian and moves the offset forward the amount of bytes read
+// ReadU64LENext reads a slice of uint64s from the buffer at the
+// current offset in little-endian and moves the offset forward the
+// amount of bytes read
 func (b *MiniBuffer) ReadU64LENext(out *[]uint64, n int64) {
 
 	b.ReadU64LE(out, b.off, n)
@@ -700,7 +765,9 @@ func (b *MiniBuffer) ReadU64LENext(out *[]uint64, n int64) {
 
 }
 
-// ReadU64BE reads a slice of uint64s from the buffer at the specified offset in big-endian without modifying the internal offset value
+// ReadU64BE reads a slice of uint64s from the buffer at the
+// specified offset in big-endian without modifying the internal
+// offset value
 func (b *MiniBuffer) ReadU64BE(out *[]uint64, off, n int64) {
 
 	i := int64(0)
@@ -725,7 +792,9 @@ func (b *MiniBuffer) ReadU64BE(out *[]uint64, off, n int64) {
 
 }
 
-// ReadU64BENext reads a slice of uint64s from the buffer at the current offset in big-endian and moves the offset forward the amount of bytes read
+// ReadU64BENext reads a slice of uint64s from the buffer at the
+// current offset in big-endian and moves the offset forward the
+// amount of bytes read
 func (b *MiniBuffer) ReadU64BENext(out *[]uint64, n int64) {
 
 	b.ReadU64BE(out, b.off, n)
@@ -733,7 +802,8 @@ func (b *MiniBuffer) ReadU64BENext(out *[]uint64, n int64) {
 
 }
 
-// SeekByte seeks to position off of the buffer relative to the current position or exact
+// SeekByte seeks to position off of the buffer relative to the
+// current position or exact
 func (b *MiniBuffer) SeekByte(off int64, relative bool) {
 
 	if relative {
@@ -748,7 +818,8 @@ func (b *MiniBuffer) SeekByte(off int64, relative bool) {
 
 }
 
-// AfterByte stores the amount of bytes located after the current position or the specified one in out
+// AfterByte stores the amount of bytes located after the current
+// position or the specified one in out
 func (b *MiniBuffer) AfterByte(out *int64, off ...int64) {
 
 	if len(off) == 0 {
