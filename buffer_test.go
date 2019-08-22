@@ -208,6 +208,23 @@ func TestBufferGrow(t *testing.T) {
 
 }
 
+func TestBufferGrow2(t *testing.T) {
+
+	var expected int64 = 4
+
+	buf := NewBuffer(make([]byte, 2, 4))
+
+	buf.Grow(2)
+
+	var out = buf.ByteCapacity()
+	if expected != out {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
 func TestBufferSeekByte(t *testing.T) {
 
 	var expected int64 = 0x04

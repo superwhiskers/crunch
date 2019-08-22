@@ -1129,11 +1129,13 @@ func (b *Buffer) Grow(n int64) {
 	if n <= int64(cap(b.buf))-b.cap {
 
 		b.buf = b.buf[0 : b.cap+n]
+		b.Refresh()
 		return
 
 	}
-	b.buf = append(b.buf, make([]byte, n)...)
-
+	tmp := make([]byte, b.cap+n, (int64(cap(b.buf))+n)*2)
+	copy(tmp, b.buf)
+	b.buf = tmp
 	b.Refresh()
 
 }

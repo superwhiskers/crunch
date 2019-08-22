@@ -224,6 +224,25 @@ func TestMiniBufferGrow(t *testing.T) {
 
 }
 
+func TestMiniBufferGrow2(t *testing.T) {
+
+	var expected int64 = 4
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, make([]byte, 2, 4))
+
+	buf.Grow(2)
+
+	var out int64
+	buf.ByteCapacity(&out)
+	if expected != out {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out, expected)
+
+	}
+
+}
+
 func TestMiniBufferSeekByte(t *testing.T) {
 
 	var expected int64 = 0x04
