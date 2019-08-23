@@ -191,6 +191,64 @@ func TestBufferReset(t *testing.T) {
 
 }
 
+func TestBufferTruncateLeft(t *testing.T) {
+
+	var (
+		expected1 byte  = 0x02
+		expected2 int64 = 1
+	)
+
+	buf := NewBuffer([]byte{0x01, 0x02})
+
+	buf.TruncateLeft(1)
+
+	t.Log(buf.buf)
+
+	out1 := buf.ReadByte(0x00)
+	if expected1 != out1 {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out1, expected1)
+
+	}
+
+	out2 := buf.ByteCapacity()
+	if expected2 != out2 {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out2, expected2)
+
+	}
+
+}
+
+func TestBufferTruncateRight(t *testing.T) {
+
+	var (
+		expected1 byte  = 0x01
+		expected2 int64 = 1
+	)
+
+	buf := NewBuffer([]byte{0x01, 0x02})
+
+	buf.TruncateRight(1)
+
+	t.Log(buf.buf)
+
+	out1 := buf.ReadByte(0x00)
+	if expected1 != out1 {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out1, expected1)
+
+	}
+
+	out2 := buf.ByteCapacity()
+	if expected2 != out2 {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out2, expected2)
+
+	}
+
+}
+
 func TestBufferGrow(t *testing.T) {
 
 	var expected int64 = 4
@@ -1424,6 +1482,36 @@ func TestBufferReadU64BEPanic2(t *testing.T) {
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
 	_ = buf.ReadU64BE(-0x01, 1)
+
+}
+
+func TestBufferGrowPanic(t *testing.T) {
+
+	defer panicChecker(t, BufferInvalidByteCountError)
+
+	buf := NewBuffer([]byte{0x00, 0x00})
+
+	buf.Grow(-1)
+
+}
+
+func TestBufferTruncateLeftPanic(t *testing.T) {
+
+	defer panicChecker(t, BufferInvalidByteCountError)
+
+	buf := NewBuffer([]byte{0x00, 0x00})
+
+	buf.TruncateLeft(-1)
+
+}
+
+func TestBufferTruncateRightPanic(t *testing.T) {
+
+	defer panicChecker(t, BufferInvalidByteCountError)
+
+	buf := NewBuffer([]byte{0x00, 0x00})
+
+	buf.TruncateRight(-1)
 
 }
 

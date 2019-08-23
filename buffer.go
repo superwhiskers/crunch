@@ -1123,8 +1123,42 @@ func (b *Buffer) AlignByte() {
 
 /* generic methods */
 
+// TruncateLeft truncates the buffer on the left side
+func (b *Buffer) TruncateLeft(n int64) {
+
+	if n < 0 {
+
+		panic(BufferInvalidByteCountError)
+
+	}
+
+	b.buf = b.buf[n:b.cap]
+	b.Refresh()
+
+}
+
+// TruncateRight truncates the buffer on the right side
+func (b *Buffer) TruncateRight(n int64) {
+
+	if n < 0 {
+
+		panic(BufferInvalidByteCountError)
+
+	}
+
+	b.buf = b.buf[0x00 : b.cap-n]
+	b.Refresh()
+
+}
+
 // Grow makes the buffer's capacity bigger by n bytes
 func (b *Buffer) Grow(n int64) {
+
+	if n < 0 {
+
+		panic(BufferInvalidByteCountError)
+
+	}
 
 	if n <= int64(cap(b.buf))-b.cap {
 

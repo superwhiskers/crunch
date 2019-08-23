@@ -205,6 +205,66 @@ func TestMiniBufferReset(t *testing.T) {
 
 }
 
+func TestMiniBufferTruncateLeft(t *testing.T) {
+
+	var (
+		expected1 byte  = 0x02
+		expected2 int64 = 1
+	)
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x01, 0x02})
+
+	buf.TruncateLeft(1)
+
+	var out1 []byte
+	buf.ReadBytes(&out1, 0x00, 1)
+	if expected1 != out1[0] {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out1, expected1)
+
+	}
+
+	var out2 int64
+	buf.ByteCapacity(&out2)
+	if expected2 != out2 {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out2, expected2)
+
+	}
+
+}
+
+func TestMiniBufferTruncateRight(t *testing.T) {
+
+	var (
+		expected1 byte  = 0x01
+		expected2 int64 = 1
+	)
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x01, 0x02})
+
+	buf.TruncateRight(1)
+
+	var out1 []byte
+	buf.ReadBytes(&out1, 0x00, 1)
+	if expected1 != out1[0] {
+
+		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out1, expected1)
+
+	}
+
+	var out2 int64
+	buf.ByteCapacity(&out2)
+	if expected2 != out2 {
+
+		t.Fatalf("expected int64 does not match the one gotten (got %d, expected %d)", out2, expected2)
+
+	}
+
+}
+
 func TestMiniBufferGrow(t *testing.T) {
 
 	var expected int64 = 4

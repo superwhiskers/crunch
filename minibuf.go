@@ -841,6 +841,22 @@ func (b *MiniBuffer) AlignByte() {
 
 /* generic methods */
 
+// TruncateLeft truncates the buffer on the left side
+func (b *MiniBuffer) TruncateLeft(n int64) {
+
+	b.buf = b.buf[n:b.cap]
+	b.Refresh()
+
+}
+
+// TruncateRight truncates the buffer on the right side
+func (b *MiniBuffer) TruncateRight(n int64) {
+
+	b.buf = b.buf[0x00 : b.cap-n]
+	b.Refresh()
+
+}
+
 // Grow makes the buffer's capacity bigger by n bytes
 func (b *MiniBuffer) Grow(n int64) {
 
