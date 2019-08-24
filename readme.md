@@ -1,4 +1,4 @@
-<h1 align="center"><img height="340" src="https://raw.githubusercontent.com/superwhiskers/crunch/.github/cookie.svg" alt="cookie with a bite taken out of it"/><br />crunch</h1>
+<h1 align="center"><img height="340" src="https://raw.githubusercontent.com/superwhiskers/crunch/.github/cookie.png" alt="cookie with a bite taken out of it"/><br />crunch</h1>
 
 <p align="center">
 	<b>a library for easily manipulating bits and bytes in golang</b>
