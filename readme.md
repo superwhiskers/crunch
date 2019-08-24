@@ -93,7 +93,7 @@ BenchmarkStdByteBufferRead-4            500000000                3.36 ns/op     
 
 ## examples
 
-examples can be found in [examples/](https://github.com/superwhiskers/crunch/blob/master/examples)
+examples can be found in the [examples](https://github.com/superwhiskers/crunch/blob/master/examples) directory
 
 ## acknowledgements
 
