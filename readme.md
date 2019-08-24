@@ -26,14 +26,14 @@
 </p>
 
 <p align="center">
-	<a href="#features">features</a> | <a href="#installation">installation</a> | <a href="#benchmarks">benchmarks</a> | <a href="#example">example</a>
+	<a href="#features">features</a> | <a href="#installation">installation</a> | <a href="#benchmarks">benchmarks</a> | <a href="#examples">examples</a>
 </p>
 
 ## features
 
-- **feature-rich**: supports reading and writing integers of varying sizes and can write them in both little-endian and big-endian
+- **feature-rich**: supports reading and writing integers of varying sizes in both little and big endian
 - **performant**: performs more than twice as fast as the standard library's `bytes.Buffer`
-- **simple and familiar**: has an api that is designed to be easy to use and mimics the api of node.js' `Buffer` in a few places
+- **simple and familiar**: has a consistent and easy-to-use api
 - **licensed under the lgplv3**: use it anywhere you wish, just don't change it privately
 
 ## installation
@@ -91,41 +91,9 @@ BenchmarkStdByteBufferWrite-4           200000000                9.42 ns/op     
 BenchmarkStdByteBufferRead-4            500000000                3.36 ns/op            0 B/op          0 allocs/op
 ```
 
-## example
+## examples
 
-```golang
-package main
-
-import (
-	"fmt"
-	"github.com/superwhiskers/crunch"
-)
-
-func main() {
-
-	// creates a new buffer with four zeroes
-	buf := crunch.NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
-	
-	// write the byte `0x01` to the first offset, and move the offset forward one
-	buf.WriteByteNext(0x01)
-	
-	// write the byte `0x01` to the second offset, and move the offset forward one
-	buf.WriteByteNext(0x01)
-	
-	// seek the offset back one
-	buf.SeekByte(-1, true)
-	
-	// write the bytes `0x02` and `0x03` to the second and third offsets, respectively
-	buf.WriteBytesNext([]byte{0x02, 0x03})
-	
-	// write the byte `0x04` to offset `0x03`
-	buf.WriteByte(0x03, 0x04)
-	
-	// output the buffer's contents to the console
-	fmt.Printf("%v\n", buf.Bytes())
-	
-}
-```
+examples can be found in [examples/](https://github.com/superwhiskers/crunch/blob/master/examples)
 
 ## acknowledgements
 
