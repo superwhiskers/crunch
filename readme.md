@@ -1,14 +1,70 @@
-# crunch
+<h1 align="center"><img height="340" src="https://raw.githubusercontent.com/superwhiskers/crunch/.github/cookie.svg" alt="cookie with a bite taken out of it"/><br />crunch</h1>
 
-[![godoc](https://godoc.org/github.com/superwhiskers/crunch?status.svg)](https://godoc.org/github.com/superwhiskers/crunch)&nbsp;[![travis](https://travis-ci.org/superwhiskers/crunch.svg?branch=master)](https://travis-ci.org/superwhiskers/crunch#)&nbsp;[![codecov](https://codecov.io/gh/superwhiskers/crunch/branch/master/graph/badge.svg)](https://codecov.io/gh/superwhiskers/crunch)&nbsp;[![go report card](https://goreportcard.com/badge/github.com/superwhiskers/crunch)](https://goreportcard.com/report/github.com/superwhiskers/crunch)&nbsp;[![edit on repl.it](https://img.shields.io/badge/try%20it%20on-repl.it-%2359646A.svg)](https://repl.it/github/https://github.com/superwhiskers/crunch?ref=button)
+<p align="center">
+	<b>a library for easily manipulating bits and bytes in golang</b>
+</p>
 
+<p align="center">
+	<a href="https://github.com/superwhiskers/crunch/blob/master/license.lesser">
+		<img src="https://img.shields.io/badge/license-lgplv3-green.svg" alt="license" />
+	</a>
+	<a href="https://godoc.org/github.com/superwhiskers/crunch">
+		<img src="https://godoc.org/github.com/superwhiskers/crunch?status.svg" alt="godoc" />
+	</a>
+	<a href="https://travis-ci.org/superwhiskers/crunch">
+		<img src="https://travis-ci.org/superwhiskers/crunch.svg?branch=master" alt="travis" />
+	</a>
+	<a href="https://codecov.io/gh/superwhiskers/crunch">
+		<img src="https://codecov.io/gh/superwhiskers/crunch/branch/master/graph/badge.svg" alt="codecov" />
+	</a>
+	<a href="https://goreportcard.com/report/github.com/superwhiskers/crunch">
+		<img src="https://goreportcard.com/badge/github.com/superwhiskers/crunch" alt="go report card" />
+	</a>
+	<a href="https://repl.it/github/https://github.com/superwhiskers/crunch?ref=button">
+		<img src="https://img.shields.io/badge/try%20it%20on-repl.it-%2359646A.svg" alt="try it on repl.it" />
+	</a>
+</p>
 
-manipulate bytes and bits in golang with ease
+<p align="center">
+	<a href="#features">features</a> | <a href="#installation">installation</a> | <a href="#benchmarks">benchmarks</a> | <a href="#example">example</a>
+</p>
 
-## install
+## features
 
-```
+- **feature-rich**: supports reading and writing integers of varying sizes and can write them in both little-endian and big-endian
+- **performant**: performs more than twice as fast as the standard library's `bytes.Buffer`
+- **simple and familiar**: has an api that is designed to be easy to use and mimics the api of node.js' `Buffer` in a few places
+- **licensed under the lgplv3**: use it anywhere you wish, just don't change it privately
+
+## installation
+
+### install with the `go` tool
+
+```bash
 $ go get github.com/superwhiskers/crunch
+```
+
+then, just import it in your project like this. easy!
+
+```go
+package "yourpackage"
+
+import "github.com/superwhiskers/crunch"
+```
+
+### install using git submodules (not recommended)
+
+```bash
+# this assumes that you are in a git repository
+$ git submodule add https://github.com/superwhiskers/crunch path/to/where/you/want/crunch
+```
+
+then, you can import it like this
+
+```go
+package "yourpackage"
+
+import "github.com/your-username/project/path/to/crunch"
 ```
 
 ## benchmarks
@@ -71,6 +127,6 @@ func main() {
 }
 ```
 
-## license
+## acknowledgements
 
-[lgplv3](https://www.gnu.org/licenses/lgpl-3.0.en.html)
+icon (cookie logo) made by [freepik](https://www.freepik.com/) from [flaticon.com](https://www.flaticon.com)
