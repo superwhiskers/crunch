@@ -9,25 +9,5 @@ file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
 */
 
+// Package crunch provides various utilities for manipulating bytes and bits easily
 package crunch
-
-import "testing"
-
-/*
-
-tests
-
-*/
-
-func TestErrorError(t *testing.T) {
-
-	expected := "crunch: buffer: read exceeds buffer capacity"
-
-	out := BufferOverreadError.Error()
-	if out != expected {
-
-		t.Fatalf("expected string does not match the one gotten (got \"%s\", expected \"%s\")", out, expected)
-
-	}
-
-}

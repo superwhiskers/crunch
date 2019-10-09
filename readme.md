@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-	<a href="https://github.com/superwhiskers/crunch/blob/master/license.lesser">
-		<img src="https://img.shields.io/badge/license-lgplv3-green.svg" alt="license" />
+	<a href="https://github.com/superwhiskers/crunch/blob/master/license.txt">
+		<img src="https://img.shields.io/badge/license-MPL--2.0-brightgreen" alt="license" />
 	</a>
 	<a href="https://godoc.org/github.com/superwhiskers/crunch">
 		<img src="https://godoc.org/github.com/superwhiskers/crunch?status.svg" alt="godoc" />
@@ -34,7 +34,7 @@
 - **feature-rich**: supports reading and writing integers of varying sizes in both little and big endian
 - **performant**: performs more than twice as fast as the standard library's `bytes.Buffer`
 - **simple and familiar**: has a consistent and easy-to-use api
-- **licensed under the lgplv3**: use it anywhere you wish, just don't change it privately
+- **licensed under the mpl-2.0**: use it anywhere you wish, just don't change it privately
 
 ## installation
 
