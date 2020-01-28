@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-	<a href="https://github.com/superwhiskers/crunch/blob/master/license.txt">
+	<a href="https://github.com/superwhiskers/crunch/blob/master/LICENSE.txt">
 		<img src="https://img.shields.io/badge/license-MPL--2.0-brightgreen" alt="license" />
 	</a>
 	<a href="https://godoc.org/github.com/superwhiskers/crunch">
@@ -41,7 +41,7 @@
 ### install with the `go` tool
 
 ```bash
-$ go get github.com/superwhiskers/crunch
+$ go get github.com/superwhiskers/crunch/v3
 ```
 
 then, just import it in your project like this. easy!
@@ -49,7 +49,7 @@ then, just import it in your project like this. easy!
 ```go
 package "yourpackage"
 
-import "github.com/superwhiskers/crunch"
+import crunch "github.com/superwhiskers/crunch/v3"
 ```
 
 ### install using git submodules (not recommended)
@@ -64,7 +64,7 @@ then, you can import it like this
 ```go
 package "yourpackage"
 
-import "github.com/your-username/project/path/to/crunch"
+import crunch "github.com/your-username/project/path/to/crunch/v3"
 ```
 
 ## benchmarks

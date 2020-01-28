@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/superwhiskers/crunch"
+	crunch "github.com/superwhiskers/crunch/v3"
 )
 
 func main() {
