@@ -10,4 +10,4 @@ file, you can obtain one at http://mozilla.org/MPL/2.0/.
 */
 
 // Package crunch provides various utilities for manipulating bytes and bits easily
-package crunch
+package v2

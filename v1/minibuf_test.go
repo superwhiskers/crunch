@@ -9,7 +9,7 @@ file, you can obtain one at http://mozilla.org/MPL/2.0/.
 
 */
 
-package crunch
+package v1
 
 import (
 	"testing"
