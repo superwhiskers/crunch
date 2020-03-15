@@ -1,4 +1,4 @@
-module github.com/superwhiskers/crunch
+module github.com/superwhiskers/crunch/v2
 
 go 1.13
 
