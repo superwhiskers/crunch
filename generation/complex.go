@@ -1,11 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"regexp"
-	"strings"
-	"bytes"
 	"strconv"
+	"strings"
 
 	"github.com/dave/jennifer/jen"
 )
@@ -66,7 +66,7 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 
 	files = oldFiles
 
-	for name, _ := range files {
+	for name := range files {
 		fmt.Println("* scanning", name)
 
 		files[name] = r.ReplaceAllFunc(files[name], func(m []byte) []byte {
@@ -106,7 +106,7 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 				fmt.Println("! unable to convert string to integer:", e)
 				return []byte{}
 			}
-			intBytes := intBits/8
+			intBytes := intBits / 8
 
 			g := &jen.Group{}
 			g.Comment(strings.Join([]string{"// ", a[1], a[2], a[3], a[4], " ", map[string]string{"Read": "reads", "Write": "writes"}[a[1]], " a slice of ", intType, "s ", map[string]string{"Read": "from", "Write": "to"}[a[1]], " the buffer at the\n"}, ""))
@@ -157,19 +157,19 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 							for i := intBytes - 1; i > 0; i-- {
 								w = w.Id(intType).Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))))
 
-								if i < intBytes - 1 {
+								if i < intBytes-1 {
 									// subsequent iterations
-									w = w.Op("<<").Lit((intBytes - i - 1)*8)
+									w = w.Op("<<").Lit((intBytes - i - 1) * 8)
 								}
 								w = w.Op("|")
 							}
-							w = w.Id(intType).Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("<<").Lit((intBytes - 1)*8)
+							w = w.Id(intType).Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("<<").Lit((intBytes - 1) * 8)
 						} else {
 							w = w.Id(intType).Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("|")
 							for i := 1; i < intBytes; i++ {
-								w = w.Id(intType).Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes))))).Op("<<").Lit(i*8)
+								w = w.Id(intType).Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes))))).Op("<<").Lit(i * 8)
 
-								if i < intBytes - 1 {
+								if i < intBytes-1 {
 									// all operations except last
 									w = w.Op("|")
 								}
@@ -185,15 +185,15 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 					g.BlockFunc(func(g *jen.Group) {
 						g.Id("write_loop:")
 						if a[4] == "BE" {
-							g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((intBytes - 1)*8))
+							g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((intBytes - 1) * 8))
 							for i := intBytes - 1; i > 1; i-- {
-								g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Lit(intBytes-i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((i-1)*8))
+								g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Lit(intBytes - i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((i - 1) * 8))
 							}
-							g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Lit(intBytes-1).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")))
+							g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Lit(intBytes - 1).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")))
 						} else {
 							g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")))
 							for i := 1; i < intBytes; i++ {
-								g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit(i*8))
+								g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit(i * 8))
 							}
 						}
 						g.Id("i").Op("++")

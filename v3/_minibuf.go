@@ -384,7 +384,6 @@ func (b *MiniBuffer) ReadBytesNext(out *[]byte, n int64) {
 
 }
 
-
 //generator:complex MiniBuffer Read U 16 LE
 
 //generator:complex MiniBuffer Read U 16 BE

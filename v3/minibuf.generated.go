@@ -532,7 +532,6 @@ func (b *MiniBuffer) ReadBytesNext(out *[]byte, n int64) {
 
 }
 
-
 // ReadU16LE reads a slice of uint16s from the buffer at the
 // specified offset in little-endian without modifying the internal
 // offset value
