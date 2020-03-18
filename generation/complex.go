@@ -62,201 +62,298 @@ import (
 //
 // after that, it goes to the next file and does the same.
 func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e error) {
-	r := regexp.MustCompile("(?m)^\\/\\/generator:complex ([A-z]{1,}) ([A-z]{1,}) ([A-z]{1,}) ([0-9]{1,}) ([A-z]{1,})$")
+	magicCommentRegex := regexp.MustCompile("(?m)^\\/\\/generator:complex ([A-z]{1,}) ([A-z]{1,}) ([A-z]{1,}) ([0-9]{1,}) ([A-z]{1,})$")
 
 	files = oldFiles
 
 	for name := range files {
 		fmt.Println("* scanning", name)
 
-		files[name] = r.ReplaceAllFunc(files[name], func(m []byte) []byte {
-			a := r.FindAllStringSubmatch(string(m), -1)[0][1:]
-			fmt.Printf("* found match. args: %v\n", a)
+		files[name] = magicCommentRegex.ReplaceAllFunc(files[name], func(comment []byte) []byte {
+			arguments := magicCommentRegex.FindAllStringSubmatch(string(comment), -1)[0][1:]
+			fmt.Printf("* invocation. args: %v\n", arguments)
 
-			// verify the arguments
-			if a[0] != "Buffer" && a[0] != "MiniBuffer" {
-				fmt.Println("! invalid argument for position 0:", a[0])
-				return []byte{}
+			/* argument verification */
+
+			if arguments[0] != "Buffer" && arguments[0] != "MiniBuffer" {
+				fmt.Println("! invalid argument for position 0:", arguments[0])
+				return []byte(fmt.Sprint("// invalid argument provided in position zero:", arguments[0]))
 			}
 
-			if a[1] != "Read" && a[1] != "Write" {
-				fmt.Println("! invalid argument for position 1:", a[1])
-				return []byte{}
+			if arguments[1] != "Read" && arguments[1] != "Write" {
+				fmt.Println("! invalid argument for position 1:", arguments[1])
+				return []byte(fmt.Sprint("// invalid argument provided in position one:", arguments[1]))
 			}
 
-			if a[2] != "I" && a[2] != "U" && a[2] != "F" {
-				fmt.Println("! invalid argument for position 2:", a[2])
-				return []byte{}
+			if arguments[2] != "I" && arguments[2] != "U" && arguments[2] != "F" {
+				fmt.Println("! invalid argument for position 2:", arguments[2])
+				return []byte(fmt.Sprint("// invalid argument provided in position two:", arguments[2]))
 			}
 
-			if a[3] != "16" && a[3] != "32" && a[3] != "64" {
-				fmt.Println("! invalid argument for position 3:", a[3])
-				return []byte{}
+			if arguments[3] != "16" && arguments[3] != "32" && arguments[3] != "64" {
+				fmt.Println("! invalid argument for position 3:", arguments[3])
+				return []byte(fmt.Sprint("// invalid argument provided in position three:", arguments[3]))
 			}
 
-			if a[4] != "BE" && a[4] != "LE" {
-				fmt.Println("! invalid argument for position 4:", a[4])
-				return []byte{}
+			if arguments[4] != "BE" && arguments[4] != "LE" {
+				fmt.Println("! invalid argument for position 4:", arguments[4])
+				return []byte(fmt.Sprint("// invalid argument provided in position four:", arguments[4]))
 			}
 
-			intType := strings.Join([]string{map[string]string{"I": "int", "U": "uint", "F": "float"}[a[2]], a[3]}, "")
+			/* convenience definitions */
 
-			intBits, e := strconv.Atoi(a[3])
-			if e != nil {
-				fmt.Println("! unable to convert string to integer:", e)
-				return []byte{}
+			intType := strings.Join(
+				[]string{
+					map[string]string{
+						"I": "int",
+						"U": "uint",
+						"F": "float",
+					}[arguments[2]],
+					arguments[3],
+				},
+				"",
+			)
+
+			intBits, err := strconv.Atoi(arguments[3])
+			if err != nil {
+				fmt.Println("! unable to convert string to integer:", err)
+				return []byte(fmt.Sprint("// conversion error:", err))
 			}
 			intBytes := intBits / 8
+			functionName := strings.Join([]string{arguments[1], arguments[2], arguments[3], arguments[4]}, "")
+			functionNameNext := strings.Join([]string{functionName, "Next"}, "")
 
-			g := &jen.Group{}
-			g.Comment(strings.Join([]string{"// ", a[1], a[2], a[3], a[4], " ", map[string]string{"Read": "reads", "Write": "writes"}[a[1]], " a slice of ", intType, "s ", map[string]string{"Read": "from", "Write": "to"}[a[1]], " the buffer at the\n"}, ""))
-			g.Comment(strings.Join([]string{"// specified offset in ", map[string]string{"BE": "big-endian", "LE": "little-endian"}[a[4]], " without modifying the internal\n"}, ""))
-			g.Comment("// offset value\n")
-			f := g.Func().
-				Params(jen.Id("b").Op("*").Id(a[0])).
-				Id(strings.Join([]string{a[1], a[2], a[3], a[4]}, ""))
-			if a[1] == "Write" {
-				f.Params(jen.Id("off").Id("int64"), jen.Id("data").Index().Id(intType))
-			} else if a[1] == "Read" {
-				if a[0] == "Buffer" {
-					f.Params(jen.Id("off"), jen.Id("n").Id("int64")).
-						Params(jen.Id("out").Index().Id(intType))
+			/* code generation */
+
+			builder := &jen.Group{}
+			builder.Comment(strings.Join([]string{
+				"// ",
+				functionName,
+				" ",
+				map[string]string{
+					"Read": "reads",
+					"Write": "writes",
+				}[arguments[1]],
+				" a slice of ",
+				intType,
+				"s ",
+				map[string]string{
+					"Read": "from",
+					"Write": "to",
+				}[arguments[1]],
+				" the buffer at the\n",
+			}, ""))
+			builder.Comment(strings.Join([]string{
+				"// specified offset in ",
+				map[string]string{
+					"BE": "big-endian",
+					"LE": "little-endian",
+				}[arguments[4]],
+				" without modifying the internal\n"
+			}, ""))
+			builder.Comment("// offset value\n")
+
+			function := builder.Func().Params(jen.Id("b").Op("*").Id(arguments[0])).Id(functionName)
+			if arguments[1] == "Write" {
+				function.Params(
+					jen.Id("off").Id("int64"),
+					jen.Id("data").Index().Id(intType))
+			} else if arguments[1] == "Read" {
+				if arguments[0] == "Buffer" {
+					function.Params(
+						jen.Id("off"),
+						jen.Id("n").Id("int64")).Params(jen.Id("out").Index().Id(intType))
 				} else {
-					f.Params(jen.Id("out").Op("*").Index().Id(intType), jen.Id("off"), jen.Id("n").Id("int64"))
+					function.Params(
+						jen.Id("out").Op("*").Index().Id(intType),
+						jen.Id("off"),
+						jen.Id("n").Id("int64"))
 				}
 			}
 
-			f.BlockFunc(func(g *jen.Group) {
-				if a[0] == "Buffer" {
-					if a[1] == "Read" {
-						g.If(jen.Parens(jen.Id("off").Op("+").Id("n").Op("*").Lit(intBytes)).Op(">").Id("b").Dot("cap")).Block(jen.Panic(jen.Id("BufferOverreadError")))
-						g.If(jen.Id("off").Op("<").Lit(0x00)).Block(jen.Panic(jen.Id("BufferUnderreadError")))
+			function.BlockFunc(func(body *jen.Group) {
+				if arguments[0] == "Buffer" {
+					if arguments[1] == "Read" {
+						body.If(jen.Parens(jen.Id("off").Op("+").Id("n").Op("*").Lit(intBytes)).Op(">").Id("b").Dot("cap")).
+							Block(jen.Panic(jen.Id("BufferOverreadError")))
+						body.If(jen.Id("off").Op("<").Lit(0x00)).
+							Block(jen.Panic(jen.Id("BufferUnderreadError")))
 					} else {
-						g.If(jen.Parens(jen.Id("off").Op("+").Id("int64").Call(jen.Len(jen.Id("data"))).Op("*").Lit(intBytes)).Op(">").Id("b").Dot("cap")).Block(jen.Panic(jen.Id("BufferOverwriteError")))
-						g.If(jen.Id("off").Op("<").Lit(0x00)).Block(jen.Panic(jen.Id("BufferUnderwriteError")))
+						body.If(jen.Parens(jen.Id("off").Op("+").Id("int64").
+							Call(jen.Len(jen.Id("data"))).Op("*").Lit(intBytes)).Op(">").Id("b").Dot("cap")).
+								Block(jen.Panic(jen.Id("BufferOverwriteError")))
+						body.If(jen.Id("off").Op("<").Lit(0x00)).
+							Block(jen.Panic(jen.Id("BufferUnderwriteError")))
 					}
 				}
 
-				if a[1] == "Read" {
+				if arguments[1] == "Read" {
 					// read generation code
-					if a[0] == "Buffer" {
-						g.Id("out").Op("=").Id("make").Call(jen.Index().Id(intType), jen.Id("n"))
+					if arguments[0] == "Buffer" {
+						body.Id("out").Op("=").Id("make").
+							Call(
+								jen.Index().Id(intType),
+								jen.Id("n"))
 					}
-					g.Id("i").Op(":=").Id("int64").Call(jen.Lit(0))
-					g.BlockFunc(func(g *jen.Group) {
-						g.Id("read_loop:")
-						var w *jen.Statement
-						if a[0] == "Buffer" {
-							w = g.Id("out").Index(jen.Id("i"))
+					body.Id("i").Op(":=").Id("int64").
+						Call(jen.Lit(0))
+					body.BlockFunc(func(loop *jen.Group) {
+						loop.Id("read_loop:")
+						var orChain *jen.Statement
+						if arguments[0] == "Buffer" {
+							orChain = loop.Id("out").Index(jen.Id("i"))
 						} else {
-							w = g.Parens(jen.Op("*").Id("out")).Index(jen.Id("i"))
+							orChain = loop.Parens(jen.Op("*").Id("out")).Index(jen.Id("i"))
 						}
-						w = w.Op("=")
+						orChain = orChain.Op("=")
 
-						if a[4] == "BE" {
+						if arguments[4] == "BE" {
 							for i := intBytes - 1; i > 0; i-- {
-								w = w.Id(intType).Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))))
+								orChain = orChain.Id(intType).
+									Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))))
 
 								if i < intBytes-1 {
 									// subsequent iterations
-									w = w.Op("<<").Lit((intBytes - i - 1) * 8)
+									orChain = orChain.Op("<<").Lit((intBytes - i - 1) * 8)
 								}
-								w = w.Op("|")
+								orChain = orChain.Op("|")
 							}
-							w = w.Id(intType).Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("<<").Lit((intBytes - 1) * 8)
+							orChain = orChain.Id(intType).
+								Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("<<").Lit((intBytes - 1) * 8)
 						} else {
-							w = w.Id(intType).Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("|")
+							orChain = orChain.Id(intType).
+								Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("|")
 							for i := 1; i < intBytes; i++ {
-								w = w.Id(intType).Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes))))).Op("<<").Lit(i * 8)
+								orChain = orChain.Id(intType).
+									Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes))))).Op("<<").Lit(i * 8)
 
 								if i < intBytes-1 {
 									// all operations except last
-									w = w.Op("|")
+									orChain = orChain.Op("|")
 								}
 							}
 						}
-						g.Id("i").Op("++")
-						g.If(jen.Id("i").Op("<").Id("n")).Block(jen.Goto().Id("read_loop"))
+						loop.Id("i").Op("++")
+						loop.If(jen.Id("i").Op("<").Id("n")).
+							Block(jen.Goto().Id("read_loop"))
 					})
 				} else {
 					// write generation code
-					g.Id("i").Op(":=").Lit(0)
-					g.Id("n").Op(":=").Len(jen.Id("data"))
-					g.BlockFunc(func(g *jen.Group) {
-						g.Id("write_loop:")
-						if a[4] == "BE" {
-							g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((intBytes - 1) * 8))
+					body.Id("i").Op(":=").Lit(0)
+					body.Id("n").Op(":=").Len(jen.Id("data"))
+					body.BlockFunc(func(loop *jen.Group) {
+						loop.Id("write_loop:")
+						if arguments[4] == "BE" {
+							loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
+								Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").
+									Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((intBytes - 1) * 8))
 							for i := intBytes - 1; i > 1; i-- {
-								g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Lit(intBytes - i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((i - 1) * 8))
+								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
+									Call(jen.Lit(intBytes - i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
+										Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((i - 1) * 8))
 							}
-							g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Lit(intBytes - 1).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")))
+							loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
+								Call(jen.Lit(intBytes - 1).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
+									Call(jen.Id("data").Index(jen.Id("i")))
 						} else {
-							g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")))
+							loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
+								Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").
+									Call(jen.Id("data").Index(jen.Id("i")))
 							for i := 1; i < intBytes; i++ {
-								g.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").Call(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit(i * 8))
+								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
+									Call(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
+										Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit(i * 8))
 							}
 						}
-						g.Id("i").Op("++")
-						g.If(jen.Id("i").Op("<").Id("n")).Block(jen.Goto().Id("write_loop"))
+						loop.Id("i").Op("++")
+						loop.If(jen.Id("i").Op("<").Id("n")).
+							Block(jen.Goto().Id("write_loop"))
 					})
 				}
 
-				if a[0] == "Buffer" && a[1] == "Read" {
-					g.Return()
+				if arguments[0] == "Buffer" && arguments[1] == "Read" {
+					body.Return()
 				}
 			})
 
-			w := bytes.NewBuffer([]byte{})
-			if g.Render(w) != nil {
-				fmt.Println("! unable to render code:", e)
-				return []byte("// render failiure")
+			outputBuffer := bytes.NewBuffer([]byte{})
+			err = builder.Render(outputBuffer)
+			if err != nil {
+				fmt.Println("! unable to render code:", err)
+				return []byte("// render failure")
 			}
 
-			_, _ = w.Write([]byte("\n"))
+			_, _ = outputBuffer.Write([]byte("\n"))
 
-			g = &jen.Group{}
-			g.Comment(strings.Join([]string{"// ", a[1], a[2], a[3], a[4], "Next ", map[string]string{"Read": "reads", "Write": "writes"}[a[1]], " a slice of ", intType, "s ", map[string]string{"Read": "from", "Write": "to"}[a[1]], " the buffer at the\n"}, ""))
-			g.Comment(strings.Join([]string{"// current offset in ", map[string]string{"BE": "big-endian", "LE": "little-endian"}[a[4]], " and moves the offset forward the\n"}, ""))
-			g.Comment("// amount of bytes written\n")
-			f = g.Func().
-				Params(jen.Id("b").Op("*").Id(a[0])).
-				Id(strings.Join([]string{a[1], a[2], a[3], a[4], "Next"}, ""))
-			if a[1] == "Write" {
-				f.Params(jen.Id("data").Index().Id(intType))
-			} else if a[1] == "Read" {
-				if a[0] == "Buffer" {
-					f.Params(jen.Id("n").Id("int64")).
-						Params(jen.Id("out").Index().Id(intType))
+			builder = &jen.Group{}
+			builder.Comment(strings.Join([]string{
+				"// ",
+				functionNameNext,
+				map[string]string{
+					"Read": "reads",
+					"Write": "writes",
+				}[arguments[1]],
+				" a slice of ",
+				intType,
+				"s ",
+				map[string]string{
+					"Read": "from",
+					"Write": "to",
+				}[arguments[1]],
+				" the buffer at the\n"
+			}, ""))
+			builder.Comment(strings.Join([]string{
+				"// current offset in ",
+				map[string]string{
+					"BE": "big-endian",
+					"LE": "little-endian",
+				}[arguments[4]],
+				" and moves the offset forward the\n"
+			}, ""))
+			builder.Comment("// amount of bytes written\n")
+			function = builder.Func().Params(jen.Id("b").Op("*").Id(arguments[0])).Id(functionNameNext)
+			if arguments[1] == "Write" {
+				function.Params(jen.Id("data").Index().Id(intType))
+			} else if arguments[1] == "Read" {
+				if arguments[0] == "Buffer" {
+					function.Params(jen.Id("n").Id("int64")).Params(jen.Id("out").Index().Id(intType))
 				} else {
-					f.Params(jen.Id("out").Op("*").Index().Id(intType), jen.Id("n").Id("int64"))
+					function.Params(jen.Id("out").Op("*").Index().Id(intType), jen.Id("n").Id("int64"))
 				}
 			}
 
-			f.BlockFunc(func(g *jen.Group) {
-				if a[1] == "Write" {
-					g.Id("b").Dot(strings.Join([]string{a[1], a[2], a[3], a[4]}, "")).Call(jen.Id("b").Dot("off"), jen.Id("data"))
-					g.Id("b").Dot("SeekByte").Call(jen.Id("int64").Call(jen.Len(jen.Id("data"))).Op("*").Lit(intBytes), jen.Lit(true))
-				} else if a[1] == "Read" {
-					if a[0] == "Buffer" {
-						g.Id("out").Op("=").Id("b").Dot(strings.Join([]string{a[1], a[2], a[3], a[4]}, "")).Call(jen.Id("b").Dot("off"), jen.Id("n"))
+			function.BlockFunc(func(body *jen.Group) {
+				if arguments[1] == "Write" {
+					body.Id("b").Dot(functionName).
+						Call(jen.Id("b").Dot("off"), jen.Id("data"))
+					body.Id("b").Dot("SeekByte").
+						Call(jen.Id("int64").
+						Call(jen.Len(jen.Id("data"))).Op("*").Lit(intBytes), jen.Lit(true))
+				} else if arguments[1] == "Read" {
+					if arguments[0] == "Buffer" {
+						body.Id("out").Op("=").Id("b").Dot(functionName).
+							Call(jen.Id("b").Dot("off"), jen.Id("n"))
 					} else {
-						g.Id("b").Dot(strings.Join([]string{a[1], a[2], a[3], a[4]}, "")).Call(jen.Id("out"), jen.Id("b").Dot("off"), jen.Id("n"))
+						body.Id("b").Dot(functionName).
+							Call(jen.Id("out"), jen.Id("b").Dot("off"), jen.Id("n"))
 					}
 
-					g.Id("b").Dot("SeekByte").Call(jen.Id("n").Op("*").Lit(intBytes), jen.Lit(true))
+					body.Id("b").Dot("SeekByte").
+						Call(jen.Id("n").Op("*").Lit(intBytes), jen.Lit(true))
 
-					if a[0] == "Buffer" {
-						g.Return()
+					if arguments[0] == "Buffer" {
+						body.Return()
 					}
 				}
 			})
 
-			if g.Render(w) != nil {
-				fmt.Println("! unable to render code:", e)
-				return []byte("// render failiure")
+			err = builder.Render(outputBuffer)
+			if err != nil {
+				fmt.Println("! unable to render code:", err)
+				return []byte("// render failure")
 			}
 
-			return w.Bytes()
+			return outputBuffer.Bytes()
 		})
 	}
 	return
