@@ -131,14 +131,14 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 				functionName,
 				" ",
 				map[string]string{
-					"Read": "reads",
+					"Read":  "reads",
 					"Write": "writes",
 				}[arguments[1]],
 				" a slice of ",
 				intType,
 				"s ",
 				map[string]string{
-					"Read": "from",
+					"Read":  "from",
 					"Write": "to",
 				}[arguments[1]],
 				" the buffer at the\n",
@@ -149,7 +149,7 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 					"BE": "big-endian",
 					"LE": "little-endian",
 				}[arguments[4]],
-				" without modifying the internal\n"
+				" without modifying the internal\n",
 			}, ""))
 			builder.Comment("// offset value\n")
 
@@ -181,7 +181,7 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 					} else {
 						body.If(jen.Parens(jen.Id("off").Op("+").Id("int64").
 							Call(jen.Len(jen.Id("data"))).Op("*").Lit(intBytes)).Op(">").Id("b").Dot("cap")).
-								Block(jen.Panic(jen.Id("BufferOverwriteError")))
+							Block(jen.Panic(jen.Id("BufferOverwriteError")))
 						body.If(jen.Id("off").Op("<").Lit(0x00)).
 							Block(jen.Panic(jen.Id("BufferUnderwriteError")))
 					}
@@ -246,23 +246,23 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 						if arguments[4] == "BE" {
 							loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
 								Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").
-									Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((intBytes - 1) * 8))
+								Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((intBytes - 1) * 8))
 							for i := intBytes - 1; i > 1; i-- {
 								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
 									Call(jen.Lit(intBytes - i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
-										Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((i - 1) * 8))
+									Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((i - 1) * 8))
 							}
 							loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
 								Call(jen.Lit(intBytes - 1).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
-									Call(jen.Id("data").Index(jen.Id("i")))
+								Call(jen.Id("data").Index(jen.Id("i")))
 						} else {
 							loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
 								Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").
-									Call(jen.Id("data").Index(jen.Id("i")))
+								Call(jen.Id("data").Index(jen.Id("i")))
 							for i := 1; i < intBytes; i++ {
 								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
 									Call(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
-										Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit(i * 8))
+									Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit(i * 8))
 							}
 						}
 						loop.Id("i").Op("++")
@@ -290,17 +290,17 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 				"// ",
 				functionNameNext,
 				map[string]string{
-					"Read": "reads",
+					"Read":  "reads",
 					"Write": "writes",
 				}[arguments[1]],
 				" a slice of ",
 				intType,
 				"s ",
 				map[string]string{
-					"Read": "from",
+					"Read":  "from",
 					"Write": "to",
 				}[arguments[1]],
-				" the buffer at the\n"
+				" the buffer at the\n",
 			}, ""))
 			builder.Comment(strings.Join([]string{
 				"// current offset in ",
@@ -308,7 +308,7 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 					"BE": "big-endian",
 					"LE": "little-endian",
 				}[arguments[4]],
-				" and moves the offset forward the\n"
+				" and moves the offset forward the\n",
 			}, ""))
 			builder.Comment("// amount of bytes written\n")
 			function = builder.Func().Params(jen.Id("b").Op("*").Id(arguments[0])).Id(functionNameNext)
@@ -328,7 +328,7 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 						Call(jen.Id("b").Dot("off"), jen.Id("data"))
 					body.Id("b").Dot("SeekByte").
 						Call(jen.Id("int64").
-						Call(jen.Len(jen.Id("data"))).Op("*").Lit(intBytes), jen.Lit(true))
+							Call(jen.Len(jen.Id("data"))).Op("*").Lit(intBytes), jen.Lit(true))
 				} else if arguments[1] == "Read" {
 					if arguments[0] == "Buffer" {
 						body.Id("out").Op("=").Id("b").Dot(functionName).

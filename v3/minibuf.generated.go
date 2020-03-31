@@ -371,7 +371,7 @@ func (b *MiniBuffer) WriteU16LE(off int64, data []uint16) {
 		}
 	}
 }
-// WriteU16LENext writes a slice of uint16s to the buffer at the
+// WriteU16LENextwrites a slice of uint16s to the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *MiniBuffer) WriteU16LENext(data []uint16) {
@@ -395,7 +395,7 @@ func (b *MiniBuffer) WriteU16BE(off int64, data []uint16) {
 		}
 	}
 }
-// WriteU16BENext writes a slice of uint16s to the buffer at the
+// WriteU16BENextwrites a slice of uint16s to the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *MiniBuffer) WriteU16BENext(data []uint16) {
@@ -421,7 +421,7 @@ func (b *MiniBuffer) WriteU32LE(off int64, data []uint32) {
 		}
 	}
 }
-// WriteU32LENext writes a slice of uint32s to the buffer at the
+// WriteU32LENextwrites a slice of uint32s to the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *MiniBuffer) WriteU32LENext(data []uint32) {
@@ -447,7 +447,7 @@ func (b *MiniBuffer) WriteU32BE(off int64, data []uint32) {
 		}
 	}
 }
-// WriteU32BENext writes a slice of uint32s to the buffer at the
+// WriteU32BENextwrites a slice of uint32s to the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *MiniBuffer) WriteU32BENext(data []uint32) {
@@ -477,7 +477,7 @@ func (b *MiniBuffer) WriteU64LE(off int64, data []uint64) {
 		}
 	}
 }
-// WriteU64LENext writes a slice of uint64s to the buffer at the
+// WriteU64LENextwrites a slice of uint64s to the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *MiniBuffer) WriteU64LENext(data []uint64) {
@@ -507,11 +507,173 @@ func (b *MiniBuffer) WriteU64BE(off int64, data []uint64) {
 		}
 	}
 }
-// WriteU64BENext writes a slice of uint64s to the buffer at the
+// WriteU64BENextwrites a slice of uint64s to the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *MiniBuffer) WriteU64BENext(data []uint64) {
 	b.WriteU64BE(b.off, data)
+	b.SeekByte(int64(len(data))*8, true)
+}
+
+//TODO(superwhiskers): add tests for the following generation directives
+
+// WriteI16LE writes a slice of int16s to the buffer at the
+// specified offset in little-endian without modifying the internal
+// offset value
+func (b *MiniBuffer) WriteI16LE(off int64, data []int16) {
+	i := 0
+	n := len(data)
+	{
+	write_loop:
+		b.buf[off+int64(i*2)] = byte(data[i])
+		b.buf[off+int64(1+(i*2))] = byte(data[i] >> 8)
+		i++
+		if i < n {
+			goto write_loop
+		}
+	}
+}
+// WriteI16LENextwrites a slice of int16s to the buffer at the
+// current offset in little-endian and moves the offset forward the
+// amount of bytes written
+func (b *MiniBuffer) WriteI16LENext(data []int16) {
+	b.WriteI16LE(b.off, data)
+	b.SeekByte(int64(len(data))*2, true)
+}
+
+// WriteI16BE writes a slice of int16s to the buffer at the
+// specified offset in big-endian without modifying the internal
+// offset value
+func (b *MiniBuffer) WriteI16BE(off int64, data []int16) {
+	i := 0
+	n := len(data)
+	{
+	write_loop:
+		b.buf[off+int64(i*2)] = byte(data[i] >> 8)
+		b.buf[off+int64(1+(i*2))] = byte(data[i])
+		i++
+		if i < n {
+			goto write_loop
+		}
+	}
+}
+// WriteI16BENextwrites a slice of int16s to the buffer at the
+// current offset in big-endian and moves the offset forward the
+// amount of bytes written
+func (b *MiniBuffer) WriteI16BENext(data []int16) {
+	b.WriteI16BE(b.off, data)
+	b.SeekByte(int64(len(data))*2, true)
+}
+
+// WriteI32LE writes a slice of int32s to the buffer at the
+// specified offset in little-endian without modifying the internal
+// offset value
+func (b *MiniBuffer) WriteI32LE(off int64, data []int32) {
+	i := 0
+	n := len(data)
+	{
+	write_loop:
+		b.buf[off+int64(i*4)] = byte(data[i])
+		b.buf[off+int64(1+(i*4))] = byte(data[i] >> 8)
+		b.buf[off+int64(2+(i*4))] = byte(data[i] >> 16)
+		b.buf[off+int64(3+(i*4))] = byte(data[i] >> 24)
+		i++
+		if i < n {
+			goto write_loop
+		}
+	}
+}
+// WriteI32LENextwrites a slice of int32s to the buffer at the
+// current offset in little-endian and moves the offset forward the
+// amount of bytes written
+func (b *MiniBuffer) WriteI32LENext(data []int32) {
+	b.WriteI32LE(b.off, data)
+	b.SeekByte(int64(len(data))*4, true)
+}
+
+// WriteI32BE writes a slice of int32s to the buffer at the
+// specified offset in big-endian without modifying the internal
+// offset value
+func (b *MiniBuffer) WriteI32BE(off int64, data []int32) {
+	i := 0
+	n := len(data)
+	{
+	write_loop:
+		b.buf[off+int64(i*4)] = byte(data[i] >> 24)
+		b.buf[off+int64(1+(i*4))] = byte(data[i] >> 16)
+		b.buf[off+int64(2+(i*4))] = byte(data[i] >> 8)
+		b.buf[off+int64(3+(i*4))] = byte(data[i])
+		i++
+		if i < n {
+			goto write_loop
+		}
+	}
+}
+// WriteI32BENextwrites a slice of int32s to the buffer at the
+// current offset in big-endian and moves the offset forward the
+// amount of bytes written
+func (b *MiniBuffer) WriteI32BENext(data []int32) {
+	b.WriteI32BE(b.off, data)
+	b.SeekByte(int64(len(data))*4, true)
+}
+
+// WriteI64LE writes a slice of int64s to the buffer at the
+// specified offset in little-endian without modifying the internal
+// offset value
+func (b *MiniBuffer) WriteI64LE(off int64, data []int64) {
+	i := 0
+	n := len(data)
+	{
+	write_loop:
+		b.buf[off+int64(i*8)] = byte(data[i])
+		b.buf[off+int64(1+(i*8))] = byte(data[i] >> 8)
+		b.buf[off+int64(2+(i*8))] = byte(data[i] >> 16)
+		b.buf[off+int64(3+(i*8))] = byte(data[i] >> 24)
+		b.buf[off+int64(4+(i*8))] = byte(data[i] >> 32)
+		b.buf[off+int64(5+(i*8))] = byte(data[i] >> 40)
+		b.buf[off+int64(6+(i*8))] = byte(data[i] >> 48)
+		b.buf[off+int64(7+(i*8))] = byte(data[i] >> 56)
+		i++
+		if i < n {
+			goto write_loop
+		}
+	}
+}
+// WriteI64LENextwrites a slice of int64s to the buffer at the
+// current offset in little-endian and moves the offset forward the
+// amount of bytes written
+func (b *MiniBuffer) WriteI64LENext(data []int64) {
+	b.WriteI64LE(b.off, data)
+	b.SeekByte(int64(len(data))*8, true)
+}
+
+// WriteI64BE writes a slice of int64s to the buffer at the
+// specified offset in big-endian without modifying the internal
+// offset value
+func (b *MiniBuffer) WriteI64BE(off int64, data []int64) {
+	i := 0
+	n := len(data)
+	{
+	write_loop:
+		b.buf[off+int64(i*8)] = byte(data[i] >> 56)
+		b.buf[off+int64(1+(i*8))] = byte(data[i] >> 48)
+		b.buf[off+int64(2+(i*8))] = byte(data[i] >> 40)
+		b.buf[off+int64(3+(i*8))] = byte(data[i] >> 32)
+		b.buf[off+int64(4+(i*8))] = byte(data[i] >> 24)
+		b.buf[off+int64(5+(i*8))] = byte(data[i] >> 16)
+		b.buf[off+int64(6+(i*8))] = byte(data[i] >> 8)
+		b.buf[off+int64(7+(i*8))] = byte(data[i])
+		i++
+		if i < n {
+			goto write_loop
+		}
+	}
+}
+// WriteI64BENextwrites a slice of int64s to the buffer at the
+// current offset in big-endian and moves the offset forward the
+// amount of bytes written
+func (b *MiniBuffer) WriteI64BENext(data []int64) {
+	b.WriteI64BE(b.off, data)
 	b.SeekByte(int64(len(data))*8, true)
 }
 
@@ -546,7 +708,7 @@ func (b *MiniBuffer) ReadU16LE(out *[]uint16, off, n int64) {
 		}
 	}
 }
-// ReadU16LENext reads a slice of uint16s from the buffer at the
+// ReadU16LENextreads a slice of uint16s from the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *MiniBuffer) ReadU16LENext(out *[]uint16, n int64) {
@@ -568,7 +730,7 @@ func (b *MiniBuffer) ReadU16BE(out *[]uint16, off, n int64) {
 		}
 	}
 }
-// ReadU16BENext reads a slice of uint16s from the buffer at the
+// ReadU16BENextreads a slice of uint16s from the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *MiniBuffer) ReadU16BENext(out *[]uint16, n int64) {
@@ -590,7 +752,7 @@ func (b *MiniBuffer) ReadU32LE(out *[]uint32, off, n int64) {
 		}
 	}
 }
-// ReadU32LENext reads a slice of uint32s from the buffer at the
+// ReadU32LENextreads a slice of uint32s from the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *MiniBuffer) ReadU32LENext(out *[]uint32, n int64) {
@@ -612,7 +774,7 @@ func (b *MiniBuffer) ReadU32BE(out *[]uint32, off, n int64) {
 		}
 	}
 }
-// ReadU32BENext reads a slice of uint32s from the buffer at the
+// ReadU32BENextreads a slice of uint32s from the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *MiniBuffer) ReadU32BENext(out *[]uint32, n int64) {
@@ -634,7 +796,7 @@ func (b *MiniBuffer) ReadU64LE(out *[]uint64, off, n int64) {
 		}
 	}
 }
-// ReadU64LENext reads a slice of uint64s from the buffer at the
+// ReadU64LENextreads a slice of uint64s from the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *MiniBuffer) ReadU64LENext(out *[]uint64, n int64) {
@@ -656,11 +818,145 @@ func (b *MiniBuffer) ReadU64BE(out *[]uint64, off, n int64) {
 		}
 	}
 }
-// ReadU64BENext reads a slice of uint64s from the buffer at the
+// ReadU64BENextreads a slice of uint64s from the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *MiniBuffer) ReadU64BENext(out *[]uint64, n int64) {
 	b.ReadU64BE(out, b.off, n)
+	b.SeekByte(n*8, true)
+}
+
+//TODO(superwhiskers): add tests for the following generation directives
+
+// ReadI16LE reads a slice of int16s from the buffer at the
+// specified offset in little-endian without modifying the internal
+// offset value
+func (b *MiniBuffer) ReadI16LE(out *[]int16, off, n int64) {
+	i := int64(0)
+	{
+	read_loop:
+		(*out)[i] = int16(b.buf[off+(i*2)]) | int16(b.buf[off+(1+(i*2))])<<8
+		i++
+		if i < n {
+			goto read_loop
+		}
+	}
+}
+// ReadI16LENextreads a slice of int16s from the buffer at the
+// current offset in little-endian and moves the offset forward the
+// amount of bytes written
+func (b *MiniBuffer) ReadI16LENext(out *[]int16, n int64) {
+	b.ReadI16LE(out, b.off, n)
+	b.SeekByte(n*2, true)
+}
+
+// ReadI16BE reads a slice of int16s from the buffer at the
+// specified offset in big-endian without modifying the internal
+// offset value
+func (b *MiniBuffer) ReadI16BE(out *[]int16, off, n int64) {
+	i := int64(0)
+	{
+	read_loop:
+		(*out)[i] = int16(b.buf[off+(1+(i*2))]) | int16(b.buf[off+(i*2)])<<8
+		i++
+		if i < n {
+			goto read_loop
+		}
+	}
+}
+// ReadI16BENextreads a slice of int16s from the buffer at the
+// current offset in big-endian and moves the offset forward the
+// amount of bytes written
+func (b *MiniBuffer) ReadI16BENext(out *[]int16, n int64) {
+	b.ReadI16BE(out, b.off, n)
+	b.SeekByte(n*2, true)
+}
+
+// ReadI32LE reads a slice of int32s from the buffer at the
+// specified offset in little-endian without modifying the internal
+// offset value
+func (b *MiniBuffer) ReadI32LE(out *[]int32, off, n int64) {
+	i := int64(0)
+	{
+	read_loop:
+		(*out)[i] = int32(b.buf[off+(i*4)]) | int32(b.buf[off+(1+(i*4))])<<8 | int32(b.buf[off+(2+(i*4))])<<16 | int32(b.buf[off+(3+(i*4))])<<24
+		i++
+		if i < n {
+			goto read_loop
+		}
+	}
+}
+// ReadI32LENextreads a slice of int32s from the buffer at the
+// current offset in little-endian and moves the offset forward the
+// amount of bytes written
+func (b *MiniBuffer) ReadI32LENext(out *[]int32, n int64) {
+	b.ReadI32LE(out, b.off, n)
+	b.SeekByte(n*4, true)
+}
+
+// ReadI32BE reads a slice of int32s from the buffer at the
+// specified offset in big-endian without modifying the internal
+// offset value
+func (b *MiniBuffer) ReadI32BE(out *[]int32, off, n int64) {
+	i := int64(0)
+	{
+	read_loop:
+		(*out)[i] = int32(b.buf[off+(3+(i*4))]) | int32(b.buf[off+(2+(i*4))])<<8 | int32(b.buf[off+(1+(i*4))])<<16 | int32(b.buf[off+(i*4)])<<24
+		i++
+		if i < n {
+			goto read_loop
+		}
+	}
+}
+// ReadI32BENextreads a slice of int32s from the buffer at the
+// current offset in big-endian and moves the offset forward the
+// amount of bytes written
+func (b *MiniBuffer) ReadI32BENext(out *[]int32, n int64) {
+	b.ReadI32BE(out, b.off, n)
+	b.SeekByte(n*4, true)
+}
+
+// ReadI64LE reads a slice of int64s from the buffer at the
+// specified offset in little-endian without modifying the internal
+// offset value
+func (b *MiniBuffer) ReadI64LE(out *[]int64, off, n int64) {
+	i := int64(0)
+	{
+	read_loop:
+		(*out)[i] = int64(b.buf[off+(i*8)]) | int64(b.buf[off+(1+(i*8))])<<8 | int64(b.buf[off+(2+(i*8))])<<16 | int64(b.buf[off+(3+(i*8))])<<24 | int64(b.buf[off+(4+(i*8))])<<32 | int64(b.buf[off+(5+(i*8))])<<40 | int64(b.buf[off+(6+(i*8))])<<48 | int64(b.buf[off+(7+(i*8))])<<56
+		i++
+		if i < n {
+			goto read_loop
+		}
+	}
+}
+// ReadI64LENextreads a slice of int64s from the buffer at the
+// current offset in little-endian and moves the offset forward the
+// amount of bytes written
+func (b *MiniBuffer) ReadI64LENext(out *[]int64, n int64) {
+	b.ReadI64LE(out, b.off, n)
+	b.SeekByte(n*8, true)
+}
+
+// ReadI64BE reads a slice of int64s from the buffer at the
+// specified offset in big-endian without modifying the internal
+// offset value
+func (b *MiniBuffer) ReadI64BE(out *[]int64, off, n int64) {
+	i := int64(0)
+	{
+	read_loop:
+		(*out)[i] = int64(b.buf[off+(7+(i*8))]) | int64(b.buf[off+(6+(i*8))])<<8 | int64(b.buf[off+(5+(i*8))])<<16 | int64(b.buf[off+(4+(i*8))])<<24 | int64(b.buf[off+(3+(i*8))])<<32 | int64(b.buf[off+(2+(i*8))])<<40 | int64(b.buf[off+(1+(i*8))])<<48 | int64(b.buf[off+(i*8)])<<56
+		i++
+		if i < n {
+			goto read_loop
+		}
+	}
+}
+// ReadI64BENextreads a slice of int64s from the buffer at the
+// current offset in big-endian and moves the offset forward the
+// amount of bytes written
+func (b *MiniBuffer) ReadI64BENext(out *[]int64, n int64) {
+	b.ReadI64BE(out, b.off, n)
 	b.SeekByte(n*8, true)
 }
 

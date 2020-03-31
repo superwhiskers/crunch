@@ -16,16 +16,21 @@ endif
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
+# get path of makefile regardless of directory
+MAKEFILE_DIR := $(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+
 .PHONY: all
 all: *.generated.go
 
 .PHONY: clean
 clean:
-> rm *.generated.go ../generation/generation
+> cd $(MAKEFILE_DIR)
+> rm -f *.generated.go ../generation/generation
 
-../generation/generation:
-> cd ../generation
+$(MAKEFILE_DIR)/generation/generation:
+> cd $(MAKEFILE_DIR)/../generation
 > go build
 
-*.generated.go: ../generation/generation
+*.generated.go: $(MAKEFILE_DIR)/generation/generation
+> cd $(MAKEFILE_DIR)
 > ../generation/generation -generation "complex"
