@@ -24,13 +24,13 @@ all: *.generated.go
 
 .PHONY: clean
 clean:
-> cd $(MAKEFILE_DIR)
-> rm -f *.generated.go ../generation/generation
+> @cd $(MAKEFILE_DIR)
+> @rm -f *.generated.go ../generation/generation
 
 $(MAKEFILE_DIR)/generation/generation:
-> cd $(MAKEFILE_DIR)/../generation
-> go build
+> @cd $(MAKEFILE_DIR)/../generation
+> @go build
 
 *.generated.go: $(MAKEFILE_DIR)/generation/generation
-> cd $(MAKEFILE_DIR)
-> ../generation/generation -generation "complex"
+> @cd $(MAKEFILE_DIR)
+> @../generation/generation -generation "complex"
