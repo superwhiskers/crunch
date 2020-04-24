@@ -208,29 +208,66 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 						orChain = orChain.Op("=")
 
 						if arguments[4] == "BE" {
-							for i := intBytes - 1; i > 0; i-- {
-								orChain = orChain.Id(intType).
-									Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))))
+							// double check that we don't need to special-case for the float* types
+							if arguments[2] == "U" || arguments[2] == "I" {
+								for i := intBytes - 1; i > 0; i-- {
+									orChain = orChain.Id(intType).
+										Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))))
 
-								if i < intBytes-1 {
-									// subsequent iterations
-									orChain = orChain.Op("<<").Lit((intBytes - i - 1) * 8)
-								}
-								orChain = orChain.Op("|")
-							}
-							orChain = orChain.Id(intType).
-								Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("<<").Lit((intBytes - 1) * 8)
-						} else {
-							orChain = orChain.Id(intType).
-								Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("|")
-							for i := 1; i < intBytes; i++ {
-								orChain = orChain.Id(intType).
-									Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes))))).Op("<<").Lit(i * 8)
-
-								if i < intBytes-1 {
-									// all operations except last
+									if i < intBytes-1 {
+										// subsequent iterations
+										orChain = orChain.Op("<<").Lit((intBytes - i - 1) * 8)
+									}
 									orChain = orChain.Op("|")
 								}
+								orChain = orChain.Id(intType).
+									Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("<<").Lit((intBytes - 1) * 8)
+							} else if arguments[2] == "F" {
+								// somewhat annoying that this is needed, but whatever, ig
+								orChain = orChain.Id(intType).CallFunc(func(g *jen.Group) {
+									s := g.Null()
+									for i := intBytes - 1; i > 0; i-- {
+										s = s.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, "")).Parens(jen.Id("unsafe").Dot("Pointer").
+											Call(jen.Op("&").Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))))))
+
+										if i < intBytes-1 {
+											// subsequent iterations
+											s = s.Op("<<").Lit((intBytes - i - 1) * 8)
+										}
+										s = s.Op("|")
+									}
+									s = s.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, "")).Parens(jen.Id("unsafe").Dot("Pointer").
+										Call(jen.Op("&").Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("<<").Lit((intBytes - 1) * 8)))
+								})
+							}
+						} else {
+							// check if we're reading a float* type
+							if arguments[2] == "U" || arguments[2] == "I" {
+								orChain = orChain.Id(intType).
+									Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("|")
+								for i := 1; i < intBytes; i++ {
+									orChain = orChain.Id(intType).
+										Call(jen.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes))))).Op("<<").Lit(i * 8)
+									if i < intBytes-1 {
+										// all operations except last
+										orChain = orChain.Op("|")
+									}
+								}
+							} else {
+								// again, this is annoying
+								orChain = orChain.Id(intType).CallFunc(func(g *jen.Group) {
+									s := g.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, "")).Parens(jen.Id("unsafe").Dot("Pointer").
+										Call(jen.Op("&").Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))))).Op("|")
+									for i := 1; i < intBytes; i++ {
+										s = s.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, "")).Parens(jen.Id("unsafe").Dot("Pointer").
+											Call(jen.Op("&").Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes))))).Op("<<").Lit(i * 8)))
+
+										if i < intBytes-1 {
+											// all operations except last
+											s = s.Op("|")
+										}
+									}
+								})
 							}
 						}
 						loop.Id("i").Op("++")
@@ -283,7 +320,7 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 				return []byte("// render failure")
 			}
 
-			_, _ = outputBuffer.Write([]byte("\n"))
+			_, _ = outputBuffer.Write([]byte("\n\n"))
 
 			builder = &jen.Group{}
 			builder.Comment(strings.Join([]string{
