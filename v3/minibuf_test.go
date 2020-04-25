@@ -1463,10 +1463,43 @@ func BenchmarkMiniBufferReadU32LE(b *testing.B) {
 	buf := &MiniBuffer{}
 	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
-	out := []uint32{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+	out := []uint32{0x00, 0x00}
 	for n := 0; n < b.N; n++ {
 
 		buf.ReadU32LE(&out, 0x00, 2)
+
+	}
+
+	_ = out
+
+}
+
+func BenchmarkMiniBufferWriteF32LE(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	for n := 0; n < b.N; n++ {
+
+		buf.WriteF32LE(0x00, []float32{0.01, 0.02})
+
+	}
+
+}
+
+func BenchmarkMiniBufferReadF32LE(b *testing.B) {
+
+	b.ReportAllocs()
+
+	buf := &MiniBuffer{}
+	NewMiniBuffer(&buf, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	out := []float32{0x00, 0x00}
+	for n := 0; n < b.N; n++ {
+
+		buf.ReadF32LE(&out, 0x00, 2)
 
 	}
 

@@ -1107,9 +1107,11 @@ func (b *MiniBuffer) ReadI64BENext(out *[]int64, n int64) {
 // offset value
 func (b *MiniBuffer) ReadF32LE(out *[]float32, off, n int64) {
 	i := int64(0)
+	var u uint32
 	{
 	read_loop:
-		(*out)[i] = float32(*(*uint32)(unsafe.Pointer(&b.buf[off+(i*4)])) | *(*uint32)(unsafe.Pointer(&b.buf[off+(1+(i*4))]))<<8 | *(*uint32)(unsafe.Pointer(&b.buf[off+(2+(i*4))]))<<16 | *(*uint32)(unsafe.Pointer(&b.buf[off+(3+(i*4))]))<<24)
+		u = (uint32(b.buf[off+(i*4)]) | uint32(b.buf[off+(1+(i*4))])<<8 | uint32(b.buf[off+(2+(i*4))])<<16 | uint32(b.buf[off+(3+(i*4))])<<24)
+		(*out)[i] = *(*float32)(unsafe.Pointer(&u))
 		i++
 		if i < n {
 			goto read_loop
@@ -1130,9 +1132,11 @@ func (b *MiniBuffer) ReadF32LENext(out *[]float32, n int64) {
 // offset value
 func (b *MiniBuffer) ReadF32BE(out *[]float32, off, n int64) {
 	i := int64(0)
+	var u uint32
 	{
 	read_loop:
-		(*out)[i] = float32(*(*uint32)(unsafe.Pointer(&b.buf[off+(3+(i*4))])) | *(*uint32)(unsafe.Pointer(&b.buf[off+(2+(i*4))]))<<8 | *(*uint32)(unsafe.Pointer(&b.buf[off+(1+(i*4))]))<<16 | *(*uint32)(unsafe.Pointer(&b.buf[off+(i*4)]))<<24)
+		u = (uint32(b.buf[off+(3+(i*4))]) | uint32(b.buf[off+(2+(i*4))])<<8 | uint32(b.buf[off+(1+(i*4))])<<16 | uint32(b.buf[off+(i*4)])<<24)
+		(*out)[i] = *(*float32)(unsafe.Pointer(&u))
 		i++
 		if i < n {
 			goto read_loop
@@ -1153,9 +1157,11 @@ func (b *MiniBuffer) ReadF32BENext(out *[]float32, n int64) {
 // offset value
 func (b *MiniBuffer) ReadF64LE(out *[]float64, off, n int64) {
 	i := int64(0)
+	var u uint64
 	{
 	read_loop:
-		(*out)[i] = float64(*(*uint64)(unsafe.Pointer(&b.buf[off+(i*8)])) | *(*uint64)(unsafe.Pointer(&b.buf[off+(1+(i*8))]))<<8 | *(*uint64)(unsafe.Pointer(&b.buf[off+(2+(i*8))]))<<16 | *(*uint64)(unsafe.Pointer(&b.buf[off+(3+(i*8))]))<<24 | *(*uint64)(unsafe.Pointer(&b.buf[off+(4+(i*8))]))<<32 | *(*uint64)(unsafe.Pointer(&b.buf[off+(5+(i*8))]))<<40 | *(*uint64)(unsafe.Pointer(&b.buf[off+(6+(i*8))]))<<48 | *(*uint64)(unsafe.Pointer(&b.buf[off+(7+(i*8))]))<<56)
+		u = (uint64(b.buf[off+(i*8)]) | uint64(b.buf[off+(1+(i*8))])<<8 | uint64(b.buf[off+(2+(i*8))])<<16 | uint64(b.buf[off+(3+(i*8))])<<24 | uint64(b.buf[off+(4+(i*8))])<<32 | uint64(b.buf[off+(5+(i*8))])<<40 | uint64(b.buf[off+(6+(i*8))])<<48 | uint64(b.buf[off+(7+(i*8))])<<56)
+		(*out)[i] = *(*float64)(unsafe.Pointer(&u))
 		i++
 		if i < n {
 			goto read_loop
@@ -1176,9 +1182,11 @@ func (b *MiniBuffer) ReadF64LENext(out *[]float64, n int64) {
 // offset value
 func (b *MiniBuffer) ReadF64BE(out *[]float64, off, n int64) {
 	i := int64(0)
+	var u uint64
 	{
 	read_loop:
-		(*out)[i] = float64(*(*uint64)(unsafe.Pointer(&b.buf[off+(7+(i*8))])) | *(*uint64)(unsafe.Pointer(&b.buf[off+(6+(i*8))]))<<8 | *(*uint64)(unsafe.Pointer(&b.buf[off+(5+(i*8))]))<<16 | *(*uint64)(unsafe.Pointer(&b.buf[off+(4+(i*8))]))<<24 | *(*uint64)(unsafe.Pointer(&b.buf[off+(3+(i*8))]))<<32 | *(*uint64)(unsafe.Pointer(&b.buf[off+(2+(i*8))]))<<40 | *(*uint64)(unsafe.Pointer(&b.buf[off+(1+(i*8))]))<<48 | *(*uint64)(unsafe.Pointer(&b.buf[off+(i*8)]))<<56)
+		u = (uint64(b.buf[off+(7+(i*8))]) | uint64(b.buf[off+(6+(i*8))])<<8 | uint64(b.buf[off+(5+(i*8))])<<16 | uint64(b.buf[off+(4+(i*8))])<<24 | uint64(b.buf[off+(3+(i*8))])<<32 | uint64(b.buf[off+(2+(i*8))])<<40 | uint64(b.buf[off+(1+(i*8))])<<48 | uint64(b.buf[off+(i*8)])<<56)
+		(*out)[i] = *(*float64)(unsafe.Pointer(&u))
 		i++
 		if i < n {
 			goto read_loop

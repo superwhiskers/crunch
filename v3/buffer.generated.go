@@ -1427,9 +1427,11 @@ func (b *Buffer) ReadF32LE(off, n int64) (out []float32) {
 	}
 	out = make([]float32, n)
 	i := int64(0)
+	var u uint32
 	{
 	read_loop:
-		out[i] = float32(*(*uint32)(unsafe.Pointer(&b.buf[off+(i*4)])) | *(*uint32)(unsafe.Pointer(&b.buf[off+(1+(i*4))]))<<8 | *(*uint32)(unsafe.Pointer(&b.buf[off+(2+(i*4))]))<<16 | *(*uint32)(unsafe.Pointer(&b.buf[off+(3+(i*4))]))<<24)
+		u = (uint32(b.buf[off+(i*4)]) | uint32(b.buf[off+(1+(i*4))])<<8 | uint32(b.buf[off+(2+(i*4))])<<16 | uint32(b.buf[off+(3+(i*4))])<<24)
+		out[i] = *(*float32)(unsafe.Pointer(&u))
 		i++
 		if i < n {
 			goto read_loop
@@ -1459,9 +1461,11 @@ func (b *Buffer) ReadF32BE(off, n int64) (out []float32) {
 	}
 	out = make([]float32, n)
 	i := int64(0)
+	var u uint32
 	{
 	read_loop:
-		out[i] = float32(*(*uint32)(unsafe.Pointer(&b.buf[off+(3+(i*4))])) | *(*uint32)(unsafe.Pointer(&b.buf[off+(2+(i*4))]))<<8 | *(*uint32)(unsafe.Pointer(&b.buf[off+(1+(i*4))]))<<16 | *(*uint32)(unsafe.Pointer(&b.buf[off+(i*4)]))<<24)
+		u = (uint32(b.buf[off+(3+(i*4))]) | uint32(b.buf[off+(2+(i*4))])<<8 | uint32(b.buf[off+(1+(i*4))])<<16 | uint32(b.buf[off+(i*4)])<<24)
+		out[i] = *(*float32)(unsafe.Pointer(&u))
 		i++
 		if i < n {
 			goto read_loop
@@ -1491,9 +1495,11 @@ func (b *Buffer) ReadF64LE(off, n int64) (out []float64) {
 	}
 	out = make([]float64, n)
 	i := int64(0)
+	var u uint64
 	{
 	read_loop:
-		out[i] = float64(*(*uint64)(unsafe.Pointer(&b.buf[off+(i*8)])) | *(*uint64)(unsafe.Pointer(&b.buf[off+(1+(i*8))]))<<8 | *(*uint64)(unsafe.Pointer(&b.buf[off+(2+(i*8))]))<<16 | *(*uint64)(unsafe.Pointer(&b.buf[off+(3+(i*8))]))<<24 | *(*uint64)(unsafe.Pointer(&b.buf[off+(4+(i*8))]))<<32 | *(*uint64)(unsafe.Pointer(&b.buf[off+(5+(i*8))]))<<40 | *(*uint64)(unsafe.Pointer(&b.buf[off+(6+(i*8))]))<<48 | *(*uint64)(unsafe.Pointer(&b.buf[off+(7+(i*8))]))<<56)
+		u = (uint64(b.buf[off+(i*8)]) | uint64(b.buf[off+(1+(i*8))])<<8 | uint64(b.buf[off+(2+(i*8))])<<16 | uint64(b.buf[off+(3+(i*8))])<<24 | uint64(b.buf[off+(4+(i*8))])<<32 | uint64(b.buf[off+(5+(i*8))])<<40 | uint64(b.buf[off+(6+(i*8))])<<48 | uint64(b.buf[off+(7+(i*8))])<<56)
+		out[i] = *(*float64)(unsafe.Pointer(&u))
 		i++
 		if i < n {
 			goto read_loop
@@ -1523,9 +1529,11 @@ func (b *Buffer) ReadF64BE(off, n int64) (out []float64) {
 	}
 	out = make([]float64, n)
 	i := int64(0)
+	var u uint64
 	{
 	read_loop:
-		out[i] = float64(*(*uint64)(unsafe.Pointer(&b.buf[off+(7+(i*8))])) | *(*uint64)(unsafe.Pointer(&b.buf[off+(6+(i*8))]))<<8 | *(*uint64)(unsafe.Pointer(&b.buf[off+(5+(i*8))]))<<16 | *(*uint64)(unsafe.Pointer(&b.buf[off+(4+(i*8))]))<<24 | *(*uint64)(unsafe.Pointer(&b.buf[off+(3+(i*8))]))<<32 | *(*uint64)(unsafe.Pointer(&b.buf[off+(2+(i*8))]))<<40 | *(*uint64)(unsafe.Pointer(&b.buf[off+(1+(i*8))]))<<48 | *(*uint64)(unsafe.Pointer(&b.buf[off+(i*8)]))<<56)
+		u = (uint64(b.buf[off+(7+(i*8))]) | uint64(b.buf[off+(6+(i*8))])<<8 | uint64(b.buf[off+(5+(i*8))])<<16 | uint64(b.buf[off+(4+(i*8))])<<24 | uint64(b.buf[off+(3+(i*8))])<<32 | uint64(b.buf[off+(2+(i*8))])<<40 | uint64(b.buf[off+(1+(i*8))])<<48 | uint64(b.buf[off+(i*8)])<<56)
+		out[i] = *(*float64)(unsafe.Pointer(&u))
 		i++
 		if i < n {
 			goto read_loop
