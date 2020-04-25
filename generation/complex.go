@@ -253,7 +253,7 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 										orChain = orChain.Op("|")
 									}
 								}
-							} else {
+							} else if arguments[2] == "F" {
 								// again, this is annoying
 								orChain = orChain.Id(intType).CallFunc(func(g *jen.Group) {
 									s := g.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, "")).Parens(jen.Id("unsafe").Dot("Pointer").
@@ -281,25 +281,60 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 					body.BlockFunc(func(loop *jen.Group) {
 						loop.Id("write_loop:")
 						if arguments[4] == "BE" {
-							loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
-								Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").
-								Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((intBytes - 1) * 8))
-							for i := intBytes - 1; i > 1; i-- {
+							if arguments[2] == "U" || arguments[2] == "I" {
 								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
-									Call(jen.Lit(intBytes - i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
-									Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((i - 1) * 8))
+									Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").
+									Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((intBytes - 1) * 8))
+								for i := intBytes - 1; i > 1; i-- {
+									loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
+										Call(jen.Lit(intBytes - i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
+										Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((i - 1) * 8))
+								}
+								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
+									Call(jen.Lit(intBytes - 1).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
+									Call(jen.Id("data").Index(jen.Id("i")))
+							} else if arguments[2] == "F" {
+								// TODO(superwhiskers): finish implementing this, don't get sidetracked next time
+								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
+									Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").
+									Call(jen.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
+									Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((intBytes - 1) * 8))))
+								for i := intBytes - 1; i > 1; i-- {
+									loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
+										Call(jen.Lit(intBytes - i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
+										Call(jen.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
+										Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((i - 1) * 8))))
+								}
+								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
+									Call(jen.Lit(intBytes - 1).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
+									Call(jen.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
+									Call(jen.Id("data").Index(jen.Id("i")))))
+									// b.buf[off+int64(i*8)] = byte(data[i])
+									// b.buf[off+int64(i*8)] = byte(*(*uint32)(unsafe.Pointer(data[i])))
+
+									// b.buf[off+int64(i*8)] = byte(*(*uint32)(unsafe.Pointer(data[i])) >> whatever)
 							}
-							loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
-								Call(jen.Lit(intBytes - 1).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
-								Call(jen.Id("data").Index(jen.Id("i")))
 						} else {
-							loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
-								Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").
-								Call(jen.Id("data").Index(jen.Id("i")))
-							for i := 1; i < intBytes; i++ {
+							if arguments[2] == "U" || arguments[2] == "I" {
 								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
-									Call(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
-									Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit(i * 8))
+									Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").
+									Call(jen.Id("data").Index(jen.Id("i")))
+								for i := 1; i < intBytes; i++ {
+									loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
+										Call(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
+										Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit(i * 8))
+								}
+							} else if arguments[2] == "F" {
+								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
+									Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").
+									Call(jen.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
+									Call(jen.Id("data").Index(jen.Id("i")))))
+								for i := 1; i < intBytes; i++ {
+									loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
+										Call(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
+										Call(jen.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
+										Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit(i * 8))))
+								}
 							}
 						}
 						loop.Id("i").Op("++")
