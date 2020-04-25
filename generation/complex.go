@@ -227,8 +227,8 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 								orChain = orChain.Id(intType).CallFunc(func(g *jen.Group) {
 									s := g.Null()
 									for i := intBytes - 1; i > 0; i-- {
-										s = s.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, "")).Parens(jen.Id("unsafe").Dot("Pointer").
-											Call(jen.Op("&").Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))))))
+										s = s.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
+											Call(jen.Op("&").Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes))))))
 
 										if i < intBytes-1 {
 											// subsequent iterations
@@ -236,8 +236,8 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 										}
 										s = s.Op("|")
 									}
-									s = s.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, "")).Parens(jen.Id("unsafe").Dot("Pointer").
-										Call(jen.Op("&").Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("<<").Lit((intBytes - 1) * 8)))
+									s = s.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
+										Call(jen.Op("&").Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes))))).Op("<<").Lit((intBytes - 1) * 8)
 								})
 							}
 						} else {
@@ -256,11 +256,11 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 							} else if arguments[2] == "F" {
 								// again, this is annoying
 								orChain = orChain.Id(intType).CallFunc(func(g *jen.Group) {
-									s := g.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, "")).Parens(jen.Id("unsafe").Dot("Pointer").
-										Call(jen.Op("&").Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))))).Op("|")
+									s := g.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
+										Call(jen.Op("&").Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes))))).Op("|")
 									for i := 1; i < intBytes; i++ {
-										s = s.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, "")).Parens(jen.Id("unsafe").Dot("Pointer").
-											Call(jen.Op("&").Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes))))).Op("<<").Lit(i * 8)))
+										s = s.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
+											Call(jen.Op("&").Id("b").Dot("buf").Index(jen.Id("off").Op("+").Parens(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))))).Op("<<").Lit(i * 8)
 
 										if i < intBytes-1 {
 											// all operations except last
@@ -298,17 +298,17 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
 									Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").
 									Call(jen.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
-									Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((intBytes - 1) * 8))))
+									Call(jen.Op("&").Id("data").Index(jen.Id("i")))).Op(">>").Lit((intBytes - 1) * 8))
 								for i := intBytes - 1; i > 1; i-- {
 									loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
 										Call(jen.Lit(intBytes - i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
 										Call(jen.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
-										Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit((i - 1) * 8))))
+										Call(jen.Op("&").Id("data").Index(jen.Id("i")))).Op(">>").Lit((i - 1) * 8))
 								}
 								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
 									Call(jen.Lit(intBytes - 1).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
 									Call(jen.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
-									Call(jen.Id("data").Index(jen.Id("i")))))
+									Call(jen.Op("&").Id("data").Index(jen.Id("i")))))
 									// b.buf[off+int64(i*8)] = byte(data[i])
 									// b.buf[off+int64(i*8)] = byte(*(*uint32)(unsafe.Pointer(data[i])))
 
@@ -328,12 +328,12 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
 									Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").
 									Call(jen.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
-									Call(jen.Id("data").Index(jen.Id("i")))))
+									Call(jen.Op("&").Id("data").Index(jen.Id("i")))))
 								for i := 1; i < intBytes; i++ {
 									loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
 										Call(jen.Lit(i).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
 										Call(jen.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
-										Call(jen.Id("data").Index(jen.Id("i")).Op(">>").Lit(i * 8))))
+										Call(jen.Op("&").Id("data").Index(jen.Id("i")))).Op(">>").Lit(i * 8))
 								}
 							}
 						}

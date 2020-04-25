@@ -458,7 +458,7 @@ func (b *Buffer) WriteByteNext(data byte) {
 
 //generator:complex Buffer Write I 64 BE
 
-//TODO: unfinished
+//TODO(superwhiskers): add tests for the following generation directives
 
 //generator:complex Buffer Write F 32 LE
 
@@ -541,6 +541,7 @@ func (b *Buffer) ReadByteNext() (out byte) {
 
 //generator:complex Buffer Read I 64 BE
 
+//TODO(superwhiskers): add tests for the following generation directives
 
 //generator:complex Buffer Read F 32 LE
 
