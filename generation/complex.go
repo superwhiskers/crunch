@@ -312,7 +312,6 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 									Call(jen.Lit(intBytes - 1).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
 									Call(jen.Id("data").Index(jen.Id("i")))
 							} else if arguments[2] == "F" {
-								// TODO(superwhiskers): finish implementing this, don't get sidetracked next time
 								loop.Id("b").Dot("buf").Index(jen.Id("off").Op("+").Id("int64").
 									Call(jen.Id("i").Op("*").Lit(intBytes))).Op("=").Id("byte").
 									Call(jen.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
@@ -327,10 +326,11 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 									Call(jen.Lit(intBytes - 1).Op("+").Parens(jen.Id("i").Op("*").Lit(intBytes)))).Op("=").Id("byte").
 									Call(jen.Op("*").Parens(jen.Op("*").Id(strings.Join([]string{"uint", arguments[3]}, ""))).Parens(jen.Id("unsafe").Dot("Pointer").
 									Call(jen.Op("&").Id("data").Index(jen.Id("i")))))
-									// b.buf[off+int64(i*8)] = byte(data[i])
-									// b.buf[off+int64(i*8)] = byte(*(*uint32)(unsafe.Pointer(data[i])))
+									/*
+									looking into reworking it to be like this:
 
-									// b.buf[off+int64(i*8)] = byte(*(*uint32)(unsafe.Pointer(data[i])) >> whatever)
+									*(*uintBITS)(unsafe.Pointer(b.obuf + (i * 8))) = (or chain)
+									*/
 							}
 						} else {
 							if arguments[2] == "U" || arguments[2] == "I" {
