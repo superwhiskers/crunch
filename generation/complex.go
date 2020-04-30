@@ -379,6 +379,7 @@ func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e err
 			builder.Comment(strings.Join([]string{
 				"// ",
 				functionNameNext,
+				" ",
 				map[string]string{
 					"Read":  "reads",
 					"Write": "writes",

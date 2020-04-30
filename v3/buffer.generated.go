@@ -456,7 +456,7 @@ func (b *Buffer) WriteU16LE(off int64, data []uint16) {
 	}
 }
 
-// WriteU16LENextwrites a slice of uint16s to the buffer at the
+// WriteU16LENext writes a slice of uint16s to the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteU16LENext(data []uint16) {
@@ -487,7 +487,7 @@ func (b *Buffer) WriteU16BE(off int64, data []uint16) {
 	}
 }
 
-// WriteU16BENextwrites a slice of uint16s to the buffer at the
+// WriteU16BENext writes a slice of uint16s to the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteU16BENext(data []uint16) {
@@ -520,7 +520,7 @@ func (b *Buffer) WriteU32LE(off int64, data []uint32) {
 	}
 }
 
-// WriteU32LENextwrites a slice of uint32s to the buffer at the
+// WriteU32LENext writes a slice of uint32s to the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteU32LENext(data []uint32) {
@@ -553,7 +553,7 @@ func (b *Buffer) WriteU32BE(off int64, data []uint32) {
 	}
 }
 
-// WriteU32BENextwrites a slice of uint32s to the buffer at the
+// WriteU32BENext writes a slice of uint32s to the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteU32BENext(data []uint32) {
@@ -590,7 +590,7 @@ func (b *Buffer) WriteU64LE(off int64, data []uint64) {
 	}
 }
 
-// WriteU64LENextwrites a slice of uint64s to the buffer at the
+// WriteU64LENext writes a slice of uint64s to the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteU64LENext(data []uint64) {
@@ -627,7 +627,7 @@ func (b *Buffer) WriteU64BE(off int64, data []uint64) {
 	}
 }
 
-// WriteU64BENextwrites a slice of uint64s to the buffer at the
+// WriteU64BENext writes a slice of uint64s to the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteU64BENext(data []uint64) {
@@ -658,7 +658,7 @@ func (b *Buffer) WriteI16LE(off int64, data []int16) {
 	}
 }
 
-// WriteI16LENextwrites a slice of int16s to the buffer at the
+// WriteI16LENext writes a slice of int16s to the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteI16LENext(data []int16) {
@@ -689,7 +689,7 @@ func (b *Buffer) WriteI16BE(off int64, data []int16) {
 	}
 }
 
-// WriteI16BENextwrites a slice of int16s to the buffer at the
+// WriteI16BENext writes a slice of int16s to the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteI16BENext(data []int16) {
@@ -722,7 +722,7 @@ func (b *Buffer) WriteI32LE(off int64, data []int32) {
 	}
 }
 
-// WriteI32LENextwrites a slice of int32s to the buffer at the
+// WriteI32LENext writes a slice of int32s to the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteI32LENext(data []int32) {
@@ -755,7 +755,7 @@ func (b *Buffer) WriteI32BE(off int64, data []int32) {
 	}
 }
 
-// WriteI32BENextwrites a slice of int32s to the buffer at the
+// WriteI32BENext writes a slice of int32s to the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteI32BENext(data []int32) {
@@ -792,7 +792,7 @@ func (b *Buffer) WriteI64LE(off int64, data []int64) {
 	}
 }
 
-// WriteI64LENextwrites a slice of int64s to the buffer at the
+// WriteI64LENext writes a slice of int64s to the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteI64LENext(data []int64) {
@@ -829,15 +829,13 @@ func (b *Buffer) WriteI64BE(off int64, data []int64) {
 	}
 }
 
-// WriteI64BENextwrites a slice of int64s to the buffer at the
+// WriteI64BENext writes a slice of int64s to the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteI64BENext(data []int64) {
 	b.WriteI64BE(b.off, data)
 	b.SeekByte(int64(len(data))*8, true)
 }
-
-//TODO(superwhiskers): add tests for the following generation directives
 
 // WriteF32LE writes a slice of float32s to the buffer at the
 // specified offset in little-endian without modifying the internal
@@ -864,7 +862,7 @@ func (b *Buffer) WriteF32LE(off int64, data []float32) {
 	}
 }
 
-// WriteF32LENextwrites a slice of float32s to the buffer at the
+// WriteF32LENext writes a slice of float32s to the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteF32LENext(data []float32) {
@@ -897,7 +895,7 @@ func (b *Buffer) WriteF32BE(off int64, data []float32) {
 	}
 }
 
-// WriteF32BENextwrites a slice of float32s to the buffer at the
+// WriteF32BENext writes a slice of float32s to the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteF32BENext(data []float32) {
@@ -934,7 +932,7 @@ func (b *Buffer) WriteF64LE(off int64, data []float64) {
 	}
 }
 
-// WriteF64LENextwrites a slice of float64s to the buffer at the
+// WriteF64LENext writes a slice of float64s to the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteF64LENext(data []float64) {
@@ -971,7 +969,7 @@ func (b *Buffer) WriteF64BE(off int64, data []float64) {
 	}
 }
 
-// WriteF64BENextwrites a slice of float64s to the buffer at the
+// WriteF64BENext writes a slice of float64s to the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) WriteF64BENext(data []float64) {
@@ -1050,7 +1048,7 @@ func (b *Buffer) ReadU16LE(off, n int64) (out []uint16) {
 	return
 }
 
-// ReadU16LENextreads a slice of uint16s from the buffer at the
+// ReadU16LENext reads a slice of uint16s from the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadU16LENext(n int64) (out []uint16) {
@@ -1082,7 +1080,7 @@ func (b *Buffer) ReadU16BE(off, n int64) (out []uint16) {
 	return
 }
 
-// ReadU16BENextreads a slice of uint16s from the buffer at the
+// ReadU16BENext reads a slice of uint16s from the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadU16BENext(n int64) (out []uint16) {
@@ -1114,7 +1112,7 @@ func (b *Buffer) ReadU32LE(off, n int64) (out []uint32) {
 	return
 }
 
-// ReadU32LENextreads a slice of uint32s from the buffer at the
+// ReadU32LENext reads a slice of uint32s from the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadU32LENext(n int64) (out []uint32) {
@@ -1146,7 +1144,7 @@ func (b *Buffer) ReadU32BE(off, n int64) (out []uint32) {
 	return
 }
 
-// ReadU32BENextreads a slice of uint32s from the buffer at the
+// ReadU32BENext reads a slice of uint32s from the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadU32BENext(n int64) (out []uint32) {
@@ -1178,7 +1176,7 @@ func (b *Buffer) ReadU64LE(off, n int64) (out []uint64) {
 	return
 }
 
-// ReadU64LENextreads a slice of uint64s from the buffer at the
+// ReadU64LENext reads a slice of uint64s from the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadU64LENext(n int64) (out []uint64) {
@@ -1210,7 +1208,7 @@ func (b *Buffer) ReadU64BE(off, n int64) (out []uint64) {
 	return
 }
 
-// ReadU64BENextreads a slice of uint64s from the buffer at the
+// ReadU64BENext reads a slice of uint64s from the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadU64BENext(n int64) (out []uint64) {
@@ -1242,7 +1240,7 @@ func (b *Buffer) ReadI16LE(off, n int64) (out []int16) {
 	return
 }
 
-// ReadI16LENextreads a slice of int16s from the buffer at the
+// ReadI16LENext reads a slice of int16s from the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadI16LENext(n int64) (out []int16) {
@@ -1274,7 +1272,7 @@ func (b *Buffer) ReadI16BE(off, n int64) (out []int16) {
 	return
 }
 
-// ReadI16BENextreads a slice of int16s from the buffer at the
+// ReadI16BENext reads a slice of int16s from the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadI16BENext(n int64) (out []int16) {
@@ -1306,7 +1304,7 @@ func (b *Buffer) ReadI32LE(off, n int64) (out []int32) {
 	return
 }
 
-// ReadI32LENextreads a slice of int32s from the buffer at the
+// ReadI32LENext reads a slice of int32s from the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadI32LENext(n int64) (out []int32) {
@@ -1338,7 +1336,7 @@ func (b *Buffer) ReadI32BE(off, n int64) (out []int32) {
 	return
 }
 
-// ReadI32BENextreads a slice of int32s from the buffer at the
+// ReadI32BENext reads a slice of int32s from the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadI32BENext(n int64) (out []int32) {
@@ -1370,7 +1368,7 @@ func (b *Buffer) ReadI64LE(off, n int64) (out []int64) {
 	return
 }
 
-// ReadI64LENextreads a slice of int64s from the buffer at the
+// ReadI64LENext reads a slice of int64s from the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadI64LENext(n int64) (out []int64) {
@@ -1402,7 +1400,7 @@ func (b *Buffer) ReadI64BE(off, n int64) (out []int64) {
 	return
 }
 
-// ReadI64BENextreads a slice of int64s from the buffer at the
+// ReadI64BENext reads a slice of int64s from the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadI64BENext(n int64) (out []int64) {
@@ -1410,8 +1408,6 @@ func (b *Buffer) ReadI64BENext(n int64) (out []int64) {
 	b.SeekByte(n*8, true)
 	return
 }
-
-//TODO(superwhiskers): add tests for the following generation directives
 
 // ReadF32LE reads a slice of float32s from the buffer at the
 // specified offset in little-endian without modifying the internal
@@ -1438,7 +1434,7 @@ func (b *Buffer) ReadF32LE(off, n int64) (out []float32) {
 	return
 }
 
-// ReadF32LENextreads a slice of float32s from the buffer at the
+// ReadF32LENext reads a slice of float32s from the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadF32LENext(n int64) (out []float32) {
@@ -1472,7 +1468,7 @@ func (b *Buffer) ReadF32BE(off, n int64) (out []float32) {
 	return
 }
 
-// ReadF32BENextreads a slice of float32s from the buffer at the
+// ReadF32BENext reads a slice of float32s from the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadF32BENext(n int64) (out []float32) {
@@ -1506,7 +1502,7 @@ func (b *Buffer) ReadF64LE(off, n int64) (out []float64) {
 	return
 }
 
-// ReadF64LENextreads a slice of float64s from the buffer at the
+// ReadF64LENext reads a slice of float64s from the buffer at the
 // current offset in little-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadF64LENext(n int64) (out []float64) {
@@ -1540,7 +1536,7 @@ func (b *Buffer) ReadF64BE(off, n int64) (out []float64) {
 	return
 }
 
-// ReadF64BENextreads a slice of float64s from the buffer at the
+// ReadF64BENext reads a slice of float64s from the buffer at the
 // current offset in big-endian and moves the offset forward the
 // amount of bytes written
 func (b *Buffer) ReadF64BENext(n int64) (out []float64) {
