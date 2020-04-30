@@ -718,6 +718,91 @@ func TestBufferReadSNEN(t *testing.T) {
 	}
 	buf.SeekByte(0x00, false)
 
+	//
+	// floats (we use a slightly different buffer to have higher confidence here)
+	//
+
+	var (
+		expected_readf32le = []float32{-45.318115, -8.536945e+32}
+		expected_readf32be = []float32{-3.081406, -1.0854726e-29}
+		expected_readf64le = []float64{-1.498274907009045e+261, 5.278146837874356e-99}
+		expected_readf64be = []float64{-42.42, 3.621}
+	)
+
+	buf = NewBuffer([]byte{0xc0, 0x45, 0x35, 0xc2, 0x8f, 0x5c, 0x28, 0xf6, 0x40, 0xc, 0xf7, 0xce, 0xd9, 0x16, 0x87, 0x2b})
+
+	//
+	// f32le
+	//
+
+	out7 := buf.ReadF32LENext(2)
+	if !cmp.Equal(out7, expected_readf32le) {
+
+		t.Fatalf("expected float32 array does not match the one gotten (got %#v, expected %#v)", out7, expected_readf32le)
+
+	}
+	off = buf.ByteOffset()
+	if off != 8 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.SeekByte(0x00, false)
+
+	//
+	// f32be
+	//
+
+	out7 = buf.ReadF32BENext(2)
+	if !cmp.Equal(out7, expected_readf32be) {
+
+		t.Fatalf("expected float32 array does not match the one gotten (got %#v, expected %#v)", out7, expected_readf32be)
+
+	}
+	off = buf.ByteOffset()
+	if off != 8 {
+		
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.SeekByte(0x00, false)
+
+	//
+	// f64le
+	//
+
+	out8 := buf.ReadF64LENext(2)
+	if !cmp.Equal(out8, expected_readf64le) {
+
+		t.Fatalf("expected float64 array does not match the one gotten (got %#v, expected %#v)", out8, expected_readf64le)
+
+	}
+	off = buf.ByteOffset()
+	if off != 16 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.SeekByte(0x00, false)
+	
+	//
+	// f64be
+	//
+
+	out8 = buf.ReadF64BENext(2)
+	if !cmp.Equal(out8, expected_readf64be) {
+
+		t.Fatalf("expected float64 array does not match the one gotten (got %#v, expected %#v)", out8, expected_readf64be)
+
+	}
+	off = buf.ByteOffset()
+	if off != 16 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.SeekByte(0x00, false)
+
 }
 
 func TestBufferWriteByte(t *testing.T) {
@@ -1119,6 +1204,98 @@ func TestBufferWriteSNEN(t *testing.T) {
 	if expected != out[0] {
 
 		t.Fatalf("expected byte does not match the one gotten (got %d, expected %d)", out[0], expected)
+
+	}
+
+	off = buf.ByteOffset()
+	if off != 16 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.SeekByte(0x00, false)
+
+	//
+	// floats (we use a slightly different expected integer array to have higher confidence here)
+	//
+
+	buf = NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	expected2 := []byte{0xc0, 0x45, 0x35, 0xc2, 0x8f, 0x5c, 0x28, 0xf6, 0x40, 0xc, 0xf7, 0xce, 0xd9, 0x16, 0x87, 0x2b}
+
+	//
+	// f32le
+	//
+
+	buf.WriteF32LENext([]float32{-45.318115, -8.536945e+32})
+
+	out = buf.ReadBytes(0x00, 8)
+	if !cmp.Equal(expected2[0:8], out) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out, expected2)
+
+	}
+
+	off = buf.ByteOffset()
+	if off != 8 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.SeekByte(0x00, false)
+
+	//
+	// f32be
+	//
+
+	buf.WriteF32BENext([]float32{-3.081406, -1.0854726e-29})
+
+	out = buf.ReadBytes(0x00, 8)
+	if !cmp.Equal(expected2[0:8], out) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out, expected2)
+
+	}
+
+	off = buf.ByteOffset()
+	if off != 8 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.SeekByte(0x00, false)
+
+	//
+	// f64le
+	//
+
+	buf.WriteF64LENext([]float64{-1.498274907009045e+261, 5.278146837874356e-99})
+
+	out = buf.ReadBytes(0x00, 16)
+	if !cmp.Equal(expected2, out) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out, expected2)
+
+	}
+
+	off = buf.ByteOffset()
+	if off != 16 {
+
+		t.Fatalf("incorrect offset: %d", off)
+
+	}
+	buf.SeekByte(0x00, false)
+
+	//
+	// f64be
+	//
+
+	buf.WriteF64BENext([]float64{-42.42, 3.621})
+
+	out = buf.ReadBytes(0x00, 16)
+	if !cmp.Equal(expected2, out) {
+
+		t.Fatalf("expected byte array does not match the one gotten (got %#v, expected %#v)", out, expected2)
 
 	}
 

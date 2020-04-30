@@ -22,7 +22,7 @@ func main() {
 
 	// write four float64s to the buffer (in big-endian, a different endianness
 	// that i'm using to exemplify the control that crunch gives you)
-	buf.WriteF64BENext([]float64{69.0, -21.0, -420.69, 3.621})
+	buf.WriteF64BENext([]float64{69.0, -21.0, -42.42, 3.621})
 
 	// output the buffer
 	fmt.Println(buf.Bytes())
