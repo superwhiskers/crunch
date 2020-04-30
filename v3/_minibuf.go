@@ -380,7 +380,6 @@ func (b *MiniBuffer) WriteBytesNext(data []byte) {
 
 //generator:complex MiniBuffer Write I 64 BE
 
-//TODO(superwhiskers): add tests for the following generation directives
 
 //generator:complex MiniBuffer Write F 32 LE
 
@@ -432,7 +431,6 @@ func (b *MiniBuffer) ReadBytesNext(out *[]byte, n int64) {
 
 //generator:complex MiniBuffer Read I 64 BE
 
-//TODO(superwhiskers): add tests for the following generation directives
 
 //generator:complex MiniBuffer Read F 32 LE
 
