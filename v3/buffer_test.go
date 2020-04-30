@@ -1913,6 +1913,86 @@ func TestBufferWriteI64BEPanic2(t *testing.T) {
 
 }
 
+func TestBufferWriteF32LEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.WriteF32LE(0x00, []float32{0x01, 0x02, 0x03, 0x04})
+
+}
+
+func TestBufferWriteF32LEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.WriteF32LE(-0x01, []float32{0x01})
+
+}
+
+func TestBufferWriteF32BEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.WriteF32BE(0x00, []float32{0x01, 0x02, 0x03, 0x04})
+
+}
+
+func TestBufferWriteF32BEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.WriteF32BE(-0x01, []float32{0x01})
+
+}
+
+func TestBufferWriteF64LEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.WriteF64LE(0x00, []float64{0x01, 0x02, 0x03, 0x04})
+
+}
+
+func TestBufferWriteF64LEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	buf.WriteF64LE(-0x01, []float64{0x01})
+
+}
+
+func TestBufferWriteF64BEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	buf.WriteF64BE(0x00, []float64{0x01, 0x02, 0x03, 0x04})
+
+}
+
+func TestBufferWriteF64BEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderwriteError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	buf.WriteF64BE(-0x01, []float64{0x01})
+
+}
+
 func TestBufferReadU16LEPanic1(t *testing.T) {
 
 	defer panicChecker(t, BufferOverreadError)
@@ -2150,6 +2230,86 @@ func TestBufferReadI64BEPanic2(t *testing.T) {
 	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
 
 	_ = buf.ReadI64BE(-0x01, 1)
+
+}
+
+func TestBufferReadF32LEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.ReadF32LE(0x04, 1)
+
+}
+
+func TestBufferReadF32LEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.ReadF32LE(-0x01, 1)
+
+}
+
+func TestBufferReadF32BEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.ReadF32BE(0x04, 1)
+
+}
+
+func TestBufferReadF32BEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.ReadF32BE(-0x01, 1)
+
+}
+
+func TestBufferReadF64LEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.ReadF64LE(0x04, 1)
+
+}
+
+func TestBufferReadF64LEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.ReadF64LE(-0x01, 1)
+
+}
+
+func TestBufferReadF64BEPanic1(t *testing.T) {
+
+	defer panicChecker(t, BufferOverreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.ReadF64BE(0x04, 1)
+
+}
+
+func TestBufferReadF64BEPanic2(t *testing.T) {
+
+	defer panicChecker(t, BufferUnderreadError)
+
+	buf := NewBuffer([]byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+
+	_ = buf.ReadF64BE(-0x01, 1)
 
 }
 
