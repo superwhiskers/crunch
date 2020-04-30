@@ -635,7 +635,6 @@ func (b *Buffer) WriteU64BENext(data []uint64) {
 	b.SeekByte(int64(len(data))*8, true)
 }
 
-
 // WriteI16LE writes a slice of int16s to the buffer at the
 // specified offset in little-endian without modifying the internal
 // offset value
@@ -1219,7 +1218,6 @@ func (b *Buffer) ReadU64BENext(n int64) (out []uint64) {
 	b.SeekByte(n*8, true)
 	return
 }
-
 
 // ReadI16LE reads a slice of int16s from the buffer at the
 // specified offset in little-endian without modifying the internal

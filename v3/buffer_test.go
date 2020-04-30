@@ -479,19 +479,19 @@ func TestBufferReadBytesNext(t *testing.T) {
 func TestBufferReadSNEN(t *testing.T) {
 
 	var (
-		expected_readu16le = []uint16{0x01, 0x00}
-		expected_readu16be = []uint16{0x100, 0x00}
-		expected_readu32le = []uint32{0x01, 0x00}
-		expected_readu32be = []uint32{0x1000000, 0x00}
-		expected_readu64le = []uint64{0x01, 0x01}
-		expected_readu64be = []uint64{0x100000000000000, 0x100000000000000}
+		expectedReadu16le = []uint16{0x01, 0x00}
+		expectedReadu16be = []uint16{0x100, 0x00}
+		expectedReadu32le = []uint32{0x01, 0x00}
+		expectedReadu32be = []uint32{0x1000000, 0x00}
+		expectedReadu64le = []uint64{0x01, 0x01}
+		expectedReadu64be = []uint64{0x100000000000000, 0x100000000000000}
 
-		expected_readi16le = []int16{0x01, 0x00}
-		expected_readi16be = []int16{0x100, 0x00}
-		expected_readi32le = []int32{0x01, 0x00}
-		expected_readi32be = []int32{0x1000000, 0x00}
-		expected_readi64le = []int64{0x01, 0x01}
-		expected_readi64be = []int64{0x100000000000000, 0x100000000000000}
+		expectedReadi16le = []int16{0x01, 0x00}
+		expectedReadi16be = []int16{0x100, 0x00}
+		expectedReadi32le = []int32{0x01, 0x00}
+		expectedReadi32be = []int32{0x1000000, 0x00}
+		expectedReadi64le = []int64{0x01, 0x01}
+		expectedReadi64be = []int64{0x100000000000000, 0x100000000000000}
 	)
 
 	buf := NewBuffer([]byte{0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
@@ -501,9 +501,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out1 := buf.ReadU16LENext(2)
-	if !cmp.Equal(out1, expected_readu16le) {
+	if !cmp.Equal(out1, expectedReadu16le) {
 
-		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out1, expected_readu16le)
+		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out1, expectedReadu16le)
 
 	}
 
@@ -520,9 +520,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out1 = buf.ReadU16BENext(2)
-	if !cmp.Equal(out1, expected_readu16be) {
+	if !cmp.Equal(out1, expectedReadu16be) {
 
-		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out1, expected_readu16be)
+		t.Fatalf("expected uint16 array does not match the one gotten (got %#v, expected %#v)", out1, expectedReadu16be)
 
 	}
 
@@ -539,9 +539,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out2 := buf.ReadU32LENext(2)
-	if !cmp.Equal(out2, expected_readu32le) {
+	if !cmp.Equal(out2, expectedReadu32le) {
 
-		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out2, expected_readu32le)
+		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out2, expectedReadu32le)
 
 	}
 
@@ -558,9 +558,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out2 = buf.ReadU32BENext(2)
-	if !cmp.Equal(out2, expected_readu32be) {
+	if !cmp.Equal(out2, expectedReadu32be) {
 
-		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out2, expected_readu32be)
+		t.Fatalf("expected uint32 array does not match the one gotten (got %#v, expected %#v)", out2, expectedReadu32be)
 
 	}
 
@@ -577,9 +577,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out3 := buf.ReadU64LENext(2)
-	if !cmp.Equal(out3, expected_readu64le) {
+	if !cmp.Equal(out3, expectedReadu64le) {
 
-		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out3, expected_readu64le)
+		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out3, expectedReadu64le)
 
 	}
 
@@ -596,9 +596,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out3 = buf.ReadU64BENext(2)
-	if !cmp.Equal(out3, expected_readu64be) {
+	if !cmp.Equal(out3, expectedReadu64be) {
 
-		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out3, expected_readu64be)
+		t.Fatalf("expected uint64 array does not match the one gotten (got %#v, expected %#v)", out3, expectedReadu64be)
 
 	}
 
@@ -615,9 +615,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out4 := buf.ReadI16LENext(2)
-	if !cmp.Equal(out4, expected_readi16le) {
+	if !cmp.Equal(out4, expectedReadi16le) {
 
-		t.Fatalf("expected int16 array does not match the one gotten (got %#v, expected %#v)", out4, expected_readi16le)
+		t.Fatalf("expected int16 array does not match the one gotten (got %#v, expected %#v)", out4, expectedReadi16le)
 
 	}
 	off = buf.ByteOffset()
@@ -633,9 +633,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out4 = buf.ReadI16BENext(2)
-	if !cmp.Equal(out4, expected_readi16be) {
+	if !cmp.Equal(out4, expectedReadi16be) {
 
-		t.Fatalf("expected int16 array does not match the one gotten (got %#v, expected %#v)", out4, expected_readi16be)
+		t.Fatalf("expected int16 array does not match the one gotten (got %#v, expected %#v)", out4, expectedReadi16be)
 
 	}
 	off = buf.ByteOffset()
@@ -651,9 +651,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out5 := buf.ReadI32LENext(2)
-	if !cmp.Equal(out5, expected_readi32le) {
+	if !cmp.Equal(out5, expectedReadi32le) {
 
-		t.Fatalf("expected int32 array does not match the one gotten (got %#v, expected %#v)", out5, expected_readi32le)
+		t.Fatalf("expected int32 array does not match the one gotten (got %#v, expected %#v)", out5, expectedReadi32le)
 
 	}
 	off = buf.ByteOffset()
@@ -669,9 +669,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out5 = buf.ReadI32BENext(2)
-	if !cmp.Equal(out5, expected_readi32be) {
+	if !cmp.Equal(out5, expectedReadi32be) {
 
-		t.Fatalf("expected int32 array does not match the one gotten (got %#v, expected %#v)", out5, expected_readi32be)
+		t.Fatalf("expected int32 array does not match the one gotten (got %#v, expected %#v)", out5, expectedReadi32be)
 
 	}
 	off = buf.ByteOffset()
@@ -687,9 +687,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out6 := buf.ReadI64LENext(2)
-	if !cmp.Equal(out6, expected_readi64le) {
+	if !cmp.Equal(out6, expectedReadi64le) {
 
-		t.Fatalf("expected int64 array does not match the one gotten (got %#v, expected %#v)", out6, expected_readi64le)
+		t.Fatalf("expected int64 array does not match the one gotten (got %#v, expected %#v)", out6, expectedReadi64le)
 
 	}
 	off = buf.ByteOffset()
@@ -705,9 +705,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out6 = buf.ReadI64BENext(2)
-	if !cmp.Equal(out6, expected_readi64be) {
+	if !cmp.Equal(out6, expectedReadi64be) {
 
-		t.Fatalf("expected int64 array does not match the one gotten (got %#v, expected %#v)", out6, expected_readi64be)
+		t.Fatalf("expected int64 array does not match the one gotten (got %#v, expected %#v)", out6, expectedReadi64be)
 
 	}
 	off = buf.ByteOffset()
@@ -723,10 +723,10 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	var (
-		expected_readf32le = []float32{-45.318115, -8.536945e+32}
-		expected_readf32be = []float32{-3.081406, -1.0854726e-29}
-		expected_readf64le = []float64{-1.498274907009045e+261, 5.278146837874356e-99}
-		expected_readf64be = []float64{-42.42, 3.621}
+		expectedReadf32le = []float32{-45.318115, -8.536945e+32}
+		expectedReadf32be = []float32{-3.081406, -1.0854726e-29}
+		expectedReadf64le = []float64{-1.498274907009045e+261, 5.278146837874356e-99}
+		expectedReadf64be = []float64{-42.42, 3.621}
 	)
 
 	buf = NewBuffer([]byte{0xc0, 0x45, 0x35, 0xc2, 0x8f, 0x5c, 0x28, 0xf6, 0x40, 0xc, 0xf7, 0xce, 0xd9, 0x16, 0x87, 0x2b})
@@ -736,9 +736,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out7 := buf.ReadF32LENext(2)
-	if !cmp.Equal(out7, expected_readf32le) {
+	if !cmp.Equal(out7, expectedReadf32le) {
 
-		t.Fatalf("expected float32 array does not match the one gotten (got %#v, expected %#v)", out7, expected_readf32le)
+		t.Fatalf("expected float32 array does not match the one gotten (got %#v, expected %#v)", out7, expectedReadf32le)
 
 	}
 	off = buf.ByteOffset()
@@ -754,14 +754,14 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out7 = buf.ReadF32BENext(2)
-	if !cmp.Equal(out7, expected_readf32be) {
+	if !cmp.Equal(out7, expectedReadf32be) {
 
-		t.Fatalf("expected float32 array does not match the one gotten (got %#v, expected %#v)", out7, expected_readf32be)
+		t.Fatalf("expected float32 array does not match the one gotten (got %#v, expected %#v)", out7, expectedReadf32be)
 
 	}
 	off = buf.ByteOffset()
 	if off != 8 {
-		
+
 		t.Fatalf("incorrect offset: %d", off)
 
 	}
@@ -772,9 +772,9 @@ func TestBufferReadSNEN(t *testing.T) {
 	//
 
 	out8 := buf.ReadF64LENext(2)
-	if !cmp.Equal(out8, expected_readf64le) {
+	if !cmp.Equal(out8, expectedReadf64le) {
 
-		t.Fatalf("expected float64 array does not match the one gotten (got %#v, expected %#v)", out8, expected_readf64le)
+		t.Fatalf("expected float64 array does not match the one gotten (got %#v, expected %#v)", out8, expectedReadf64le)
 
 	}
 	off = buf.ByteOffset()
@@ -784,15 +784,15 @@ func TestBufferReadSNEN(t *testing.T) {
 
 	}
 	buf.SeekByte(0x00, false)
-	
+
 	//
 	// f64be
 	//
 
 	out8 = buf.ReadF64BENext(2)
-	if !cmp.Equal(out8, expected_readf64be) {
+	if !cmp.Equal(out8, expectedReadf64be) {
 
-		t.Fatalf("expected float64 array does not match the one gotten (got %#v, expected %#v)", out8, expected_readf64be)
+		t.Fatalf("expected float64 array does not match the one gotten (got %#v, expected %#v)", out8, expectedReadf64be)
 
 	}
 	off = buf.ByteOffset()

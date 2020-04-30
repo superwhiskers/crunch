@@ -16,7 +16,7 @@ func main() {
 	//       | the size of a 32-bit signed integer (in bytes)
 	//       |
 	//       |   | two integers
-	//       |   | 
+	//       |   |
 	//       v   v
 	buf.Grow(4 * 2)
 

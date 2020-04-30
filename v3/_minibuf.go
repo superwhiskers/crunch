@@ -367,7 +367,6 @@ func (b *MiniBuffer) WriteBytesNext(data []byte) {
 
 //generator:complex MiniBuffer Write U 64 BE
 
-
 //generator:complex MiniBuffer Write I 16 LE
 
 //generator:complex MiniBuffer Write I 16 BE
@@ -379,7 +378,6 @@ func (b *MiniBuffer) WriteBytesNext(data []byte) {
 //generator:complex MiniBuffer Write I 64 LE
 
 //generator:complex MiniBuffer Write I 64 BE
-
 
 //generator:complex MiniBuffer Write F 32 LE
 
@@ -418,7 +416,6 @@ func (b *MiniBuffer) ReadBytesNext(out *[]byte, n int64) {
 
 //generator:complex MiniBuffer Read U 64 BE
 
-
 //generator:complex MiniBuffer Read I 16 LE
 
 //generator:complex MiniBuffer Read I 16 BE
@@ -430,7 +427,6 @@ func (b *MiniBuffer) ReadBytesNext(out *[]byte, n int64) {
 //generator:complex MiniBuffer Read I 64 LE
 
 //generator:complex MiniBuffer Read I 64 BE
-
 
 //generator:complex MiniBuffer Read F 32 LE
 

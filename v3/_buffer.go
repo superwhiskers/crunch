@@ -445,7 +445,6 @@ func (b *Buffer) WriteByteNext(data byte) {
 
 //generator:complex Buffer Write U 64 BE
 
-
 //generator:complex Buffer Write I 16 LE
 
 //generator:complex Buffer Write I 16 BE
@@ -457,7 +456,6 @@ func (b *Buffer) WriteByteNext(data byte) {
 //generator:complex Buffer Write I 64 LE
 
 //generator:complex Buffer Write I 64 BE
-
 
 //generator:complex Buffer Write F 32 LE
 
@@ -527,7 +525,6 @@ func (b *Buffer) ReadByteNext() (out byte) {
 
 //generator:complex Buffer Read U 64 BE
 
-
 //generator:complex Buffer Read I 16 LE
 
 //generator:complex Buffer Read I 16 BE
@@ -539,7 +536,6 @@ func (b *Buffer) ReadByteNext() (out byte) {
 //generator:complex Buffer Read I 64 LE
 
 //generator:complex Buffer Read I 64 BE
-
 
 //generator:complex Buffer Read F 32 LE
 
