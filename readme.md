@@ -8,9 +8,9 @@
 	<a href="https://github.com/superwhiskers/crunch/blob/master/LICENSE.txt">
 		<img src="https://img.shields.io/badge/license-MPL--2.0-brightgreen" alt="license" />
 	</a>
-	<a href="https://godoc.org/github.com/superwhiskers/crunch/v3">
-		<img src="https://godoc.org/github.com/superwhiskers/crunch/v3?status.svg" alt="godoc" />
-	</a>
+  <a href="https://pkg.go.dev/pkg.go.dev/github.com/superwhiskers/crunch">
+    <img src="https://pkg.go.dev/badge/pkg.go.dev/github.com/superwhiskers/crunch.svg" alt="documentation" />
+  </a>
 	<a href="https://travis-ci.org/superwhiskers/crunch">
 		<img src="https://travis-ci.org/superwhiskers/crunch.svg?branch=master" alt="travis" />
 	</a>
