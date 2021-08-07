@@ -71,24 +71,33 @@ import crunch "github.com/your-username/project/path/to/crunch/v3"
 
 both `Buffer` and `MiniBuffer` perform on average more than twice as fast as `bytes.Buffer` in both writing and reading
 ```
-BenchmarkBufferWriteBytes-4             2000000000               1.45 ns/op            0 B/op          0 allocs/op
-BenchmarkBufferReadBytes-4              2000000000               0.84 ns/op            0 B/op          0 allocs/op
-BenchmarkBufferWriteU32LE-4             200000000                9.28 ns/op            0 B/op          0 allocs/op
-BenchmarkBufferReadU32LE-4              50000000                26.6 ns/op             8 B/op          1 allocs/op
-BenchmarkBufferReadBit-4                2000000000               0.84 ns/op            0 B/op          0 allocs/op
-BenchmarkBufferReadBits-4               1000000000               2.25 ns/op            0 B/op          0 allocs/op
-BenchmarkBufferSetBit-4                 1000000000               2.07 ns/op            0 B/op          0 allocs/op
-BenchmarkBufferClearBit-4               1000000000               2.05 ns/op            0 B/op          0 allocs/op
-BenchmarkMiniBufferWriteBytes-4         2000000000               1.42 ns/op            0 B/op          0 allocs/op
-BenchmarkMiniBufferReadBytes-4          2000000000               0.58 ns/op            0 B/op          0 allocs/op
-BenchmarkMiniBufferWriteU32LE-4         200000000                8.79 ns/op            0 B/op          0 allocs/op
-BenchmarkMiniBufferReadU32LE-4          500000000                3.91 ns/op            0 B/op          0 allocs/op
-BenchmarkMiniBufferReadBit-4            2000000000               0.64 ns/op            0 B/op          0 allocs/op
-BenchmarkMiniBufferReadBits-4           300000000                5.64 ns/op            0 B/op          0 allocs/op
-BenchmarkMiniBufferSetBit-4             1000000000               2.03 ns/op            0 B/op          0 allocs/op
-BenchmarkMiniBufferClearBit-4           1000000000               2.10 ns/op            0 B/op          0 allocs/op
-BenchmarkStdByteBufferWrite-4           200000000                9.42 ns/op            0 B/op          0 allocs/op
-BenchmarkStdByteBufferRead-4            500000000                3.36 ns/op            0 B/op          0 allocs/op
+goos: linux
+goarch: amd64
+pkg: github.com/superwhiskers/crunch/v3
+cpu: Intel(R) Core(TM) i5-4300M CPU @ 2.60GHz
+BenchmarkBufferWriteBytes-4       	612593820	         1.948 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferReadBytes-4        	1000000000	         0.5476 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferWriteU32LE-4       	125229171	         9.528 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferReadU32LE-4        	44677784	        24.73 ns/op	       8 B/op	       1 allocs/op
+BenchmarkBufferReadBit-4          	1000000000	         0.5709 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferReadBits-4         	620840577	         1.869 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferSetBit-4           	600202990	         1.929 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferClearBit-4         	625814206	         1.993 ns/op	       0 B/op	       0 allocs/op
+BenchmarkBufferGrow-4             	252735192	         6.638 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferWriteBytes-4   	577940112	         2.112 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferReadBytes-4    	1000000000	         0.5531 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferWriteU32LE-4   	116178949	        12.90 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferReadU32LE-4    	189681555	         6.296 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferWriteF32LE-4   	121033429	        13.06 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferReadF32LE-4    	170977377	         7.244 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferReadBit-4      	1000000000	         0.4730 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferReadBits-4     	249350655	         4.968 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferSetBit-4       	566985802	         2.173 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferClearBit-4     	531134203	         2.195 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMiniBufferGrow-4         	271458589	         4.434 ns/op	       0 B/op	       0 allocs/op
+BenchmarkStdByteBufferWrite-4     	127322588	         9.249 ns/op	       0 B/op	       0 allocs/op
+BenchmarkStdByteBufferRead-4      	319744824	         3.742 ns/op	       0 B/op	       0 allocs/op
+BenchmarkStdByteBufferGrow-4      	274847331	         4.367 ns/op	       0 B/op	       0 allocs/op
 ```
 
 ## examples
