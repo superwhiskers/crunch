@@ -22,9 +22,6 @@ type MiniBuffer struct {
 	cap  int64
 	boff int64
 	bcap int64
-
-	// temp?
-	obuf unsafe.Pointer
 }
 
 // NewMiniBuffer initilaizes a new MiniBuffer with the provided byte
@@ -309,33 +306,13 @@ func (b *MiniBuffer) AlignBit() {
 // without modifying the internal offset value
 func (b *MiniBuffer) WriteBytes(off int64, data []byte) {
 
-	/*
-	   i'm just leaving this here incase this new
-	   method proves to be slower in some edge cases
-	*/
-	/*var (
+	var (
 		i = int64(0)
 		n = int64(len(data))
 	)
 	{
 	write_loop:
 		b.buf[off+i] = data[i]
-		i++
-		if i < n {
-
-			goto write_loop
-
-		}
-	}*/
-
-	var (
-		p = unsafe.Pointer(uintptr(b.obuf) + uintptr(off))
-		i = int64(0)
-		n = int64(len(data))
-	)
-	{
-	write_loop:
-		*(*byte)(unsafe.Pointer(uintptr(p) + uintptr(i))) = data[i]
 		i++
 		if i < n {
 
@@ -514,12 +491,6 @@ func (b *MiniBuffer) Refresh() {
 
 	b.cap = int64(len(b.buf))
 	b.bcap = b.cap * 8
-
-	if len(b.buf) > 0 {
-
-		b.obuf = unsafe.Pointer(&b.buf[0])
-
-	}
 
 }
 

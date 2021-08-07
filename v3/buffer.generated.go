@@ -21,9 +21,6 @@ type Buffer struct {
 	cap  int64
 	boff int64
 	bcap int64
-
-	// temp?
-	obuf unsafe.Pointer
 }
 
 // NewBuffer initilaizes a new Buffer with the provided byte slice(s)
@@ -370,33 +367,13 @@ func (b *Buffer) WriteBytes(off int64, data []byte) {
 
 	}
 
-	/*
-	   same as in minibuffer, leaving here in case this new
-	   method proves to be slower in some edge cases
-	*/
-	/*var (
+	var (
 		i = int64(0)
 		n = int64(len(data))
 	)
 	{
 	write_loop:
 		b.buf[off+i] = data[i]
-		i++
-		if i < n {
-
-			goto write_loop
-
-		}
-	}*/
-
-	var (
-		p = unsafe.Pointer(uintptr(b.obuf) + uintptr(off))
-		i = int64(0)
-		n = int64(len(data))
-	)
-	{
-	write_loop:
-		*(*byte)(unsafe.Pointer(uintptr(p) + uintptr(i))) = data[i]
 		i++
 		if i < n {
 
@@ -1639,12 +1616,6 @@ func (b *Buffer) Refresh() {
 
 	b.cap = int64(len(b.buf))
 	b.bcap = b.cap * 8
-
-	if len(b.buf) > 0 {
-
-		b.obuf = unsafe.Pointer(&b.buf[0])
-
-	}
 
 }
 
