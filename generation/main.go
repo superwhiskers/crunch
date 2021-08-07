@@ -19,6 +19,7 @@ func init() {
 	generationKind = flag.String("generation", "", "what kind of generation to run on the files")
 }
 
+//gocyclo:ignore
 func main() {
 	flag.Parse()
 

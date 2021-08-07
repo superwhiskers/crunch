@@ -61,6 +61,8 @@ import (
 // 	<filename w/o leading underscore>.generated.go
 //
 // after that, it goes to the next file and does the same.
+//
+//gocyclo:ignore
 func GenerateComplex(oldFiles map[string][]byte) (files map[string][]byte, e error) {
 	magicCommentRegex := regexp.MustCompile("(?m)^\\/\\/generator:complex ([A-z]{1,}) ([A-z]{1,}) ([A-z]{1,}) ([0-9]{1,}) ([A-z]{1,})$")
 

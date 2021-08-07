@@ -484,6 +484,7 @@ func TestMiniBufferReadBytesNext(t *testing.T) {
 
 }
 
+//gocyclo:ignore
 func TestMiniBufferReadSNEN(t *testing.T) {
 
 	var (
@@ -871,6 +872,7 @@ func TestMiniBufferWriteBytesNext(t *testing.T) {
 
 }
 
+//gocyclo:ignore
 func TestMiniBufferWriteSNEN(t *testing.T) {
 
 	var (

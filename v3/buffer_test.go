@@ -476,6 +476,7 @@ func TestBufferReadBytesNext(t *testing.T) {
 
 }
 
+//gocyclo:ignore
 func TestBufferReadSNEN(t *testing.T) {
 
 	var (
@@ -873,6 +874,7 @@ func TestBufferWriteBytesNext(t *testing.T) {
 
 }
 
+//gocyclo:ignore
 func TestBufferWriteSNEN(t *testing.T) {
 
 	var expected byte = 0x01
