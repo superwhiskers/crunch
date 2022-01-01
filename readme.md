@@ -11,11 +11,8 @@
   <a href="https://pkg.go.dev/github.com/superwhiskers/crunch/v3">
     <img src="https://pkg.go.dev/badge/github.com/superwhiskers/crunch/v3.svg" alt="documentation" />
   </a>
-	<a href="https://travis-ci.org/superwhiskers/crunch">
-		<img src="https://travis-ci.org/superwhiskers/crunch.svg?branch=master" alt="travis" />
-	</a>
-	<a href="https://codecov.io/gh/superwhiskers/crunch">
-		<img src="https://codecov.io/gh/superwhiskers/crunch/branch/master/graph/badge.svg" alt="codecov" />
+	<a href="https://github.com/superwhiskers/crunch/actions/workflows/go.yml">
+		<img src="https://github.com/superwhiskers/crunch/actions/workflows/go.yml/badge.svg" alt="go" />
 	</a>
 	<a href="https://goreportcard.com/report/github.com/superwhiskers/crunch">
 		<img src="https://goreportcard.com/badge/github.com/superwhiskers/crunch" alt="go report card" />
