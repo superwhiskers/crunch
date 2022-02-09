@@ -367,20 +367,7 @@ func (b *Buffer) WriteBytes(off int64, data []byte) {
 
 	}
 
-	var (
-		i = int64(0)
-		n = int64(len(data))
-	)
-	{
-	write_loop:
-		b.buf[off+i] = data[i]
-		i++
-		if i < n {
-
-			goto write_loop
-
-		}
-	}
+	copy(b.buf[off:], data)
 
 }
 

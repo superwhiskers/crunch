@@ -306,20 +306,7 @@ func (b *MiniBuffer) AlignBit() {
 // without modifying the internal offset value
 func (b *MiniBuffer) WriteBytes(off int64, data []byte) {
 
-	var (
-		i = int64(0)
-		n = int64(len(data))
-	)
-	{
-	write_loop:
-		b.buf[off+i] = data[i]
-		i++
-		if i < n {
-
-			goto write_loop
-
-		}
-	}
+	copy(b.buf[off:], data)
 
 }
 
