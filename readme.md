@@ -1,11 +1,11 @@
-<h1 align="center"><img height="340" src="https://github.com/superwhiskers/crunch/raw/master/.github/cookie.png" alt="cookie with a bite taken out of it"/><br />crunch</h1>
+<h1 align="center"><img height="340" src="https://github.com/superwhiskers/crunch/raw/canon/.github/cookie.png" alt="cookie with a bite taken out of it"/><br />crunch</h1>
 
 <p align="center">
 	<b>a library for easily manipulating bits and bytes in golang</b>
 </p>
 
 <p align="center">
-	<a href="https://github.com/superwhiskers/crunch/blob/master/LICENSE.txt">
+	<a href="https://github.com/superwhiskers/crunch/blob/canon/LICENSE.txt">
 		<img src="https://img.shields.io/badge/license-MPL--2.0-brightgreen" alt="license" />
 	</a>
   <a href="https://pkg.go.dev/github.com/superwhiskers/crunch/v3">
@@ -99,7 +99,7 @@ BenchmarkStdByteBufferGrow-4      	274847331	         4.367 ns/op	       0 B/op	
 
 ## examples
 
-examples can be found in the [examples](https://github.com/superwhiskers/crunch/blob/master/examples) directory
+examples can be found in the [examples](https://github.com/superwhiskers/crunch/blob/canon/examples) directory
 
 ## acknowledgements
 
