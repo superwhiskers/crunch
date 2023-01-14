@@ -1,10 +1,10 @@
 #
 # crunch - utilities for taking bytes out of things
-# copyright (c) 2019-2020 superwhiskers <whiskerdev@protonmail.com>
+# Copyright (c) 2019-2020 superwhiskers <whiskerdev@protonmail.com>
 #
-# this source code form is subject to the terms of the mozilla public
-# license, v. 2.0. if a copy of the mpl was not distributed with this
-# file, you can obtain one at http://mozilla.org/MPL/2.0/.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
 #
 
 ifeq ($(origin .RECIPEPREFIX), undefined)
